@@ -14,7 +14,7 @@ RUN mvn -B -q dependency:go-offline
 COPY src ./src
 
 # 构建（跳过测试，生产可按需开启）
-RUN mvn -B clean package -DskipTests
+RUN mvn -B package -DskipTests
 
 
 # ===============================
