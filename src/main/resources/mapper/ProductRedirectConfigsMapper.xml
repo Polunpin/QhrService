@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tencent.dao.ProductRedirectConfigsMapper">
+
+    <resultMap id="ProductRedirectConfigMap" type="com.tencent.model.ProductRedirectConfig">
+        <constructor>
+            <idArg column="id" javaType="java.lang.Long" name="id"/>
+            <arg column="product_id" javaType="java.lang.Long" name="productId"/>
+            <arg column="config_type" javaType="java.lang.String" name="configType"/>
+            <arg column="external_user_id" javaType="java.lang.String" name="externalUserId"/>
+            <arg column="target_name" javaType="java.lang.String" name="targetName"/>
+            <arg column="redirect_url" javaType="java.lang.String" name="redirectUrl"/>
+            <arg column="is_active" javaType="java.lang.Integer" name="isActive"/>
+            <arg column="click_count" javaType="java.lang.Integer" name="clickCount"/>
+            <arg column="priority" javaType="java.lang.Integer" name="priority"/>
+            <arg column="last_update_at" javaType="java.time.LocalDateTime" name="lastUpdateAt"/>
+            <arg column="created_at" javaType="java.time.LocalDateTime" name="createdAt"/>
+        </constructor>
+    </resultMap>
+
+    <sql id="ProductRedirectConfig_Columns">
+        id, product_id, config_type, external_user_id, target_name, redirect_url,
+        is_active, click_count, priority, last_update_at, created_at
+    </sql>
+
+    <select id="getById" resultMap="ProductRedirectConfigMap" parameterType="java.lang.Long">
+        SELECT <include refid="ProductRedirectConfig_Columns"/>
+        FROM Product_Redirect_Config
+        WHERE id = #{id}
+    </select>
+
+    <select id="list" resultMap="ProductRedirectConfigMap">
+        SELECT <include refid="ProductRedirectConfig_Columns"/>
+        FROM Product_Redirect_Config
+        <where>
+            <if test="productId != null"> AND product_id = #{productId}</if>
+            <if test="configType != null and configType != ''"> AND config_type = #{configType}</if>
+            <if test="externalUserId != null and externalUserId != ''"> AND external_user_id = #{externalUserId}</if>
+            <if test="isActive != null"> AND is_active = #{isActive}</if>
+            <if test="targetName != null and targetName != ''"> AND target_name LIKE CONCAT('%', #{targetName}, '%')</if>
+        </where>
+        ORDER BY priority DESC, id DESC
+        <if test="offset != null and size != null">
+            LIMIT #{offset}, #{size}
+        </if>
+    </select>
+
+    <select id="count">
+        SELECT COUNT(1)
+        FROM Product_Redirect_Config
+        <where>
+            <if test="productId != null"> AND product_id = #{productId}</if>
+            <if test="configType != null and configType != ''"> AND config_type = #{configType}</if>
+            <if test="externalUserId != null and externalUserId != ''"> AND external_user_id = #{externalUserId}</if>
+            <if test="isActive != null"> AND is_active = #{isActive}</if>
+            <if test="targetName != null and targetName != ''"> AND target_name LIKE CONCAT('%', #{targetName}, '%')</if>
+        </where>
+    </select>
+
+    <select id="listActiveByProductId" resultMap="ProductRedirectConfigMap" parameterType="java.lang.Long">
+        SELECT <include refid="ProductRedirectConfig_Columns"/>
+        FROM Product_Redirect_Config
+        WHERE product_id = #{productId}
+          AND is_active = 1
+        ORDER BY priority DESC, id DESC
+    </select>
+
+    <insert id="insert" parameterType="com.tencent.model.ProductRedirectConfig">
+        INSERT INTO Product_Redirect_Config (product_id, config_type, external_user_id, target_name, redirect_url,
+                                             is_active, click_count, priority)
+        VALUES (#{productId}, #{configType}, #{externalUserId}, #{targetName}, #{redirectUrl},
+                #{isActive}, #{clickCount}, #{priority})
+    </insert>
+
+    <update id="update" parameterType="com.tencent.model.ProductRedirectConfig">
+        UPDATE Product_Redirect_Config
+        <set>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="configType != null">config_type = #{configType},</if>
+            <if test="externalUserId != null">external_user_id = #{externalUserId},</if>
+            <if test="targetName != null">target_name = #{targetName},</if>
+            <if test="redirectUrl != null">redirect_url = #{redirectUrl},</if>
+            <if test="isActive != null">is_active = #{isActive},</if>
+            <if test="clickCount != null">click_count = #{clickCount},</if>
+            <if test="priority != null">priority = #{priority},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateActive">
+        UPDATE Product_Redirect_Config
+        SET is_active = #{isActive}
+        WHERE id = #{id}
+    </update>
+
+    <update id="increaseClickCount" parameterType="java.lang.Long">
+        UPDATE Product_Redirect_Config
+        SET click_count = click_count + 1
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM Product_Redirect_Config WHERE id = #{id}
+    </delete>
+
+    <select id="lastInsertId" resultType="long">
+        SELECT LAST_INSERT_ID()
+    </select>
+
+</mapper>

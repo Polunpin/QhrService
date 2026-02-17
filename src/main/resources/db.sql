@@ -155,3 +155,23 @@ CREATE TABLE staffs
     created_at     DATETIME                                DEFAULT CURRENT_TIMESTAMP
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='内部员工表';
+-- 10. 信贷产品申请路径配置表
+CREATE TABLE Product_Redirect_Config
+(
+    id               BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    product_id       BIGINT NOT NULL COMMENT '关联信贷产品ID',
+    config_type      VARCHAR(20)       DEFAULT 'GENERAL' COMMENT '配置类型：GENERAL-通用, PERSON-客户经理, BRANCH-支行',
+    external_user_id VARCHAR(128)      DEFAULT NULL COMMENT '承接对象ID-用于企业微信跳转银行客户经理',
+    target_name      VARCHAR(100)  NOT NULL COMMENT '承接对象姓名',
+    redirect_url     VARCHAR(1024) NOT NULL COMMENT '跳转链接',
+    is_active        TINYINT(1)        DEFAULT 1 COMMENT '启用状态：1-启用，0-停用',
+    click_count      INT               DEFAULT 0 COMMENT '累计点击次数',
+    priority         INT               DEFAULT 0 COMMENT '展示优先级',
+    last_update_at   DATETIME          DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at       DATETIME          DEFAULT CURRENT_TIMESTAMP,
+    -- 索引优化
+    INDEX idx_product_id (product_id),
+    INDEX idx_is_active (is_active),
+    INDEX idx_external_user (external_user_id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='信贷产品申请路径配置表';
