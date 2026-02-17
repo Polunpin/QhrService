@@ -15,3 +15,9 @@ spring:
 
 mybatis:
   mapper-locations: classpath*:mapper/*Mapper.xml
+
+we-com:
+  corp-id: ww87ecff7cdc463532
+  agent-id: 1000002
+  corp-secret: OvBxtHNEx98vfiMWjUmudOLCg_zh-05clvmIIHTxM3Q
+  redirect-uri: https://www.qhr.goldenguard.top/api/auth/wecom/callback
