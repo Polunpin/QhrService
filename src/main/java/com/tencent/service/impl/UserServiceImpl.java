@@ -3,6 +3,7 @@ package com.tencent.service.impl;
 import com.tencent.dao.EnterprisesMapper;
 import com.tencent.dao.UserEnterpriseRelationMapper;
 import com.tencent.dao.UsersMapper;
+import com.tencent.dto.UsersRequest;
 import com.tencent.model.Enterprise;
 import com.tencent.model.User;
 import com.tencent.model.UserEnterpriseRelation;
@@ -60,7 +61,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<User> list(Integer status, String mobile, String realName, Integer offset, Integer size) {
+  public List<UsersRequest> list(Integer status, String mobile, String realName, Integer offset, Integer size) {
     return usersMapper.list(status, mobile, realName, offset, size);
   }
 

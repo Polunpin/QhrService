@@ -1,5 +1,6 @@
 package com.tencent.dao;
 
+import com.tencent.dto.UsersRequest;
 import com.tencent.model.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -21,11 +22,11 @@ public interface UsersMapper {
 
   int updateStatus(@Param("id") Long id, @Param("status") Integer status);
 
-  List<User> list(@Param("status") Integer status,
-                  @Param("mobile") String mobile,
-                  @Param("realName") String realName,
-                  @Param("offset") Integer offset,
-                  @Param("size") Integer size);
+  List<UsersRequest> list(@Param("status") Integer status,
+                          @Param("mobile") String mobile,
+                          @Param("realName") String realName,
+                          @Param("offset") Integer offset,
+                          @Param("size") Integer size);
 
   long count(@Param("status") Integer status,
              @Param("mobile") String mobile,

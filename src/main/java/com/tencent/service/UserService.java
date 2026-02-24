@@ -1,5 +1,6 @@
 package com.tencent.service;
 
+import com.tencent.dto.UsersRequest;
 import com.tencent.model.Enterprise;
 import com.tencent.model.User;
 
@@ -26,7 +27,7 @@ public interface UserService {
   boolean updateStatus(Long id, Integer status);
 
   /** 分页查询用户列表 */
-  List<User> list(Integer status, String mobile, String realName, Integer offset, Integer size);
+  List<UsersRequest> list(Integer status, String mobile, String realName, Integer offset, Integer size);
 
   /** 统计用户数量 */
   long count(Integer status, String mobile, String realName);

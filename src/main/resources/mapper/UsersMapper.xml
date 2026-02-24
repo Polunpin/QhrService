@@ -31,15 +31,26 @@
         WHERE openid = #{openid}
     </select>
 
-    <select id="list" resultMap="UsersMap">
-        SELECT <include refid="User_Columns"/>
-        FROM users
+    <select id="list" parameterType="com.tencent.dto.UsersRequest">
+        SELECT u.id,u.real_name AS name,u.mobile,
+        COALESCE(ue.enterprises, 0) AS enterprises,
+        COALESCE(m.matchCount, 0) AS matchCount,
+        m.lastMatch AS lastMatch
+        FROM users u
+        LEFT JOIN
+        (SELECT user_id, COUNT(DISTINCT enterprise_id) AS enterprises
+        FROM user_enterprise_relation
+        GROUP BY user_id) ue ON u.id = ue.user_id
+        LEFT JOIN
+        (SELECT user_id, COUNT(id) AS matchCount, MAX(created_at) AS lastMatch
+        FROM match_records
+        GROUP BY user_id) m ON u.id = m.user_id
         <where>
-            <if test="status != null"> AND status = #{status}</if>
-            <if test="mobile != null and mobile != ''"> AND mobile = #{mobile}</if>
-            <if test="realName != null and realName != ''"> AND real_name LIKE CONCAT('%', #{realName}, '%')</if>
+            <if test="status != null">AND status = #{status}</if>
+            <if test="mobile != null and mobile != ''">AND mobile = #{mobile}</if>
+            <if test="realName != null and realName != ''">AND real_name LIKE CONCAT('%', #{realName}, '%')</if>
         </where>
-        ORDER BY id DESC
+        and u.status = 1 ORDER BY id DESC
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
         </if>
