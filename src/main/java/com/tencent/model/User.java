@@ -1,5 +1,7 @@
 package com.tencent.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -9,7 +11,9 @@ import java.time.LocalDateTime;
 public record User(Long id,
                    String openid,
                    String unionid,
+                   @JsonProperty("phone")
                    String mobile,
+                   @JsonProperty("name")
                    String realName,
                    Integer status,
                    LocalDateTime createdAt,

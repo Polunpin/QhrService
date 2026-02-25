@@ -21,3 +21,10 @@ we-com:
   agent-id: 1000002
   corp-secret: OvBxtHNEx98vfiMWjUmudOLCg_zh-05clvmIIHTxM3Q
   redirect-uri: https://www.qhr.goldenguard.top/api/auth/wecom/callback
+
+# 日志
+logging:
+  level:
+    mybatis: DEBUG
+    com.baomidou.mybatis plus: DEBUG
+
