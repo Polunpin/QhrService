@@ -1,6 +1,7 @@
 package com.tencent.service.impl;
 
 import com.tencent.dao.StaffsMapper;
+import com.tencent.dto.StaffRequest;
 import com.tencent.model.Staff;
 import com.tencent.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class StaffServiceImpl implements StaffService {
   }
 
   @Override
-  public List<Staff> list(String role, Integer status, String department, String mobile, Integer offset, Integer size) {
+  public List<StaffRequest> list(String role, Integer status, String department, String mobile, Integer offset, Integer size) {
     return staffsMapper.list(role, status, department, mobile, offset, size);
   }
 

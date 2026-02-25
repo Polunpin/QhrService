@@ -32,8 +32,14 @@
         WHERE mobile = #{mobile}
     </select>
 
-    <select id="list" resultMap="StaffsMap">
-        SELECT <include refid="Staff_Columns"/>
+    <select id="list" parameterType="com.tencent.dto.StaffRequest">
+        SELECT id,
+        real_name as name,
+        mobile as phone,
+        role,
+        department,
+        status,
+        last_update_at as lastLogin
         FROM staffs
         <where>
             <if test="role != null and role != ''"> AND role = #{role}</if>

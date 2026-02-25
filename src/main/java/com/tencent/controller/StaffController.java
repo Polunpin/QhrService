@@ -1,6 +1,7 @@
 package com.tencent.controller;
 
 import com.tencent.config.ApiResponse;
+import com.tencent.dto.StaffRequest;
 import com.tencent.dto.UpdateStatusRequest;
 import com.tencent.model.Staff;
 import com.tencent.service.StaffService;
@@ -40,7 +41,7 @@ public class StaffController {
                           @RequestParam(required = false) Integer page,
                           @RequestParam(required = false) Integer size) {
     PageBounds bounds = PageBounds.of(page, size);
-    List<Staff> staffs = staffService.list(role, status, department, mobile,
+    List<StaffRequest> staffs = staffService.list(role, status, department, mobile,
         bounds.offset(), bounds.size());
     long total = staffService.count(role, status, department, mobile);
     return ApiResponse.ok(PageResult.of(staffs, total, bounds.page(), bounds.size()));

@@ -1,5 +1,7 @@
 package com.tencent.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -8,7 +10,9 @@ import java.time.LocalDateTime;
  */
 public record Staff(Long id,
                     String openid,
+                    @JsonProperty("name")
                     String realName,
+                    @JsonProperty("phone")
                     String mobile,
                     String role,
                     String department,

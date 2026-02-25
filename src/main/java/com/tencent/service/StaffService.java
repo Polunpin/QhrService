@@ -1,5 +1,6 @@
 package com.tencent.service;
 
+import com.tencent.dto.StaffRequest;
 import com.tencent.model.Staff;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface StaffService {
   boolean updateStatus(Long id, Integer status);
 
   /** 分页查询员工列表 */
-  List<Staff> list(String role, Integer status, String department, String mobile, Integer offset, Integer size);
+  List<StaffRequest> list(String role, Integer status, String department, String mobile, Integer offset, Integer size);
 
   /** 统计员工数量 */
   long count(String role, Integer status, String department, String mobile);
