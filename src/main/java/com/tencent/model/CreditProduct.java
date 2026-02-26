@@ -3,6 +3,7 @@ package com.tencent.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * 信贷产品实体。
@@ -16,7 +17,7 @@ public record CreditProduct(Long id,
                             String interestRateRange,
                             Integer loanTerm,
                             String repaymentMethod,
-                            String serviceArea,
+                            String region,
                             String criteriaJson,
                             Integer status,
                             BigDecimal successRate,
@@ -26,7 +27,7 @@ public record CreditProduct(Long id,
   /** 复制并替换id。 */
   public CreditProduct withId(Long id) {
     return new CreditProduct(id, bankName, productName, productType, minAmount, maxAmount,
-        interestRateRange, loanTerm, repaymentMethod, serviceArea, criteriaJson, status,
+        interestRateRange, loanTerm, repaymentMethod, region, criteriaJson, status,
         successRate, createdAt, updatedAt);
   }
 }

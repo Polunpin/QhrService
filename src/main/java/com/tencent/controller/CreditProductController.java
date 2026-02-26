@@ -1,10 +1,12 @@
 package com.tencent.controller;
 
 import com.tencent.config.ApiResponse;
+import com.tencent.vo.CreditProductStats;
 import com.tencent.dto.MatchProductsRequest;
 import com.tencent.dto.UpdateProductStatusRequest;
 import com.tencent.model.CreditProduct;
 import com.tencent.service.CreditProductService;
+import com.tencent.vo.CreditProducts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +17,7 @@ import com.tencent.config.PageBounds;
 import com.tencent.config.PageResult;
 
 @RestController
-@RequestMapping("/api/credit-products")
+@RequestMapping("/api/products")
 public class CreditProductController {
 
   private final CreditProductService creditProductService;
@@ -32,6 +34,14 @@ public class CreditProductController {
     return ApiResponse.ok(product);
   }
 
+  /** 产品统计查询 */
+  @GetMapping("/stats")
+  public ApiResponse getStats() {
+    CreditProductStats productStats = creditProductService.getStats();
+    ApiAssert.notNull(productStats, ApiCode.NOT_FOUND, "产品统计失败");
+    return ApiResponse.ok(productStats);
+  }
+
   /** 分页查询产品列表 */
   @GetMapping("/list")
   public ApiResponse list(@RequestParam(required = false) Integer status,
@@ -40,7 +50,7 @@ public class CreditProductController {
                           @RequestParam(required = false) Integer page,
                           @RequestParam(required = false) Integer size) {
     PageBounds bounds = PageBounds.of(page, size);
-    List<CreditProduct> products = creditProductService.list(status, productType, bankName,
+    List<CreditProducts> products = creditProductService.list(status, productType, bankName,
         bounds.offset(), bounds.size());
     long total = creditProductService.count(status, productType, bankName);
     return ApiResponse.ok(PageResult.of(products, total, bounds.page(), bounds.size()));

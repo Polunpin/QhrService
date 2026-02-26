@@ -28,13 +28,13 @@
 
     <select id="getById" resultMap="CustomServiceOrdersMap" parameterType="java.lang.Long">
         SELECT <include refid="CustomServiceOrder_Columns"/>
-        FROM custom_service_orders
+        FROM f_custom_service_orders
         WHERE id = #{id}
     </select>
 
     <select id="list" resultMap="CustomServiceOrdersMap">
         SELECT <include refid="CustomServiceOrder_Columns"/>
-        FROM custom_service_orders
+        FROM f_custom_service_orders
         <where>
             <if test="enterpriseId != null"> AND enterprise_id = #{enterpriseId}</if>
             <if test="staffId != null"> AND staff_id = #{staffId}</if>
@@ -50,7 +50,7 @@
 
     <select id="count">
         SELECT COUNT(1)
-        FROM custom_service_orders
+        FROM f_custom_service_orders
         <where>
             <if test="enterpriseId != null"> AND enterprise_id = #{enterpriseId}</if>
             <if test="staffId != null"> AND staff_id = #{staffId}</if>
@@ -61,7 +61,7 @@
     </select>
 
     <insert id="insert" parameterType="com.tencent.model.CustomServiceOrder">
-        INSERT INTO custom_service_orders (enterprise_id, intention_id, staff_id, current_stage,
+        INSERT INTO f_custom_service_orders (enterprise_id, intention_id, staff_id, current_stage,
                                            service_status, loan_amount, commission_amount, service_cost,
                                            cost_details, settle_status)
         VALUES (#{enterpriseId}, #{intentionId}, #{staffId}, #{currentStage},
@@ -70,7 +70,7 @@
     </insert>
 
     <update id="update" parameterType="com.tencent.model.CustomServiceOrder">
-        UPDATE custom_service_orders
+        UPDATE f_custom_service_orders
         <set>
             <if test="enterpriseId != null">enterprise_id = #{enterpriseId},</if>
             <if test="intentionId != null">intention_id = #{intentionId},</if>
@@ -87,27 +87,27 @@
     </update>
 
     <update id="updateStage">
-        UPDATE custom_service_orders SET current_stage = #{currentStage}
+        UPDATE f_custom_service_orders SET current_stage = #{currentStage}
         WHERE id = #{id}
     </update>
 
     <update id="updateServiceStatus">
-        UPDATE custom_service_orders SET service_status = #{serviceStatus}
+        UPDATE f_custom_service_orders SET service_status = #{serviceStatus}
         WHERE id = #{id}
     </update>
 
     <update id="updateSettleStatus">
-        UPDATE custom_service_orders SET settle_status = #{settleStatus}
+        UPDATE f_custom_service_orders SET settle_status = #{settleStatus}
         WHERE id = #{id}
     </update>
 
     <update id="assignStaff">
-        UPDATE custom_service_orders SET staff_id = #{staffId}
+        UPDATE f_custom_service_orders SET staff_id = #{staffId}
         WHERE id = #{id}
     </update>
 
     <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM custom_service_orders WHERE id = #{id}
+        DELETE FROM f_custom_service_orders WHERE id = #{id}
     </delete>
 
     <select id="lastInsertId" resultType="long">

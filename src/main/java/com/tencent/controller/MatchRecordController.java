@@ -4,6 +4,8 @@ import com.tencent.config.ApiResponse;
 import com.tencent.dto.UpdateStringStatusRequest;
 import com.tencent.model.MatchRecord;
 import com.tencent.service.MatchRecordService;
+import com.tencent.vo.MatchRecords;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,14 +16,11 @@ import com.tencent.config.PageBounds;
 import com.tencent.config.PageResult;
 
 @RestController
-@RequestMapping("/api/match-records")
+@RequestMapping("/api/matching")
 public class MatchRecordController {
 
-  private final MatchRecordService matchRecordService;
-
-  public MatchRecordController(@Autowired MatchRecordService matchRecordService) {
-    this.matchRecordService = matchRecordService;
-  }
+  @Resource
+  private MatchRecordService matchRecordService;
 
   /** 查询匹配记录详情 */
   @GetMapping("/{id}")
@@ -39,7 +38,7 @@ public class MatchRecordController {
                           @RequestParam(required = false) Integer page,
                           @RequestParam(required = false) Integer size) {
     PageBounds bounds = PageBounds.of(page, size);
-    List<MatchRecord> records = matchRecordService.list(enterpriseId, intentionId, status,
+    List<MatchRecords> records = matchRecordService.list(enterpriseId, intentionId, status,
         bounds.offset(), bounds.size());
     long total = matchRecordService.count(enterpriseId, intentionId, status);
     return ApiResponse.ok(PageResult.of(records, total, bounds.page(), bounds.size()));

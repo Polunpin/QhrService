@@ -5,7 +5,7 @@
     <resultMap id="MatchRecordsMap" type="com.tencent.model.MatchRecord">
         <constructor>
             <idArg column="id" javaType="java.lang.Long" name="id"/>
-            <arg column="match_no" javaType="java.lang.String" name="matchNo"/>
+            <arg column="user_id" javaType="java.lang.String" name="userId"/>
             <arg column="enterprise_id" javaType="java.lang.Long" name="enterpriseId"/>
             <arg column="intention_id" javaType="java.lang.Long" name="intentionId"/>
             <arg column="product_ids" javaType="java.lang.String" name="productIds"/>
@@ -17,32 +17,47 @@
         </constructor>
     </resultMap>
 
+    <resultMap id="MatchRecordsVoMap" type="com.tencent.vo.MatchRecords">
+        <id column="id" property="id"/>
+        <result column="enterprise" property="enterprise"/>
+        <result column="applicant" property="applicant"/>
+        <result column="products" property="products"
+                typeHandler="com.tencent.config.typehandler.MatchProductsTypeHandler"/>
+        <result column="riskType" property="riskType"/>
+        <result column="riskLevel" property="riskLevel"/>
+        <result column="status" property="status"/>
+        <result column="matchTime" property="matchTime"/>
+    </resultMap>
+
     <sql id="MatchRecord_Columns">
-        id, match_no, enterprise_id, intention_id, product_ids, match_score,
+        id, userId, enterprise_id, intention_id, product_ids, match_score,
         risk_type, risk_level, status, created_at
     </sql>
 
     <select id="getById" resultMap="MatchRecordsMap" parameterType="java.lang.Long">
         SELECT <include refid="MatchRecord_Columns"/>
-        FROM match_records
+        FROM y_match_records
         WHERE id = #{id}
     </select>
 
-    <select id="getByMatchNo" resultMap="MatchRecordsMap" parameterType="java.lang.String">
-        SELECT <include refid="MatchRecord_Columns"/>
-        FROM match_records
-        WHERE match_no = #{matchNo}
-    </select>
-
-    <select id="list" resultMap="MatchRecordsMap">
-        SELECT <include refid="MatchRecord_Columns"/>
-        FROM match_records
+    <select id="list" parameterType="com.tencent.vo.MatchRecords" resultMap="MatchRecordsVoMap">
+        select ymr.id,
+        ye.full_name as enterprise,
+        pu.real_name as applicant,
+        ymr.product_ids as products,
+        ymr.risk_type as riskType,
+        ymr.risk_level as riskLevel,
+        ymr.status as status,
+        ymr.created_at as matchTime
+        from y_match_records ymr
+        left join p_users pu on ymr.user_id=pu.id
+        left join y_enterprises ye on ymr.enterprise_id=ye.id
         <where>
-            <if test="enterpriseId != null"> AND enterprise_id = #{enterpriseId}</if>
-            <if test="intentionId != null"> AND intention_id = #{intentionId}</if>
-            <if test="status != null and status != ''"> AND status = #{status}</if>
+            <if test="enterpriseId != null"> AND ymr.enterprise_id = #{enterpriseId}</if>
+            <if test="intentionId != null"> AND ymr.intention_id = #{intentionId}</if>
+            <if test="status != null and status != ''"> AND ymr.status = #{status}</if>
         </where>
-        ORDER BY id DESC
+        ORDER BY ymr.id DESC
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
         </if>
@@ -50,7 +65,7 @@
 
     <select id="count">
         SELECT COUNT(1)
-        FROM match_records
+        FROM y_match_records
         <where>
             <if test="enterpriseId != null"> AND enterprise_id = #{enterpriseId}</if>
             <if test="intentionId != null"> AND intention_id = #{intentionId}</if>
@@ -59,14 +74,14 @@
     </select>
 
     <insert id="insert" parameterType="com.tencent.model.MatchRecord">
-        INSERT INTO match_records (match_no, enterprise_id, intention_id, product_ids,
+        INSERT INTO y_match_records (user_id, enterprise_id, intention_id, product_ids,
                                    match_score, risk_type, risk_level, status)
-        VALUES (#{matchNo}, #{enterpriseId}, #{intentionId}, #{productIds},
+        VALUES (#{userId}, #{enterpriseId}, #{intentionId}, #{productIds},
                 #{matchScore}, #{riskType}, #{riskLevel}, #{status})
     </insert>
 
     <update id="update" parameterType="com.tencent.model.MatchRecord">
-        UPDATE match_records
+        UPDATE y_match_records
         <set>
             <if test="enterpriseId != null">enterprise_id = #{enterpriseId},</if>
             <if test="intentionId != null">intention_id = #{intentionId},</if>
@@ -80,12 +95,12 @@
     </update>
 
     <update id="updateStatus">
-        UPDATE match_records SET status = #{status}
+        UPDATE y_match_records SET status = #{status}
         WHERE id = #{id}
     </update>
 
     <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM match_records WHERE id = #{id}
+        DELETE FROM y_match_records WHERE id = #{id}
     </delete>
 
     <select id="lastInsertId" resultType="long">

@@ -28,13 +28,13 @@
 
     <select id="getById" resultMap="EnterprisesMap" parameterType="java.lang.Long">
         SELECT <include refid="Enterprise_Columns"/>
-        FROM enterprises
+        FROM y_enterprises
         WHERE id = #{id}
     </select>
 
     <select id="list" resultMap="EnterprisesMap">
         SELECT <include refid="Enterprise_Columns"/>
-        FROM enterprises
+        FROM y_enterprises
         <where>
             <if test="matchStatus != null and matchStatus != ''"> AND match_status = #{matchStatus}</if>
             <if test="industry != null and industry != ''"> AND industry = #{industry}</if>
@@ -48,7 +48,7 @@
 
     <select id="count">
         SELECT COUNT(1)
-        FROM enterprises
+        FROM y_enterprises
         <where>
             <if test="matchStatus != null and matchStatus != ''"> AND match_status = #{matchStatus}</if>
             <if test="industry != null and industry != ''"> AND industry = #{industry}</if>
@@ -60,8 +60,8 @@
         SELECT e.id, e.full_name, e.credit_code, e.industry, e.tax_rating, e.region_code,
                e.annual_turnover, e.annual_tax_amount, e.existing_loan_balance, e.match_status,
                e.profile_data, e.created_at, e.updated_at
-        FROM enterprises e
-        JOIN user_enterprise_relation r ON e.id = r.enterprise_id
+        FROM y_enterprises e
+        JOIN p_user_enterprise_relation r ON e.id = r.enterprise_id
         WHERE r.user_id = #{userId}
         ORDER BY e.id DESC
         <if test="offset != null and size != null">
@@ -71,13 +71,13 @@
 
     <select id="countByUserId">
         SELECT COUNT(1)
-        FROM enterprises e
-        JOIN user_enterprise_relation r ON e.id = r.enterprise_id
+        FROM y_enterprises e
+        JOIN p_user_enterprise_relation r ON e.id = r.enterprise_id
         WHERE r.user_id = #{userId}
     </select>
 
     <insert id="insert" parameterType="com.tencent.model.Enterprise">
-        INSERT INTO enterprises (full_name, credit_code, industry, tax_rating, region_code,
+        INSERT INTO y_enterprises (full_name, credit_code, industry, tax_rating, region_code,
                                  annual_turnover, annual_tax_amount, existing_loan_balance,
                                  match_status, profile_data)
         VALUES (#{fullName}, #{creditCode}, #{industry}, #{taxRating}, #{regionCode},
@@ -86,7 +86,7 @@
     </insert>
 
     <update id="update" parameterType="com.tencent.model.Enterprise">
-        UPDATE enterprises
+        UPDATE y_enterprises
         <set>
             <if test="fullName != null">full_name = #{fullName},</if>
             <if test="creditCode != null">credit_code = #{creditCode},</if>
@@ -103,17 +103,17 @@
     </update>
 
     <update id="updateMatchStatus">
-        UPDATE enterprises SET match_status = #{matchStatus}
+        UPDATE y_enterprises SET match_status = #{matchStatus}
         WHERE id = #{id}
     </update>
 
     <update id="updateProfileData">
-        UPDATE enterprises SET profile_data = #{profileData}
+        UPDATE y_enterprises SET profile_data = #{profileData}
         WHERE id = #{id}
     </update>
 
     <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM enterprises WHERE id = #{id}
+        DELETE FROM y_enterprises WHERE id = #{id}
     </delete>
 
     <select id="lastInsertId" resultType="long">

@@ -1,9 +1,9 @@
-package com.tencent.dto;
+package com.tencent.vo;
 
 /**
  * 用户列表。
  */
-public record StaffRequest(
+public record Staffs(
         /*用户ID*/
         String id,
         /*姓名*/

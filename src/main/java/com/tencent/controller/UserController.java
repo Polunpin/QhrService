@@ -3,7 +3,7 @@ package com.tencent.controller;
 import com.tencent.config.ApiResponse;
 import com.tencent.dto.BindEnterpriseRequest;
 import com.tencent.dto.UpdateStatusRequest;
-import com.tencent.dto.UsersRequest;
+import com.tencent.vo.Users;
 import com.tencent.model.Enterprise;
 import com.tencent.model.User;
 import com.tencent.service.UserService;
@@ -42,7 +42,7 @@ public class UserController {
                           @RequestParam(required = false) Integer page,
                           @RequestParam(required = false) Integer size) {
     PageBounds bounds = PageBounds.of(page, size);
-    List<UsersRequest> users = userService.list(status, mobile, realName, bounds.offset(), bounds.size());
+    List<Users> users = userService.list(status, mobile, realName, bounds.offset(), bounds.size());
     long total = userService.count(status, mobile, realName);
     return ApiResponse.ok(PageResult.of(users, total, bounds.page(), bounds.size()));
   }

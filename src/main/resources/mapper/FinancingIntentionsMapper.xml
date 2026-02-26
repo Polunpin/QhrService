@@ -31,19 +31,19 @@
 
     <select id="getById" resultMap="FinancingIntentionsMap" parameterType="java.lang.Long">
         SELECT <include refid="FinancingIntention_Columns"/>
-        FROM financing_intentions
+        FROM y_financing_intentions
         WHERE id = #{id}
     </select>
 
     <select id="getByApplicationNo" resultMap="FinancingIntentionsMap" parameterType="java.lang.String">
         SELECT <include refid="FinancingIntention_Columns"/>
-        FROM financing_intentions
+        FROM y_financing_intentions
         WHERE application_no = #{applicationNo}
     </select>
 
     <select id="list" resultMap="FinancingIntentionsMap">
         SELECT <include refid="FinancingIntention_Columns"/>
-        FROM financing_intentions
+        FROM y_financing_intentions
         <where>
             <if test="enterpriseId != null"> AND enterprise_id = #{enterpriseId}</if>
             <if test="userId != null"> AND user_id = #{userId}</if>
@@ -57,7 +57,7 @@
 
     <select id="count">
         SELECT COUNT(1)
-        FROM financing_intentions
+        FROM y_financing_intentions
         <where>
             <if test="enterpriseId != null"> AND enterprise_id = #{enterpriseId}</if>
             <if test="userId != null"> AND user_id = #{userId}</if>
@@ -66,7 +66,7 @@
     </select>
 
     <insert id="insert" parameterType="com.tencent.model.FinancingIntention">
-        INSERT INTO financing_intentions (application_no, enterprise_id, user_id, expected_amount,
+        INSERT INTO y_financing_intentions (application_no, enterprise_id, user_id, expected_amount,
                                           expected_term, purpose, repayment_source, guarantee_type,
                                           target_product_id, contact_mobile, status, refusal_reason, urgency_level)
         VALUES (#{applicationNo}, #{enterpriseId}, #{userId}, #{expectedAmount},
@@ -75,7 +75,7 @@
     </insert>
 
     <update id="update" parameterType="com.tencent.model.FinancingIntention">
-        UPDATE financing_intentions
+        UPDATE y_financing_intentions
         <set>
             <if test="enterpriseId != null">enterprise_id = #{enterpriseId},</if>
             <if test="userId != null">user_id = #{userId},</if>
@@ -94,19 +94,19 @@
     </update>
 
     <update id="updateStatus">
-        UPDATE financing_intentions
+        UPDATE y_financing_intentions
         SET status = #{status}, refusal_reason = #{refusalReason}
         WHERE id = #{id}
     </update>
 
     <update id="updateTargetProduct">
-        UPDATE financing_intentions
+        UPDATE y_financing_intentions
         SET target_product_id = #{targetProductId}
         WHERE id = #{id}
     </update>
 
     <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM financing_intentions WHERE id = #{id}
+        DELETE FROM y_financing_intentions WHERE id = #{id}
     </delete>
 
     <select id="lastInsertId" resultType="long">

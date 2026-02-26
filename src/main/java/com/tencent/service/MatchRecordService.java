@@ -1,6 +1,7 @@
 package com.tencent.service;
 
 import com.tencent.model.MatchRecord;
+import com.tencent.vo.MatchRecords;
 
 import java.util.List;
 
@@ -8,9 +9,6 @@ public interface MatchRecordService {
 
   /** 根据ID查询匹配记录 */
   MatchRecord getById(Long id);
-
-  /** 根据匹配编号查询匹配记录 */
-  MatchRecord getByMatchNo(String matchNo);
 
   /** 创建匹配记录并返回主键 */
   Long create(MatchRecord record);
@@ -25,7 +23,7 @@ public interface MatchRecordService {
   boolean updateStatus(Long id, String status);
 
   /** 分页查询匹配记录列表 */
-  List<MatchRecord> list(Long enterpriseId, Long intentionId, String status, Integer offset, Integer size);
+  List<MatchRecords> list(Long enterpriseId, Long intentionId, String status, Integer offset, Integer size);
 
   /** 统计匹配记录数量 */
   long count(Long enterpriseId, Long intentionId, String status);

@@ -25,13 +25,13 @@
 
     <select id="getById" resultMap="ProductRedirectConfigMap" parameterType="java.lang.Long">
         SELECT <include refid="ProductRedirectConfig_Columns"/>
-        FROM Product_Redirect_Config
+        FROM y_product_Redirect_Config
         WHERE id = #{id}
     </select>
 
     <select id="list" resultMap="ProductRedirectConfigMap">
         SELECT <include refid="ProductRedirectConfig_Columns"/>
-        FROM Product_Redirect_Config
+        FROM y_product_Redirect_Config
         <where>
             <if test="productId != null"> AND product_id = #{productId}</if>
             <if test="configType != null and configType != ''"> AND config_type = #{configType}</if>
@@ -47,7 +47,7 @@
 
     <select id="count">
         SELECT COUNT(1)
-        FROM Product_Redirect_Config
+        FROM y_product_Redirect_Config
         <where>
             <if test="productId != null"> AND product_id = #{productId}</if>
             <if test="configType != null and configType != ''"> AND config_type = #{configType}</if>
@@ -59,21 +59,21 @@
 
     <select id="listActiveByProductId" resultMap="ProductRedirectConfigMap" parameterType="java.lang.Long">
         SELECT <include refid="ProductRedirectConfig_Columns"/>
-        FROM Product_Redirect_Config
+        FROM y_product_Redirect_Config
         WHERE product_id = #{productId}
           AND is_active = 1
         ORDER BY priority DESC, id DESC
     </select>
 
     <insert id="insert" parameterType="com.tencent.model.ProductRedirectConfig">
-        INSERT INTO Product_Redirect_Config (product_id, config_type, external_user_id, target_name, redirect_url,
+        INSERT INTO y_product_Redirect_Config (product_id, config_type, external_user_id, target_name, redirect_url,
                                              is_active, click_count, priority)
         VALUES (#{productId}, #{configType}, #{externalUserId}, #{targetName}, #{redirectUrl},
                 #{isActive}, #{clickCount}, #{priority})
     </insert>
 
     <update id="update" parameterType="com.tencent.model.ProductRedirectConfig">
-        UPDATE Product_Redirect_Config
+        UPDATE y_product_Redirect_Config
         <set>
             <if test="productId != null">product_id = #{productId},</if>
             <if test="configType != null">config_type = #{configType},</if>
@@ -88,19 +88,19 @@
     </update>
 
     <update id="updateActive">
-        UPDATE Product_Redirect_Config
+        UPDATE y_product_Redirect_Config
         SET is_active = #{isActive}
         WHERE id = #{id}
     </update>
 
     <update id="increaseClickCount" parameterType="java.lang.Long">
-        UPDATE Product_Redirect_Config
+        UPDATE y_product_Redirect_Config
         SET click_count = click_count + 1
         WHERE id = #{id}
     </update>
 
     <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM Product_Redirect_Config WHERE id = #{id}
+        DELETE FROM y_product_Redirect_Config WHERE id = #{id}
     </delete>
 
     <select id="lastInsertId" resultType="long">

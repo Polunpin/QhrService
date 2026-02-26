@@ -13,7 +13,7 @@
             <arg column="interest_rate_range" javaType="java.lang.String" name="interestRateRange"/>
             <arg column="loan_term" javaType="java.lang.Integer" name="loanTerm"/>
             <arg column="repayment_method" javaType="java.lang.String" name="repaymentMethod"/>
-            <arg column="service_area" javaType="java.lang.String" name="serviceArea"/>
+            <arg column="region" javaType="java.lang.String" name="region"/>
             <arg column="criteria_json" javaType="java.lang.String" name="criteriaJson"/>
             <arg column="status" javaType="java.lang.Integer" name="status"/>
             <arg column="success_rate" javaType="java.math.BigDecimal" name="successRate"/>
@@ -24,19 +24,28 @@
 
     <sql id="CreditProduct_Columns">
         id, bank_name, product_name, product_type, min_amount, max_amount, interest_rate_range,
-        loan_term, repayment_method, service_area, criteria_json, status, success_rate,
+        loan_term, repayment_method, region, criteria_json, status, success_rate,
         created_at, updated_at
     </sql>
 
     <select id="getById" resultMap="CreditProductsMap" parameterType="java.lang.Long">
         SELECT <include refid="CreditProduct_Columns"/>
-        FROM credit_products
+        FROM y_credit_products
         WHERE id = #{id}
     </select>
 
-    <select id="list" resultMap="CreditProductsMap">
+    <select id="getByIds" resultMap="CreditProductsMap">
         SELECT <include refid="CreditProduct_Columns"/>
-        FROM credit_products
+        FROM y_credit_products
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="list" parameterType="com.tencent.vo.CreditProducts">
+        SELECT <include refid="CreditProduct_Columns"/>
+        FROM y_credit_products
         <where>
             <if test="status != null"> AND status = #{status}</if>
             <if test="productType != null and productType != ''"> AND product_type = #{productType}</if>
@@ -50,7 +59,7 @@
 
     <select id="count">
         SELECT COUNT(1)
-        FROM credit_products
+        FROM y_credit_products
         <where>
             <if test="status != null"> AND status = #{status}</if>
             <if test="productType != null and productType != ''"> AND product_type = #{productType}</if>
@@ -60,12 +69,12 @@
 
     <select id="findEligibleProducts" resultMap="CreditProductsMap">
         SELECT <include refid="CreditProduct_Columns"/>
-        FROM credit_products
+        FROM y_credit_products
         <where>
             AND status = 1
             <if test="expectedAmount != null"> AND min_amount &lt;= #{expectedAmount} AND max_amount &gt;= #{expectedAmount}</if>
             <if test="expectedTerm != null"> AND loan_term &gt;= #{expectedTerm}</if>
-            <if test="regionCode != null and regionCode != ''"> AND service_area LIKE CONCAT('%', #{regionCode}, '%')</if>
+            <if test="regionCode != null and regionCode != ''"> AND region LIKE CONCAT('%', #{regionCode}, '%')</if>
             <if test="productType != null and productType != ''"> AND product_type = #{productType}</if>
         </where>
         ORDER BY success_rate DESC, id DESC
@@ -76,27 +85,27 @@
 
     <select id="countEligibleProducts">
         SELECT COUNT(1)
-        FROM credit_products
+        FROM y_credit_products
         <where>
             AND status = 1
             <if test="expectedAmount != null"> AND min_amount &lt;= #{expectedAmount} AND max_amount &gt;= #{expectedAmount}</if>
             <if test="expectedTerm != null"> AND loan_term &gt;= #{expectedTerm}</if>
-            <if test="regionCode != null and regionCode != ''"> AND service_area LIKE CONCAT('%', #{regionCode}, '%')</if>
+            <if test="regionCode != null and regionCode != ''"> AND region LIKE CONCAT('%', #{regionCode}, '%')</if>
             <if test="productType != null and productType != ''"> AND product_type = #{productType}</if>
         </where>
     </select>
 
     <insert id="insert" parameterType="com.tencent.model.CreditProduct">
-        INSERT INTO credit_products (bank_name, product_name, product_type, min_amount, max_amount,
-                                     interest_rate_range, loan_term, repayment_method, service_area,
-                                     criteria_json, status, success_rate)
+        INSERT INTO y_credit_products (bank_name, product_name, product_type, min_amount, max_amount,
+                                     interest_rate_range, loan_term, repayment_method, region,
+                                     criteria_json, status)
         VALUES (#{bankName}, #{productName}, #{productType}, #{minAmount}, #{maxAmount},
-                #{interestRateRange}, #{loanTerm}, #{repaymentMethod}, #{serviceArea},
-                #{criteriaJson}, #{status}, #{successRate})
+                #{interestRateRange}, #{loanTerm}, #{repaymentMethod}, #{region},
+                #{criteriaJson}, #{status})
     </insert>
 
     <update id="update" parameterType="com.tencent.model.CreditProduct">
-        UPDATE credit_products
+        UPDATE y_credit_products
         <set>
             <if test="bankName != null">bank_name = #{bankName},</if>
             <if test="productName != null">product_name = #{productName},</if>
@@ -106,7 +115,7 @@
             <if test="interestRateRange != null">interest_rate_range = #{interestRateRange},</if>
             <if test="loanTerm != null">loan_term = #{loanTerm},</if>
             <if test="repaymentMethod != null">repayment_method = #{repaymentMethod},</if>
-            <if test="serviceArea != null">service_area = #{serviceArea},</if>
+            <if test="region != null">region = #{region},</if>
             <if test="criteriaJson != null">criteria_json = #{criteriaJson},</if>
             <if test="status != null">status = #{status},</if>
             <if test="successRate != null">success_rate = #{successRate},</if>
@@ -115,16 +124,24 @@
     </update>
 
     <update id="updateStatus">
-        UPDATE credit_products SET status = #{status}
+        UPDATE y_credit_products SET status = #{status}
         WHERE id = #{id}
     </update>
 
     <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM credit_products WHERE id = #{id}
+        DELETE FROM y_credit_products WHERE id = #{id}
     </delete>
 
     <select id="lastInsertId" resultType="long">
         SELECT LAST_INSERT_ID()
+    </select>
+    <select id="getStats" resultType="com.tencent.vo.CreditProductStats">
+        SELECT (SELECT COUNT(DISTINCT bank_name) FROM y_credit_products)                       AS bankNameCount,
+               (SELECT COUNT(*) FROM y_credit_products)                                        AS productCount,
+               (SELECT COUNT(*) FROM y_match_records WHERE WEEK(created_at) = WEEK(CURDATE())) AS matchCount,
+               (SELECT IF(COUNT(*) = 0, '0.00%', CONCAT(ROUND(SUM(IF(status = 1, 1, 0)) / COUNT(*) * 100, 2), '%'))
+                FROM y_match_records
+                WHERE WEEK(created_at) = WEEK(CURDATE()))                                      AS matchRate
     </select>
 
 </mapper>

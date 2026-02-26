@@ -56,7 +56,7 @@ CREATE TABLE credit_products
     interest_rate_range VARCHAR(50) COMMENT '利率范围(如: 3.5%-5%)',
     loan_term           INT COMMENT '期限(月)',
     repayment_method    VARCHAR(50) COMMENT '还款方式',
-    service_area        VARCHAR(255) COMMENT '准入地区',
+    region        VARCHAR(255) COMMENT '准入地区',
     criteria_json       JSON COMMENT '准入条件结构化描述',
     status              TINYINT        DEFAULT 2 COMMENT '0:下架, 1:上架, 2:草稿',
     success_rate        DECIMAL(5, 2)  DEFAULT 0.00 COMMENT '历史匹配成功率',

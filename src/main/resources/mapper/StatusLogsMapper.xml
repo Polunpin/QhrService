@@ -21,13 +21,13 @@
 
     <select id="getById" resultMap="StatusLogsMap" parameterType="java.lang.Long">
         SELECT <include refid="StatusLog_Columns"/>
-        FROM status_logs
+        FROM f_status_logs
         WHERE id = #{id}
     </select>
 
     <select id="listByOrderId" resultMap="StatusLogsMap">
         SELECT <include refid="StatusLog_Columns"/>
-        FROM status_logs
+        FROM f_status_logs
         WHERE order_id = #{orderId}
         ORDER BY id DESC
         <if test="offset != null and size != null">
@@ -37,12 +37,12 @@
 
     <select id="countByOrderId">
         SELECT COUNT(1)
-        FROM status_logs
+        FROM f_status_logs
         WHERE order_id = #{orderId}
     </select>
 
     <insert id="insert" parameterType="com.tencent.model.StatusLog">
-        INSERT INTO status_logs (order_id, operator_type, operator_id, pre_stage, post_stage, remark)
+        INSERT INTO f_status_logs (order_id, operator_type, operator_id, pre_stage, post_stage, remark)
         VALUES (#{orderId}, #{operatorType}, #{operatorId}, #{preStage}, #{postStage}, #{remark})
     </insert>
 

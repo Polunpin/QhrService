@@ -1,8 +1,10 @@
 package com.tencent.service.impl;
 
 import com.tencent.dao.CreditProductsMapper;
+import com.tencent.vo.CreditProductStats;
 import com.tencent.model.CreditProduct;
 import com.tencent.service.CreditProductService;
+import com.tencent.vo.CreditProducts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,14 @@ public class CreditProductServiceImpl implements CreditProductService {
   @Override
   public CreditProduct getById(Long id) {
     return creditProductsMapper.getById(id);
+  }
+
+  @Override
+  public List<CreditProduct> getByIds(List<Long> ids) {
+    if (ids == null || ids.isEmpty()) {
+      return List.of();
+    }
+    return creditProductsMapper.getByIds(ids);
   }
 
   @Override
@@ -45,7 +55,7 @@ public class CreditProductServiceImpl implements CreditProductService {
   }
 
   @Override
-  public List<CreditProduct> list(Integer status, String productType, String bankName, Integer offset, Integer size) {
+  public List<CreditProducts> list(Integer status, String productType, String bankName, Integer offset, Integer size) {
     return creditProductsMapper.list(status, productType, bankName, offset, size);
   }
 
@@ -71,4 +81,10 @@ public class CreditProductServiceImpl implements CreditProductService {
                                     String productType) {
     return creditProductsMapper.countEligibleProducts(expectedAmount, expectedTerm, regionCode, productType);
   }
+
+    @Override
+    public CreditProductStats getStats() {
+      return creditProductsMapper.getStats();
+
+    }
 }

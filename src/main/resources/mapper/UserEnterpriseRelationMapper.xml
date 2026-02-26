@@ -18,36 +18,36 @@
 
     <select id="getByUserEnterprise" resultMap="RelationMap">
         SELECT <include refid="Relation_Columns"/>
-        FROM user_enterprise_relation
+        FROM p_user_enterprise_relation
         WHERE user_id = #{userId} AND enterprise_id = #{enterpriseId}
         LIMIT 1
     </select>
 
     <select id="listByUserId" resultMap="RelationMap" parameterType="java.lang.Long">
         SELECT <include refid="Relation_Columns"/>
-        FROM user_enterprise_relation
+        FROM p_user_enterprise_relation
         WHERE user_id = #{userId}
         ORDER BY id DESC
     </select>
 
     <select id="listByEnterpriseId" resultMap="RelationMap" parameterType="java.lang.Long">
         SELECT <include refid="Relation_Columns"/>
-        FROM user_enterprise_relation
+        FROM p_user_enterprise_relation
         WHERE enterprise_id = #{enterpriseId}
         ORDER BY id DESC
     </select>
 
     <insert id="insert" parameterType="com.tencent.model.UserEnterpriseRelation">
-        INSERT INTO user_enterprise_relation (enterprise_id, user_id, role)
+        INSERT INTO p_user_enterprise_relation (enterprise_id, user_id, role)
         VALUES (#{enterpriseId}, #{userId}, #{role})
     </insert>
 
     <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM user_enterprise_relation WHERE id = #{id}
+        DELETE FROM p_user_enterprise_relation WHERE id = #{id}
     </delete>
 
     <delete id="deleteByUserEnterprise">
-        DELETE FROM user_enterprise_relation
+        DELETE FROM p_user_enterprise_relation
         WHERE user_id = #{userId} AND enterprise_id = #{enterpriseId}
     </delete>
 

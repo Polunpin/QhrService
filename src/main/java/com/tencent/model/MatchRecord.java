@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
  * 匹配记录实体。
  */
 public record MatchRecord(Long id,
-                          String matchNo,
+                          String userId,
                           Long enterpriseId,
                           Long intentionId,
                           String productIds,
@@ -18,9 +18,11 @@ public record MatchRecord(Long id,
                           String status,
                           LocalDateTime createdAt) implements Serializable, WithId<MatchRecord> {
 
-  /** 复制并替换id。 */
-  public MatchRecord withId(Long id) {
-    return new MatchRecord(id, matchNo, enterpriseId, intentionId, productIds,
-        matchScore, riskType, riskLevel, status, createdAt);
-  }
+    /**
+     * 复制并替换id。
+     */
+    public MatchRecord withId(Long id) {
+        return new MatchRecord(id, userId, enterpriseId, intentionId, productIds,
+                matchScore, riskType, riskLevel, status, createdAt);
+    }
 }

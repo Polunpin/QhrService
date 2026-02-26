@@ -1,8 +1,7 @@
 package com.tencent.service.impl;
 
 import com.tencent.dao.StaffsMapper;
-import com.tencent.dto.StaffRequest;
-import com.tencent.model.Staff;
+import com.tencent.vo.Staffs;
 import com.tencent.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,23 +18,23 @@ public class StaffServiceImpl implements StaffService {
   }
 
   @Override
-  public Staff getById(Long id) {
+  public com.tencent.model.Staff getById(Long id) {
     return staffsMapper.getById(id);
   }
 
   @Override
-  public Staff getByMobile(String mobile) {
+  public com.tencent.model.Staff getByMobile(String mobile) {
     return staffsMapper.getByMobile(mobile);
   }
 
   @Override
-  public Long create(Staff staff) {
+  public Long create(com.tencent.model.Staff staff) {
     staffsMapper.insert(staff);
     return staffsMapper.lastInsertId();
   }
 
   @Override
-  public boolean update(Staff staff) {
+  public boolean update(com.tencent.model.Staff staff) {
     return staffsMapper.update(staff) > 0;
   }
 
@@ -50,7 +49,7 @@ public class StaffServiceImpl implements StaffService {
   }
 
   @Override
-  public List<StaffRequest> list(String role, Integer status, String department, String mobile, Integer offset, Integer size) {
+  public List<Staffs> list(String role, Integer status, String department, String mobile, Integer offset, Integer size) {
     return staffsMapper.list(role, status, department, mobile, offset, size);
   }
 

@@ -1,6 +1,8 @@
 package com.tencent.service;
 
+import com.tencent.vo.CreditProductStats;
 import com.tencent.model.CreditProduct;
+import com.tencent.vo.CreditProducts;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -9,6 +11,9 @@ public interface CreditProductService {
 
   /** 根据ID查询产品 */
   CreditProduct getById(Long id);
+
+  /** 根据ID列表批量查询产品 */
+  List<CreditProduct> getByIds(List<Long> ids);
 
   /** 创建产品并返回主键 */
   Long create(CreditProduct product);
@@ -23,7 +28,7 @@ public interface CreditProductService {
   boolean updateStatus(Long id, Integer status);
 
   /** 分页查询产品列表 */
-  List<CreditProduct> list(Integer status, String productType, String bankName, Integer offset, Integer size);
+  List<CreditProducts> list(Integer status, String productType, String bankName, Integer offset, Integer size);
 
   /** 统计产品数量 */
   long count(Integer status, String productType, String bankName);
@@ -41,4 +46,8 @@ public interface CreditProductService {
                              Integer expectedTerm,
                              String regionCode,
                              String productType);
+
+    /** 产品统计查询 */
+    CreditProductStats getStats();
+
 }
