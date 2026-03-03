@@ -2,11 +2,13 @@ FROM quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21 AS builder
 
 WORKDIR /build
 
-COPY pom.xml .
-RUN mvn -B -q dependency:go-offline
+COPY mvnw pom.xml ./
+COPY .mvn ./.mvn
+RUN chmod +x ./mvnw
+RUN ./mvnw -B -q dependency:go-offline
 
 COPY src ./src
-RUN mvn -B -Dnative -DskipTests package
+RUN ./mvnw -B -Dnative -DskipTests package
 
 FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
 
