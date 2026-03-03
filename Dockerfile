@@ -4,11 +4,10 @@ WORKDIR /build
 
 COPY mvnw pom.xml ./
 COPY .mvn ./.mvn
-RUN chmod +x ./mvnw
-RUN ./mvnw -B -q dependency:go-offline
+RUN sh ./mvnw -B -q dependency:go-offline
 
 COPY src ./src
-RUN ./mvnw -B -Dnative -DskipTests package
+RUN sh ./mvnw -B -Dnative -DskipTests package
 
 FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
 
