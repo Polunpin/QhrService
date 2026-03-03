@@ -1,30 +1,23 @@
 package com.tencent.config;
 
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 
-@RestControllerAdvice
-public class GlobalExceptionHandler {
+@Provider
+public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
 
-  // 统一异常出口，保证错误码策略一致
-  @ExceptionHandler(ApiException.class)
-  public ApiResponse handleApiException(ApiException ex) {
-    return ApiResponse.error(ex.getCode(), ex.getMessage());
-  }
-
-  @ExceptionHandler(IllegalArgumentException.class)
-  public ApiResponse handleIllegalArgument(IllegalArgumentException ex) {
-    return ApiResponse.error(ApiCode.BAD_REQUEST, ex.getMessage());
-  }
-
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ApiResponse handleValidation(MethodArgumentNotValidException ex) {
-    return ApiResponse.error(ApiCode.BAD_REQUEST, "参数校验失败");
-  }
-
-  @ExceptionHandler(Exception.class)
-  public ApiResponse handleException(Exception ex) {
-    return ApiResponse.error(ApiCode.INTERNAL_ERROR, "服务器异常");
+  @Override
+  public Response toResponse(Throwable throwable) {
+    ApiResponse body;
+    if (throwable instanceof ApiException ex) {
+      body = ApiResponse.error(ex.getCode(), ex.getMessage());
+    } else if (throwable instanceof IllegalArgumentException ex) {
+      body = ApiResponse.error(ApiCode.BAD_REQUEST, ex.getMessage());
+    } else {
+      body = ApiResponse.error(ApiCode.INTERNAL_ERROR, "服务器异常");
+    }
+    // 保持历史接口行为：业务错误也返回200，通过code字段区分
+    return Response.ok(body).build();
   }
 }

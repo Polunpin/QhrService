@@ -1,46 +1,46 @@
 package com.tencent.controller;
 
-import com.tencent.config.ApiResponse;
+import com.tencent.config.*;
 import com.tencent.dto.BindEnterpriseRequest;
 import com.tencent.dto.UpdateStatusRequest;
-import com.tencent.vo.Users;
 import com.tencent.model.Enterprise;
 import com.tencent.model.User;
 import com.tencent.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import com.tencent.vo.Users;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
-import com.tencent.config.ApiAssert;
-import com.tencent.config.ApiCode;
-import com.tencent.config.PageBounds;
-import com.tencent.config.PageResult;
 
-@RestController
-@RequestMapping("/api/users")
+@ApplicationScoped
+@Path("/api/users")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class UserController {
 
   private final UserService userService;
-
-  public UserController(@Autowired UserService userService) {
+  public UserController(UserService userService) {
     this.userService = userService;
   }
 
   /** 查询用户详情 */
-  @GetMapping("/{id}")
-  public ApiResponse getById(@PathVariable Long id) {
+  @GET
+  @Path("/{id}")
+  public ApiResponse getById(@PathParam("id") Long id) {
     User user = userService.getById(id);
     ApiAssert.notNull(user, ApiCode.NOT_FOUND, "用户不存在");
     return ApiResponse.ok(user);
   }
 
   /** 分页查询用户列表 */
-  @GetMapping("/list")
-  public Object list(@RequestParam(required = false) Integer status,
-                          @RequestParam(required = false) String mobile,
-                          @RequestParam(required = false) String realName,
-                          @RequestParam(required = false) Integer page,
-                          @RequestParam(required = false) Integer size) {
+  @GET
+  @Path("/list")
+  public ApiResponse list(@QueryParam("status") Integer status,
+                          @QueryParam("mobile") String mobile,
+                          @QueryParam("realName") String realName,
+                          @QueryParam("page") Integer page,
+                          @QueryParam("size") Integer size) {
     PageBounds bounds = PageBounds.of(page, size);
     List<Users> users = userService.list(status, mobile, realName, bounds.offset(), bounds.size());
     long total = userService.count(status, mobile, realName);
@@ -48,54 +48,60 @@ public class UserController {
   }
 
   /** 创建用户 */
-  @PostMapping
-  public ApiResponse create(@RequestBody User user) {
+  @POST
+  public ApiResponse create(User user) {
     Long id = userService.create(user);
     return ApiResponse.ok(id);
   }
 
   /** 更新用户 */
-  @PutMapping("/{id}")
-  public ApiResponse update(@PathVariable Long id, @RequestBody User user) {
+  @PUT
+  @Path("/{id}")
+  public ApiResponse update(@PathParam("id") Long id, User user) {
     ApiAssert.isTrue(userService.update(user.withId(id)), ApiCode.NOT_FOUND, "用户不存在");
     return ApiResponse.ok(true);
   }
 
   /** 删除用户 */
-  @DeleteMapping("/{id}")
-  public ApiResponse delete(@PathVariable Long id) {
+  @DELETE
+  @Path("/{id}")
+  public ApiResponse delete(@PathParam("id") Long id) {
     ApiAssert.isTrue(userService.delete(id), ApiCode.NOT_FOUND, "用户不存在");
     return ApiResponse.ok(true);
   }
 
   /** 更新用户状态 */
-  @PostMapping("/{id}/status")
-  public ApiResponse updateStatus(@PathVariable Long id, @RequestBody UpdateStatusRequest request) {
+  @POST
+  @Path("/{id}/status")
+  public ApiResponse updateStatus(@PathParam("id") Long id, UpdateStatusRequest request) {
     ApiAssert.isTrue(userService.updateStatus(id, request.status()), ApiCode.NOT_FOUND, "用户不存在");
     return ApiResponse.ok(true);
   }
 
   /** 绑定用户与企业关系 */
-  @PostMapping("/{id}/enterprises/{enterpriseId}")
-  public ApiResponse bindEnterprise(@PathVariable Long id,
-                                    @PathVariable Long enterpriseId,
-                                    @RequestBody(required = false) BindEnterpriseRequest request) {
+  @POST
+  @Path("/{id}/enterprises/{enterpriseId}")
+  public ApiResponse bindEnterprise(@PathParam("id") Long id,
+                                    @PathParam("enterpriseId") Long enterpriseId,
+                                    BindEnterpriseRequest request) {
     String role = request == null ? null : request.role();
     return ApiResponse.ok(userService.bindEnterprise(id, enterpriseId, role));
   }
 
   /** 解绑用户与企业关系 */
-  @DeleteMapping("/{id}/enterprises/{enterpriseId}")
-  public ApiResponse unbindEnterprise(@PathVariable Long id,
-                                      @PathVariable Long enterpriseId) {
+  @DELETE
+  @Path("/{id}/enterprises/{enterpriseId}")
+  public ApiResponse unbindEnterprise(@PathParam("id") Long id,
+                                      @PathParam("enterpriseId") Long enterpriseId) {
     return ApiResponse.ok(userService.unbindEnterprise(id, enterpriseId));
   }
 
   /** 分页查询用户关联企业 */
-  @GetMapping("/{id}/enterprises")
-  public ApiResponse listEnterprises(@PathVariable Long id,
-                                     @RequestParam(required = false) Integer page,
-                                     @RequestParam(required = false) Integer size) {
+  @GET
+  @Path("/{id}/enterprises")
+  public ApiResponse listEnterprises(@PathParam("id") Long id,
+                                     @QueryParam("page") Integer page,
+                                     @QueryParam("size") Integer size) {
     PageBounds bounds = PageBounds.of(page, size);
     List<Enterprise> enterprises = userService.listEnterprises(id, bounds.offset(), bounds.size());
     long total = userService.countEnterprises(id);
@@ -103,10 +109,11 @@ public class UserController {
   }
 
   /** 分页查询企业关联用户 */
-  @GetMapping("/enterprise/{enterpriseId}/users")
-  public ApiResponse listUsersByEnterprise(@PathVariable Long enterpriseId,
-                                           @RequestParam(required = false) Integer page,
-                                           @RequestParam(required = false) Integer size) {
+  @GET
+  @Path("/enterprise/{enterpriseId}/users")
+  public ApiResponse listUsersByEnterprise(@PathParam("enterpriseId") Long enterpriseId,
+                                           @QueryParam("page") Integer page,
+                                           @QueryParam("size") Integer size) {
     PageBounds bounds = PageBounds.of(page, size);
     List<User> users = userService.listUsersByEnterprise(enterpriseId, bounds.offset(), bounds.size());
     long total = userService.countUsersByEnterprise(enterpriseId);

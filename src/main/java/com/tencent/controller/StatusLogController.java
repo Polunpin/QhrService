@@ -1,40 +1,40 @@
 package com.tencent.controller;
 
-import com.tencent.config.ApiResponse;
+import com.tencent.config.*;
 import com.tencent.model.StatusLog;
 import com.tencent.service.StatusLogService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
-import com.tencent.config.ApiAssert;
-import com.tencent.config.ApiCode;
-import com.tencent.config.PageBounds;
-import com.tencent.config.PageResult;
 
-@RestController
-@RequestMapping("/api/status-logs")
+@ApplicationScoped
+@Path("/api/status-logs")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class StatusLogController {
 
   private final StatusLogService statusLogService;
-
-  public StatusLogController(@Autowired StatusLogService statusLogService) {
+  public StatusLogController(StatusLogService statusLogService) {
     this.statusLogService = statusLogService;
   }
 
   /** 查询日志详情 */
-  @GetMapping("/{id}")
-  public ApiResponse getById(@PathVariable Long id) {
+  @GET
+  @Path("/{id}")
+  public ApiResponse getById(@PathParam("id") Long id) {
     StatusLog log = statusLogService.getById(id);
     ApiAssert.notNull(log, ApiCode.NOT_FOUND, "日志不存在");
     return ApiResponse.ok(log);
   }
 
   /** 分页查询订单日志 */
-  @GetMapping("/order/{orderId}")
-  public ApiResponse listByOrder(@PathVariable Long orderId,
-                                 @RequestParam(required = false) Integer page,
-                                 @RequestParam(required = false) Integer size) {
+  @GET
+  @Path("/order/{orderId}")
+  public ApiResponse listByOrder(@PathParam("orderId") Long orderId,
+                                 @QueryParam("page") Integer page,
+                                 @QueryParam("size") Integer size) {
     PageBounds bounds = PageBounds.of(page, size);
     List<StatusLog> logs = statusLogService.listByOrderId(orderId, bounds.offset(), bounds.size());
     long total = statusLogService.countByOrderId(orderId);
@@ -42,8 +42,8 @@ public class StatusLogController {
   }
 
   /** 创建日志 */
-  @PostMapping
-  public ApiResponse create(@RequestBody StatusLog log) {
+  @POST
+  public ApiResponse create(StatusLog log) {
     Long id = statusLogService.create(log);
     return ApiResponse.ok(id);
   }

@@ -5,17 +5,18 @@ import com.tencent.config.ApiException;
 import com.tencent.config.ApiResponse;
 import com.tencent.config.WeComProperties;
 import com.tencent.service.wecom.WeComAuthService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/api/auth/wecom")
+@ApplicationScoped
+@Path("/api/auth/wecom")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class WeComAuthController {
 
   private final WeComAuthService authService;
@@ -26,9 +27,10 @@ public class WeComAuthController {
     this.properties = properties;
   }
 
-  @GetMapping("/login-url")
-  public ApiResponse loginUrl(@RequestParam(required = false) String redirectUri,
-                              @RequestParam(required = false) String state) {
+  @GET
+  @Path("/login-url")
+  public ApiResponse loginUrl(@QueryParam("redirectUri") String redirectUri,
+                              @QueryParam("state") String state) {
     String corpId = requireValue(properties.corpId(), "企业微信 corpId");
     String agentId = requireValue(properties.agentId(), "企业微信 agentId");
     String finalRedirectUri = redirectUri == null || redirectUri.isBlank()
@@ -47,9 +49,10 @@ public class WeComAuthController {
     ));
   }
 
-  @GetMapping("/callback")
-  public ApiResponse callback(@RequestParam String code,
-                              @RequestParam(required = false) String state) {
+  @GET
+  @Path("/callback")
+  public ApiResponse callback(@QueryParam("code") String code,
+                              @QueryParam("state") String state) {
     return ApiResponse.ok(authService.loginByCode(code));
   }
 

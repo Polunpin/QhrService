@@ -1,22 +1,16 @@
 package com.tencent.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
-/**
- * index控制器
- */
-@Controller
-
+@Path("/")
 public class IndexController {
 
-  /**
-   * 主页页面
-   * @return API response html
-   */
-  @GetMapping
+  @GET
+  @Produces(MediaType.TEXT_PLAIN)
   public String index() {
-    return "index";
+    return "QhrService is running";
   }
-
 }

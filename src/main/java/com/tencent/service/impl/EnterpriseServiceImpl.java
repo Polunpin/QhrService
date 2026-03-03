@@ -3,18 +3,17 @@ package com.tencent.service.impl;
 import com.tencent.dao.EnterprisesMapper;
 import com.tencent.model.Enterprise;
 import com.tencent.service.EnterpriseService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Collections;
 import java.util.List;
 
-@Service
+@ApplicationScoped
 public class EnterpriseServiceImpl implements EnterpriseService {
 
   private final EnterprisesMapper enterprisesMapper;
 
-  public EnterpriseServiceImpl(@Autowired EnterprisesMapper enterprisesMapper) {
+  public EnterpriseServiceImpl(EnterprisesMapper enterprisesMapper) {
     this.enterprisesMapper = enterprisesMapper;
   }
 

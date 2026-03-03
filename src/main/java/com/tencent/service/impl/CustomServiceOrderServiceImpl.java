@@ -5,20 +5,19 @@ import com.tencent.dao.StatusLogsMapper;
 import com.tencent.model.CustomServiceOrder;
 import com.tencent.model.StatusLog;
 import com.tencent.service.CustomServiceOrderService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 
-@Service
+@ApplicationScoped
 public class CustomServiceOrderServiceImpl implements CustomServiceOrderService {
 
   private final CustomServiceOrdersMapper ordersMapper;
   private final StatusLogsMapper statusLogsMapper;
 
-  public CustomServiceOrderServiceImpl(@Autowired CustomServiceOrdersMapper ordersMapper,
-                                       @Autowired StatusLogsMapper statusLogsMapper) {
+  public CustomServiceOrderServiceImpl(CustomServiceOrdersMapper ordersMapper,
+                                       StatusLogsMapper statusLogsMapper) {
     this.ordersMapper = ordersMapper;
     this.statusLogsMapper = statusLogsMapper;
   }

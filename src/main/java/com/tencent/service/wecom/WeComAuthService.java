@@ -4,9 +4,9 @@ import com.tencent.config.ApiCode;
 import com.tencent.config.ApiException;
 import com.tencent.model.User;
 import com.tencent.service.UserService;
-import org.springframework.stereotype.Service;
+import jakarta.enterprise.context.ApplicationScoped;
 
-@Service
+@ApplicationScoped
 public class WeComAuthService {
 
   private final WeComClient wecomClient;

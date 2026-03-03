@@ -1,20 +1,19 @@
 package com.tencent.service.impl;
 
 import com.tencent.dao.StaffsMapper;
-import com.tencent.vo.Staffs;
 import com.tencent.service.StaffService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.tencent.vo.Staffs;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 
-@Service
+@ApplicationScoped
 public class StaffServiceImpl implements StaffService {
 
   private final StaffsMapper staffsMapper;
 
-  public StaffServiceImpl(@Autowired StaffsMapper staffsMapper) {
-    this.staffsMapper = staffsMapper;
+  public StaffServiceImpl(StaffsMapper staffsMapper) {
+      this.staffsMapper = staffsMapper;
   }
 
   @Override

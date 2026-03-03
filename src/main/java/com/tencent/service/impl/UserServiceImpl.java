@@ -8,22 +8,21 @@ import com.tencent.model.Enterprise;
 import com.tencent.model.User;
 import com.tencent.model.UserEnterpriseRelation;
 import com.tencent.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Collections;
 import java.util.List;
 
-@Service
+@ApplicationScoped
 public class UserServiceImpl implements UserService {
 
   private final UsersMapper usersMapper;
   private final UserEnterpriseRelationMapper relationMapper;
   private final EnterprisesMapper enterprisesMapper;
 
-  public UserServiceImpl(@Autowired UsersMapper usersMapper,
-                         @Autowired UserEnterpriseRelationMapper relationMapper,
-                         @Autowired EnterprisesMapper enterprisesMapper) {
+  public UserServiceImpl(UsersMapper usersMapper,
+                         UserEnterpriseRelationMapper relationMapper,
+                         EnterprisesMapper enterprisesMapper) {
     this.usersMapper = usersMapper;
     this.relationMapper = relationMapper;
     this.enterprisesMapper = enterprisesMapper;

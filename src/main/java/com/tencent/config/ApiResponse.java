@@ -1,35 +1,25 @@
 package com.tencent.config;
 
-import lombok.Data;
+import java.util.Collections;
+import java.util.Map;
 
-import java.util.HashMap;
+public record ApiResponse(int code, String errorMsg, Object data) {
 
-@Data
-public final class ApiResponse {
-
-    private Integer code;
-    private String errorMsg;
-    private Object data;
-
-    private ApiResponse(int code, String errorMsg, Object data) {
-        this.code = code;
-        this.errorMsg = errorMsg;
-        this.data = data;
-    }
+    private static final Map<String, Object> EMPTY_DATA = Collections.emptyMap();
 
     public static ApiResponse ok() {
-        return new ApiResponse(ApiCode.OK, "", new HashMap<>());
+        return new ApiResponse(ApiCode.OK, "", EMPTY_DATA);
     }
 
     public static ApiResponse ok(Object data) {
-        return new ApiResponse(ApiCode.OK, "", data);
+        return new ApiResponse(ApiCode.OK, "", data == null ? EMPTY_DATA : data);
     }
 
     public static ApiResponse error(String errorMsg) {
-        return new ApiResponse(ApiCode.INTERNAL_ERROR, errorMsg, new HashMap<>());
+        return new ApiResponse(ApiCode.INTERNAL_ERROR, errorMsg, EMPTY_DATA);
     }
 
     public static ApiResponse error(int code, String errorMsg) {
-        return new ApiResponse(code, errorMsg, new HashMap<>());
+        return new ApiResponse(code, errorMsg, EMPTY_DATA);
     }
 }

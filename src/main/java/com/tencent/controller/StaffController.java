@@ -1,45 +1,45 @@
 package com.tencent.controller;
 
-import com.tencent.config.ApiResponse;
-import com.tencent.model.Staff;
-import com.tencent.vo.Staffs;
+import com.tencent.config.*;
 import com.tencent.dto.UpdateStatusRequest;
+import com.tencent.model.Staff;
 import com.tencent.service.StaffService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import com.tencent.vo.Staffs;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
-import com.tencent.config.ApiAssert;
-import com.tencent.config.ApiCode;
-import com.tencent.config.PageBounds;
-import com.tencent.config.PageResult;
 
-@RestController
-@RequestMapping("/api/staffs")
+@ApplicationScoped
+@Path("/api/staffs")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class StaffController {
 
   private final StaffService staffService;
-
-  public StaffController(@Autowired StaffService staffService) {
+  public StaffController(StaffService staffService) {
     this.staffService = staffService;
   }
 
   /** 查询员工详情 */
-  @GetMapping("/{id}")
-  public ApiResponse getById(@PathVariable Long id) {
+  @GET
+  @Path("/{id}")
+  public ApiResponse getById(@PathParam("id") Long id) {
     Staff staff = staffService.getById(id);
     ApiAssert.notNull(staff, ApiCode.NOT_FOUND, "员工不存在");
     return ApiResponse.ok(staff);
   }
 
   /** 分页查询员工列表 */
-  @GetMapping("/list")
-  public ApiResponse list(@RequestParam(required = false) String role,
-                          @RequestParam(required = false) Integer status,
-                          @RequestParam(required = false) String department,
-                          @RequestParam(required = false) String mobile,
-                          @RequestParam(required = false) Integer page,
-                          @RequestParam(required = false) Integer size) {
+  @GET
+  @Path("/list")
+  public ApiResponse list(@QueryParam("role") String role,
+                          @QueryParam("status") Integer status,
+                          @QueryParam("department") String department,
+                          @QueryParam("mobile") String mobile,
+                          @QueryParam("page") Integer page,
+                          @QueryParam("size") Integer size) {
     PageBounds bounds = PageBounds.of(page, size);
     List<Staffs> staffs = staffService.list(role, status, department, mobile,
         bounds.offset(), bounds.size());
@@ -48,29 +48,32 @@ public class StaffController {
   }
 
   /** 创建员工 */
-  @PostMapping
-  public ApiResponse create(@RequestBody Staff staff) {
+  @POST
+  public ApiResponse create(Staff staff) {
     Long id = staffService.create(staff);
     return ApiResponse.ok(id);
   }
 
   /** 更新员工 */
-  @PutMapping("/{id}")
-  public ApiResponse update(@PathVariable Long id, @RequestBody Staff staff) {
+  @PUT
+  @Path("/{id}")
+  public ApiResponse update(@PathParam("id") Long id, Staff staff) {
     ApiAssert.isTrue(staffService.update(staff.withId(id)), ApiCode.NOT_FOUND, "员工不存在");
     return ApiResponse.ok(true);
   }
 
   /** 删除员工 */
-  @DeleteMapping("/{id}")
-  public ApiResponse delete(@PathVariable Long id) {
+  @DELETE
+  @Path("/{id}")
+  public ApiResponse delete(@PathParam("id") Long id) {
     ApiAssert.isTrue(staffService.delete(id), ApiCode.NOT_FOUND, "员工不存在");
     return ApiResponse.ok(true);
   }
 
   /** 更新员工状态 */
-  @PostMapping("/{id}/status")
-  public ApiResponse updateStatus(@PathVariable Long id, @RequestBody UpdateStatusRequest request) {
+  @POST
+  @Path("/{id}/status")
+  public ApiResponse updateStatus(@PathParam("id") Long id, UpdateStatusRequest request) {
     ApiAssert.isTrue(staffService.updateStatus(id, request.status()), ApiCode.NOT_FOUND, "员工不存在");
     return ApiResponse.ok(true);
   }

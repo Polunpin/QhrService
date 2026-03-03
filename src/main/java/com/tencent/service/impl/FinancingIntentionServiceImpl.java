@@ -3,20 +3,19 @@ package com.tencent.service.impl;
 import com.tencent.dao.FinancingIntentionsMapper;
 import com.tencent.model.FinancingIntention;
 import com.tencent.service.FinancingIntentionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Service
+@ApplicationScoped
 public class FinancingIntentionServiceImpl implements FinancingIntentionService {
 
   private final FinancingIntentionsMapper intentionsMapper;
 
-  public FinancingIntentionServiceImpl(@Autowired FinancingIntentionsMapper intentionsMapper) {
+  public FinancingIntentionServiceImpl(FinancingIntentionsMapper intentionsMapper) {
     this.intentionsMapper = intentionsMapper;
   }
 

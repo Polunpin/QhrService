@@ -4,17 +4,16 @@ import com.tencent.dao.MatchRecordsMapper;
 import com.tencent.model.MatchRecord;
 import com.tencent.service.MatchRecordService;
 import com.tencent.vo.MatchRecords;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 
-@Service
+@ApplicationScoped
 public class MatchRecordServiceImpl implements MatchRecordService {
 
-    private final MatchRecordsMapper matchRecordsMapper;
+  private final MatchRecordsMapper matchRecordsMapper;
 
-    public MatchRecordServiceImpl(@Autowired MatchRecordsMapper matchRecordsMapper) {
+    public MatchRecordServiceImpl(MatchRecordsMapper matchRecordsMapper) {
         this.matchRecordsMapper = matchRecordsMapper;
     }
 

@@ -3,17 +3,16 @@ package com.tencent.service.impl;
 import com.tencent.dao.StatusLogsMapper;
 import com.tencent.model.StatusLog;
 import com.tencent.service.StatusLogService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 
-@Service
+@ApplicationScoped
 public class StatusLogServiceImpl implements StatusLogService {
 
   private final StatusLogsMapper statusLogsMapper;
 
-  public StatusLogServiceImpl(@Autowired StatusLogsMapper statusLogsMapper) {
+  public StatusLogServiceImpl(StatusLogsMapper statusLogsMapper) {
     this.statusLogsMapper = statusLogsMapper;
   }
 

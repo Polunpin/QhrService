@@ -1,22 +1,21 @@
 package com.tencent.service.impl;
 
 import com.tencent.dao.CreditProductsMapper;
-import com.tencent.vo.CreditProductStats;
 import com.tencent.model.CreditProduct;
 import com.tencent.service.CreditProductService;
+import com.tencent.vo.CreditProductStats;
 import com.tencent.vo.CreditProducts;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Service
+@ApplicationScoped
 public class CreditProductServiceImpl implements CreditProductService {
 
   private final CreditProductsMapper creditProductsMapper;
 
-  public CreditProductServiceImpl(@Autowired CreditProductsMapper creditProductsMapper) {
+  public CreditProductServiceImpl(CreditProductsMapper creditProductsMapper) {
     this.creditProductsMapper = creditProductsMapper;
   }
 
@@ -82,9 +81,8 @@ public class CreditProductServiceImpl implements CreditProductService {
     return creditProductsMapper.countEligibleProducts(expectedAmount, expectedTerm, regionCode, productType);
   }
 
-    @Override
-    public CreditProductStats getStats() {
-      return creditProductsMapper.getStats();
-
-    }
+  @Override
+  public CreditProductStats getStats() {
+    return creditProductsMapper.getStats();
+  }
 }

@@ -1,10 +1,11 @@
 package com.tencent.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import io.smallrye.config.ConfigMapping;
 
-@ConfigurationProperties(prefix = "we-com")
-public record WeComProperties(String corpId,
-                              String agentId,
-                              String corpSecret,
-                              String redirectUri) {
+@ConfigMapping(prefix = "we-com")
+public interface WeComProperties {
+  String corpId();
+  String agentId();
+  String corpSecret();
+  String redirectUri();
 }

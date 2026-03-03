@@ -3,17 +3,16 @@ package com.tencent.service.impl;
 import com.tencent.dao.ProductRedirectConfigsMapper;
 import com.tencent.model.ProductRedirectConfig;
 import com.tencent.service.ProductRedirectConfigService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 
-@Service
+@ApplicationScoped
 public class ProductRedirectConfigServiceImpl implements ProductRedirectConfigService {
 
   private final ProductRedirectConfigsMapper productRedirectConfigsMapper;
 
-  public ProductRedirectConfigServiceImpl(@Autowired ProductRedirectConfigsMapper productRedirectConfigsMapper) {
+  public ProductRedirectConfigServiceImpl(ProductRedirectConfigsMapper productRedirectConfigsMapper) {
     this.productRedirectConfigsMapper = productRedirectConfigsMapper;
   }
 

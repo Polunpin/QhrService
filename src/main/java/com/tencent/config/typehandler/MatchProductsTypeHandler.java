@@ -16,7 +16,7 @@ import java.util.List;
 
 public class MatchProductsTypeHandler extends BaseTypeHandler<List<MatchRecords.Product>> {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
     private static final TypeReference<List<MatchRecords.Product>> TYPE_REF = new TypeReference<>() {
     };
 

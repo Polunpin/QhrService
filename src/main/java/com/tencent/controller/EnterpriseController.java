@@ -1,44 +1,44 @@
 package com.tencent.controller;
 
-import com.tencent.config.ApiResponse;
+import com.tencent.config.*;
 import com.tencent.dto.UpdateMatchStatusRequest;
 import com.tencent.dto.UpdateProfileDataRequest;
 import com.tencent.model.Enterprise;
 import com.tencent.service.EnterpriseService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
-import com.tencent.config.ApiAssert;
-import com.tencent.config.ApiCode;
-import com.tencent.config.PageBounds;
-import com.tencent.config.PageResult;
 
-@RestController
-@RequestMapping("/api/enterprises")
+@ApplicationScoped
+@Path("/api/enterprises")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class EnterpriseController {
 
   private final EnterpriseService enterpriseService;
-
-  public EnterpriseController(@Autowired EnterpriseService enterpriseService) {
+  public EnterpriseController(EnterpriseService enterpriseService) {
     this.enterpriseService = enterpriseService;
   }
 
   /** 查询企业详情 */
-  @GetMapping("/{id}")
-  public ApiResponse getById(@PathVariable Long id) {
+  @GET
+  @Path("/{id}")
+  public ApiResponse getById(@PathParam("id") Long id) {
     Enterprise enterprise = enterpriseService.getById(id);
     ApiAssert.notNull(enterprise, ApiCode.NOT_FOUND, "企业不存在");
     return ApiResponse.ok(enterprise);
   }
 
   /** 分页查询企业列表 */
-  @GetMapping("/list")
-  public ApiResponse list(@RequestParam(required = false) String matchStatus,
-                          @RequestParam(required = false) String industry,
-                          @RequestParam(required = false) String regionCode,
-                          @RequestParam(required = false) Integer page,
-                          @RequestParam(required = false) Integer size) {
+  @GET
+  @Path("/list")
+  public ApiResponse list(@QueryParam("matchStatus") String matchStatus,
+                          @QueryParam("industry") String industry,
+                          @QueryParam("regionCode") String regionCode,
+                          @QueryParam("page") Integer page,
+                          @QueryParam("size") Integer size) {
     PageBounds bounds = PageBounds.of(page, size);
     List<Enterprise> enterprises = enterpriseService.list(matchStatus, industry, regionCode, bounds.offset(), bounds.size());
     long total = enterpriseService.count(matchStatus, industry, regionCode);
@@ -46,10 +46,11 @@ public class EnterpriseController {
   }
 
   /** 分页查询用户关联企业 */
-  @GetMapping("/user/{userId}")
-  public ApiResponse listByUser(@PathVariable Long userId,
-                                @RequestParam(required = false) Integer page,
-                                @RequestParam(required = false) Integer size) {
+  @GET
+  @Path("/user/{userId}")
+  public ApiResponse listByUser(@PathParam("userId") Long userId,
+                                @QueryParam("page") Integer page,
+                                @QueryParam("size") Integer size) {
     PageBounds bounds = PageBounds.of(page, size);
     List<Enterprise> enterprises = enterpriseService.listByUserId(userId, bounds.offset(), bounds.size());
     long total = enterpriseService.countByUserId(userId);
@@ -57,39 +58,43 @@ public class EnterpriseController {
   }
 
   /** 创建企业 */
-  @PostMapping
-  public ApiResponse create(@RequestBody Enterprise enterprise) {
+  @POST
+  public ApiResponse create(Enterprise enterprise) {
     Long id = enterpriseService.create(enterprise);
     return ApiResponse.ok(id);
   }
 
   /** 更新企业 */
-  @PutMapping("/{id}")
-  public ApiResponse update(@PathVariable Long id, @RequestBody Enterprise enterprise) {
+  @PUT
+  @Path("/{id}")
+  public ApiResponse update(@PathParam("id") Long id, Enterprise enterprise) {
     ApiAssert.isTrue(enterpriseService.update(enterprise.withId(id)), ApiCode.NOT_FOUND, "企业不存在");
     return ApiResponse.ok(true);
   }
 
   /** 删除企业 */
-  @DeleteMapping("/{id}")
-  public ApiResponse delete(@PathVariable Long id) {
+  @DELETE
+  @Path("/{id}")
+  public ApiResponse delete(@PathParam("id") Long id) {
     ApiAssert.isTrue(enterpriseService.delete(id), ApiCode.NOT_FOUND, "企业不存在");
     return ApiResponse.ok(true);
   }
 
   /** 更新企业匹配状态 */
-  @PostMapping("/{id}/match-status")
-  public ApiResponse updateMatchStatus(@PathVariable Long id,
-                                       @RequestBody UpdateMatchStatusRequest request) {
+  @POST
+  @Path("/{id}/match-status")
+  public ApiResponse updateMatchStatus(@PathParam("id") Long id,
+                                       UpdateMatchStatusRequest request) {
     ApiAssert.isTrue(enterpriseService.updateMatchStatus(id, request.matchStatus()),
         ApiCode.NOT_FOUND, "企业不存在");
     return ApiResponse.ok(true);
   }
 
   /** 更新企业画像数据 */
-  @PostMapping("/{id}/profile-data")
-  public ApiResponse updateProfileData(@PathVariable Long id,
-                                       @RequestBody UpdateProfileDataRequest request) {
+  @POST
+  @Path("/{id}/profile-data")
+  public ApiResponse updateProfileData(@PathParam("id") Long id,
+                                       UpdateProfileDataRequest request) {
     ApiAssert.isTrue(enterpriseService.updateProfileData(id, request.profileData()),
         ApiCode.NOT_FOUND, "企业不存在");
     return ApiResponse.ok(true);
