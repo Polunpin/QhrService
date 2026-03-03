@@ -1,30 +1,23 @@
 package com.tencent.controller;
 
-import com.tencent.config.ApiResponse;
-import com.tencent.vo.CreditProductStats;
+import com.tencent.config.*;
 import com.tencent.dto.MatchProductsRequest;
 import com.tencent.dto.UpdateProductStatusRequest;
 import com.tencent.model.CreditProduct;
 import com.tencent.service.CreditProductService;
+import com.tencent.vo.CreditProductStats;
 import com.tencent.vo.CreditProducts;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import com.tencent.config.ApiAssert;
-import com.tencent.config.ApiCode;
-import com.tencent.config.PageBounds;
-import com.tencent.config.PageResult;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/products")
 public class CreditProductController {
 
   private final CreditProductService creditProductService;
-
-  public CreditProductController(@Autowired CreditProductService creditProductService) {
-    this.creditProductService = creditProductService;
-  }
 
   /** 查询产品详情 */
   @GetMapping("/{id}")
