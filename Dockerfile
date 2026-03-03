@@ -4,7 +4,6 @@ WORKDIR /build
 
 COPY mvnw pom.xml ./
 COPY .mvn ./.mvn
-RUN sh ./mvnw -B -q dependency:go-offline
 
 COPY src ./src
 RUN sh ./mvnw -B -Dnative -DskipTests package
