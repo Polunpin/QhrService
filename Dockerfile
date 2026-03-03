@@ -14,8 +14,8 @@ WORKDIR /work/
 COPY --from=builder --chmod=0755 /build/target/*-runner /work/application
 
 ENV QUARKUS_HTTP_HOST=0.0.0.0
-ENV QUARKUS_HTTP_PORT=80
-EXPOSE 80
+ENV QUARKUS_HTTP_PORT=8080
+EXPOSE 8080
 
-USER 1001
+USER 0
 ENTRYPOINT ["./application"]
