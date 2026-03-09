@@ -16,9 +16,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-        <quarkus.platform.version>3.32.1</quarkus.platform.version>
+        <quarkus.platform.version>3.32.2</quarkus.platform.version>
         <quarkus.mybatis.version>2.4.2</quarkus.mybatis.version>
-        <kogito.version>1.44.1.Final</kogito.version>
+        <kogito.version>10.1.0</kogito.version>
         <lombok.version>1.18.38</lombok.version>
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <skipITs>true</skipITs>
@@ -26,6 +26,7 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Source: https://mvnrepository.com/artifact/io.quarkus/quarkus-bom -->
             <dependency>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>${quarkus.platform.artifact-id}</artifactId>
@@ -77,7 +78,7 @@
         </dependency>
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-drools</artifactId>
+            <artifactId>kogito-dmn</artifactId>
         </dependency>
 
         <dependency>
