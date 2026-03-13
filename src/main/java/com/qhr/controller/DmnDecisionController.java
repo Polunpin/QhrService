@@ -12,8 +12,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-import java.util.Map;
-
 @ApplicationScoped
 @Path("/api/dmn")
 @Produces(MediaType.APPLICATION_JSON)

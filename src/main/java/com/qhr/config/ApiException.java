@@ -1,5 +1,8 @@
 package com.qhr.config;
 
+import lombok.Getter;
+
+@Getter
 public class ApiException extends RuntimeException {
 
   private final int code;
@@ -9,7 +12,4 @@ public class ApiException extends RuntimeException {
     this.code = code;
   }
 
-  public int getCode() {
-    return code;
-  }
 }

@@ -35,7 +35,7 @@
         </if>
     </select>
 
-    <select id="countByOrderId">
+    <select id="countByOrderId" resultType="long">
         SELECT COUNT(1)
         FROM f_status_logs
         WHERE order_id = #{orderId}
