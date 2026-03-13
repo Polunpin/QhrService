@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tencent.dao.MatchRecordsMapper">
+<mapper namespace="com.qhr.dao.MatchRecordsMapper">
 
-    <resultMap id="MatchRecordsMap" type="com.tencent.model.MatchRecord">
+    <resultMap id="MatchRecordsMap" type="com.qhr.model.MatchRecord">
         <constructor>
             <idArg column="id" javaType="java.lang.Long" name="id"/>
             <arg column="user_id" javaType="java.lang.String" name="userId"/>
@@ -17,12 +17,12 @@
         </constructor>
     </resultMap>
 
-    <resultMap id="MatchRecordsVoMap" type="com.tencent.vo.MatchRecords">
+    <resultMap id="MatchRecordsVoMap" type="com.qhr.vo.MatchRecords">
         <id column="id" property="id"/>
         <result column="enterprise" property="enterprise"/>
         <result column="applicant" property="applicant"/>
         <result column="products" property="products"
-                typeHandler="com.tencent.config.typehandler.MatchProductsTypeHandler"/>
+                typeHandler="com.qhr.config.typehandler.MatchProductsTypeHandler"/>
         <result column="riskType" property="riskType"/>
         <result column="riskLevel" property="riskLevel"/>
         <result column="status" property="status"/>
@@ -30,7 +30,7 @@
     </resultMap>
 
     <sql id="MatchRecord_Columns">
-        id, userId, enterprise_id, intention_id, product_ids, match_score,
+        id, user_id, enterprise_id, intention_id, product_ids, match_score,
         risk_type, risk_level, status, created_at
     </sql>
 
@@ -40,7 +40,7 @@
         WHERE id = #{id}
     </select>
 
-    <select id="list" parameterType="com.tencent.vo.MatchRecords" resultMap="MatchRecordsVoMap">
+    <select id="list" parameterType="com.qhr.vo.MatchRecords" resultMap="MatchRecordsVoMap">
         select ymr.id,
         ye.full_name as enterprise,
         pu.real_name as applicant,
@@ -63,7 +63,7 @@
         </if>
     </select>
 
-    <select id="count">
+    <select id="count" resultType="long">
         SELECT COUNT(1)
         FROM y_match_records
         <where>
@@ -73,14 +73,14 @@
         </where>
     </select>
 
-    <insert id="insert" parameterType="com.tencent.model.MatchRecord">
+    <insert id="insert" parameterType="com.qhr.model.MatchRecord">
         INSERT INTO y_match_records (user_id, enterprise_id, intention_id, product_ids,
                                    match_score, risk_type, risk_level, status)
         VALUES (#{userId}, #{enterpriseId}, #{intentionId}, #{productIds},
                 #{matchScore}, #{riskType}, #{riskLevel}, #{status})
     </insert>
 
-    <update id="update" parameterType="com.tencent.model.MatchRecord">
+    <update id="update" parameterType="com.qhr.model.MatchRecord">
         UPDATE y_match_records
         <set>
             <if test="enterpriseId != null">enterprise_id = #{enterpriseId},</if>

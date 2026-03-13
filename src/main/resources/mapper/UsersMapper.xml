@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tencent.dao.UsersMapper">
+<mapper namespace="com.qhr.dao.UsersMapper">
 
-    <resultMap id="UsersMap" type="com.tencent.model.User">
+    <resultMap id="UsersMap" type="com.qhr.model.User">
         <constructor>
             <idArg column="id" javaType="java.lang.Long" name="id"/>
             <arg column="openid" javaType="java.lang.String" name="openid"/>
@@ -31,7 +31,7 @@
         WHERE openid = #{openid}
     </select>
 
-    <select id="list" parameterType="com.tencent.vo.Users">
+    <select id="list" parameterType="com.qhr.vo.Users">
         SELECT u.id,u.real_name AS name,u.mobile,
         COALESCE(ue.enterprises, 0) AS enterprises,
         COALESCE(m.matchCount, 0) AS matchCount,
@@ -56,7 +56,7 @@
         </if>
     </select>
 
-    <select id="count">
+    <select id="count" resultType="long">
         SELECT COUNT(1)
         FROM p_users
         <where>
@@ -84,12 +84,12 @@
         WHERE r.enterprise_id = #{enterpriseId}
     </select>
 
-    <insert id="insert" parameterType="com.tencent.model.User">
+    <insert id="insert" parameterType="com.qhr.model.User">
         INSERT INTO p_users (openid, unionid, mobile, real_name, status)
         VALUES (#{openid}, #{unionid}, #{mobile}, #{realName}, #{status})
     </insert>
 
-    <update id="update" parameterType="com.tencent.model.User">
+    <update id="update" parameterType="com.qhr.model.User">
         UPDATE p_users
         <set>
             <if test="openid != null">openid = #{openid},</if>

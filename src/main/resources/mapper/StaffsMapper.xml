@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tencent.dao.StaffsMapper">
+<mapper namespace="com.qhr.dao.StaffsMapper">
 
-    <resultMap id="StaffsMap" type="com.tencent.model.Staff">
+    <resultMap id="StaffsMap" type="com.qhr.model.Staff">
         <constructor>
             <idArg column="id" javaType="java.lang.Long" name="id"/>
             <arg column="openid" javaType="java.lang.String" name="openid"/>
@@ -32,7 +32,7 @@
         WHERE mobile = #{mobile}
     </select>
 
-    <select id="list" parameterType="com.tencent.vo.Staffs">
+    <select id="list" parameterType="com.qhr.vo.Staffs">
         SELECT id,
         real_name as name,
         mobile as phone,
@@ -53,7 +53,7 @@
         </if>
     </select>
 
-    <select id="count">
+    <select id="count" resultType="long">
         SELECT COUNT(1)
         FROM p_staffs
         <where>
@@ -64,12 +64,12 @@
         </where>
     </select>
 
-    <insert id="insert" parameterType="com.tencent.model.Staff">
+    <insert id="insert" parameterType="com.qhr.model.Staff">
         INSERT INTO p_staffs (openid, real_name, mobile, role, department, status)
         VALUES (#{openid}, #{realName}, #{mobile}, #{role}, #{department}, #{status})
     </insert>
 
-    <update id="update" parameterType="com.tencent.model.Staff">
+    <update id="update" parameterType="com.qhr.model.Staff">
         UPDATE p_staffs
         <set>
             <if test="openid != null">openid = #{openid},</if>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tencent.dao.FinancingIntentionsMapper">
+<mapper namespace="com.qhr.dao.FinancingIntentionsMapper">
 
-    <resultMap id="FinancingIntentionsMap" type="com.tencent.model.FinancingIntention">
+    <resultMap id="FinancingIntentionsMap" type="com.qhr.model.FinancingIntention">
         <constructor>
             <idArg column="id" javaType="java.lang.Long" name="id"/>
             <arg column="application_no" javaType="java.lang.String" name="applicationNo"/>
@@ -55,7 +55,7 @@
         </if>
     </select>
 
-    <select id="count">
+    <select id="count" resultType="long">
         SELECT COUNT(1)
         FROM y_financing_intentions
         <where>
@@ -65,7 +65,7 @@
         </where>
     </select>
 
-    <insert id="insert" parameterType="com.tencent.model.FinancingIntention">
+    <insert id="insert" parameterType="com.qhr.model.FinancingIntention">
         INSERT INTO y_financing_intentions (application_no, enterprise_id, user_id, expected_amount,
                                           expected_term, purpose, repayment_source, guarantee_type,
                                           target_product_id, contact_mobile, status, refusal_reason, urgency_level)
@@ -74,7 +74,7 @@
                 #{targetProductId}, #{contactMobile}, #{status}, #{refusalReason}, #{urgencyLevel})
     </insert>
 
-    <update id="update" parameterType="com.tencent.model.FinancingIntention">
+    <update id="update" parameterType="com.qhr.model.FinancingIntention">
         UPDATE y_financing_intentions
         <set>
             <if test="enterpriseId != null">enterprise_id = #{enterpriseId},</if>

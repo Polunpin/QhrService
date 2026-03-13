@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tencent.dao.CreditProductsMapper">
+<mapper namespace="com.qhr.dao.CreditProductsMapper">
 
-    <resultMap id="CreditProductsMap" type="com.tencent.model.CreditProduct">
+    <resultMap id="CreditProductsMap" type="com.qhr.model.CreditProduct">
         <constructor>
             <idArg column="id" javaType="java.lang.Long" name="id"/>
             <arg column="bank_name" javaType="java.lang.String" name="bankName"/>
@@ -12,11 +12,12 @@
             <arg column="max_amount" javaType="java.math.BigDecimal" name="maxAmount"/>
             <arg column="interest_rate_range" javaType="java.lang.String" name="interestRateRange"/>
             <arg column="loan_term" javaType="java.lang.Integer" name="loanTerm"/>
+            <arg column="credit_validity" javaType="java.lang.Integer" name="creditValidity"/>
+            <arg column="disbursement_account" javaType="java.lang.String" name="disbursementAccount"/>
+            <arg column="scene" javaType="java.lang.Integer" name="scene"/>
+            <arg column="online" javaType="java.lang.Integer" name="online"/>
             <arg column="repayment_method" javaType="java.lang.String" name="repaymentMethod"/>
-            <arg column="region" javaType="java.lang.String" name="region"/>
-            <arg column="criteria_json" javaType="java.lang.String" name="criteriaJson"/>
             <arg column="status" javaType="java.lang.Integer" name="status"/>
-            <arg column="success_rate" javaType="java.math.BigDecimal" name="successRate"/>
             <arg column="created_at" javaType="java.time.LocalDateTime" name="createdAt"/>
             <arg column="updated_at" javaType="java.time.LocalDateTime" name="updatedAt"/>
         </constructor>
@@ -24,7 +25,7 @@
 
     <sql id="CreditProduct_Columns">
         id, bank_name, product_name, product_type, min_amount, max_amount, interest_rate_range,
-        loan_term, repayment_method, region, criteria_json, status, success_rate,
+        loan_term, credit_validity, disbursement_account, scene, online, repayment_method, status,
         created_at, updated_at
     </sql>
 
@@ -43,7 +44,7 @@
         </foreach>
     </select>
 
-    <select id="list" parameterType="com.tencent.vo.CreditProducts">
+    <select id="list" resultMap="CreditProductsMap">
         SELECT <include refid="CreditProduct_Columns"/>
         FROM y_credit_products
         <where>
@@ -57,7 +58,7 @@
         </if>
     </select>
 
-    <select id="count">
+    <select id="count" resultType="long">
         SELECT COUNT(1)
         FROM y_credit_products
         <where>
@@ -74,37 +75,35 @@
             AND status = 1
             <if test="expectedAmount != null"> AND min_amount &lt;= #{expectedAmount} AND max_amount &gt;= #{expectedAmount}</if>
             <if test="expectedTerm != null"> AND loan_term &gt;= #{expectedTerm}</if>
-            <if test="regionCode != null and regionCode != ''"> AND region LIKE CONCAT('%', #{regionCode}, '%')</if>
             <if test="productType != null and productType != ''"> AND product_type = #{productType}</if>
         </where>
-        ORDER BY success_rate DESC, id DESC
+        ORDER BY id DESC
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
         </if>
     </select>
 
-    <select id="countEligibleProducts">
+    <select id="countEligibleProducts" resultType="long">
         SELECT COUNT(1)
         FROM y_credit_products
         <where>
             AND status = 1
             <if test="expectedAmount != null"> AND min_amount &lt;= #{expectedAmount} AND max_amount &gt;= #{expectedAmount}</if>
             <if test="expectedTerm != null"> AND loan_term &gt;= #{expectedTerm}</if>
-            <if test="regionCode != null and regionCode != ''"> AND region LIKE CONCAT('%', #{regionCode}, '%')</if>
             <if test="productType != null and productType != ''"> AND product_type = #{productType}</if>
         </where>
     </select>
 
-    <insert id="insert" parameterType="com.tencent.model.CreditProduct">
+    <insert id="insert" parameterType="com.qhr.model.CreditProduct">
         INSERT INTO y_credit_products (bank_name, product_name, product_type, min_amount, max_amount,
-                                     interest_rate_range, loan_term, repayment_method, region,
-                                     criteria_json, status)
+                                     interest_rate_range, loan_term, credit_validity, disbursement_account,
+                                     scene, online, repayment_method, status)
         VALUES (#{bankName}, #{productName}, #{productType}, #{minAmount}, #{maxAmount},
-                #{interestRateRange}, #{loanTerm}, #{repaymentMethod}, #{region},
-                #{criteriaJson}, #{status})
+                #{interestRateRange}, #{loanTerm}, #{creditValidity}, #{disbursementAccount},
+                #{scene}, #{online}, #{repaymentMethod}, #{status})
     </insert>
 
-    <update id="update" parameterType="com.tencent.model.CreditProduct">
+    <update id="update" parameterType="com.qhr.model.CreditProduct">
         UPDATE y_credit_products
         <set>
             <if test="bankName != null">bank_name = #{bankName},</if>
@@ -114,11 +113,12 @@
             <if test="maxAmount != null">max_amount = #{maxAmount},</if>
             <if test="interestRateRange != null">interest_rate_range = #{interestRateRange},</if>
             <if test="loanTerm != null">loan_term = #{loanTerm},</if>
+            <if test="creditValidity != null">credit_validity = #{creditValidity},</if>
+            <if test="disbursementAccount != null">disbursement_account = #{disbursementAccount},</if>
+            <if test="scene != null">scene = #{scene},</if>
+            <if test="online != null">online = #{online},</if>
             <if test="repaymentMethod != null">repayment_method = #{repaymentMethod},</if>
-            <if test="region != null">region = #{region},</if>
-            <if test="criteriaJson != null">criteria_json = #{criteriaJson},</if>
             <if test="status != null">status = #{status},</if>
-            <if test="successRate != null">success_rate = #{successRate},</if>
         </set>
         WHERE id = #{id}
     </update>
@@ -135,7 +135,7 @@
     <select id="lastInsertId" resultType="long">
         SELECT LAST_INSERT_ID()
     </select>
-    <select id="getStats" resultType="com.tencent.vo.CreditProductStats">
+    <select id="getStats" resultType="com.qhr.vo.CreditProductStats">
         SELECT (SELECT COUNT(DISTINCT bank_name) FROM y_credit_products)                       AS bankNameCount,
                (SELECT COUNT(*) FROM y_credit_products)                                        AS productCount,
                (SELECT COUNT(*) FROM y_match_records WHERE WEEK(created_at) = WEEK(CURDATE())) AS matchCount,

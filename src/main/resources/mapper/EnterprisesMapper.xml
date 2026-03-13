@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tencent.dao.EnterprisesMapper">
+<mapper namespace="com.qhr.dao.EnterprisesMapper">
 
-    <resultMap id="EnterprisesMap" type="com.tencent.model.Enterprise">
+    <resultMap id="EnterprisesMap" type="com.qhr.model.Enterprise">
         <constructor>
             <idArg column="id" javaType="java.lang.Long" name="id"/>
             <arg column="full_name" javaType="java.lang.String" name="fullName"/>
@@ -46,7 +46,7 @@
         </if>
     </select>
 
-    <select id="count">
+    <select id="count" resultType="long">
         SELECT COUNT(1)
         FROM y_enterprises
         <where>
@@ -76,7 +76,7 @@
         WHERE r.user_id = #{userId}
     </select>
 
-    <insert id="insert" parameterType="com.tencent.model.Enterprise">
+    <insert id="insert" parameterType="com.qhr.model.Enterprise">
         INSERT INTO y_enterprises (full_name, credit_code, industry, tax_rating, region_code,
                                  annual_turnover, annual_tax_amount, existing_loan_balance,
                                  match_status, profile_data)
@@ -85,7 +85,7 @@
                 #{matchStatus}, #{profileData})
     </insert>
 
-    <update id="update" parameterType="com.tencent.model.Enterprise">
+    <update id="update" parameterType="com.qhr.model.Enterprise">
         UPDATE y_enterprises
         <set>
             <if test="fullName != null">full_name = #{fullName},</if>

@@ -74,10 +74,6 @@
 
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-dmn</artifactId>
         </dependency>
 
@@ -86,11 +82,6 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-junit</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

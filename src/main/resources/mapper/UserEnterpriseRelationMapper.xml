@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tencent.dao.UserEnterpriseRelationMapper">
+<mapper namespace="com.qhr.dao.UserEnterpriseRelationMapper">
 
-    <resultMap id="RelationMap" type="com.tencent.model.UserEnterpriseRelation">
+    <resultMap id="RelationMap" type="com.qhr.model.UserEnterpriseRelation">
         <constructor>
             <idArg column="id" javaType="java.lang.Long" name="id"/>
             <arg column="enterprise_id" javaType="java.lang.Long" name="enterpriseId"/>
@@ -37,7 +37,7 @@
         ORDER BY id DESC
     </select>
 
-    <insert id="insert" parameterType="com.tencent.model.UserEnterpriseRelation">
+    <insert id="insert" parameterType="com.qhr.model.UserEnterpriseRelation">
         INSERT INTO p_user_enterprise_relation (enterprise_id, user_id, role)
         VALUES (#{enterpriseId}, #{userId}, #{role})
     </insert>

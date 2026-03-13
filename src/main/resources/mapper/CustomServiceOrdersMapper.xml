@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tencent.dao.CustomServiceOrdersMapper">
+<mapper namespace="com.qhr.dao.CustomServiceOrdersMapper">
 
-    <resultMap id="CustomServiceOrdersMap" type="com.tencent.model.CustomServiceOrder">
+    <resultMap id="CustomServiceOrdersMap" type="com.qhr.model.CustomServiceOrder">
         <constructor>
             <idArg column="id" javaType="java.lang.Long" name="id"/>
             <arg column="enterprise_id" javaType="java.lang.Long" name="enterpriseId"/>
@@ -48,7 +48,7 @@
         </if>
     </select>
 
-    <select id="count">
+    <select id="count" resultType="long">
         SELECT COUNT(1)
         FROM f_custom_service_orders
         <where>
@@ -60,7 +60,7 @@
         </where>
     </select>
 
-    <insert id="insert" parameterType="com.tencent.model.CustomServiceOrder">
+    <insert id="insert" parameterType="com.qhr.model.CustomServiceOrder">
         INSERT INTO f_custom_service_orders (enterprise_id, intention_id, staff_id, current_stage,
                                            service_status, loan_amount, commission_amount, service_cost,
                                            cost_details, settle_status)
@@ -69,7 +69,7 @@
                 #{costDetails}, #{settleStatus})
     </insert>
 
-    <update id="update" parameterType="com.tencent.model.CustomServiceOrder">
+    <update id="update" parameterType="com.qhr.model.CustomServiceOrder">
         UPDATE f_custom_service_orders
         <set>
             <if test="enterpriseId != null">enterprise_id = #{enterpriseId},</if>
