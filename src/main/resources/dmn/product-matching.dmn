@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmn:definitions xmlns:dmn="http://www.omg.org/spec/DMN/20180521/MODEL/"
+                 xmlns="https://qhr.tencent.com/dmn/product-matching"
+                 xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/"
+                 xmlns:kie="http://www.drools.org/kie/dmn/1.2"
+                 xmlns:dmndi="http://www.omg.org/spec/DMN/20180521/DMNDI/"
+                 xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+                 xmlns:feel="http://www.omg.org/spec/DMN/20180521/FEEL/"
+                 id="DMN_QhrProductMatching"
+                 name="QhrProductMatching"
+                 typeLanguage="http://www.omg.org/spec/DMN/20180521/FEEL/"
+                 namespace="https://qhr.tencent.com/dmn/product-matching">
+
+  <dmn:inputData id="Input_ApplicantProfile" name="applicantProfile">
+    <dmn:variable id="Var_ApplicantProfile" name="applicantProfile" typeRef="Any"/>
+  </dmn:inputData>
+
+  <dmn:inputData id="Input_ProductRule" name="productRule">
+    <dmn:variable id="Var_ProductRule" name="productRule" typeRef="Any"/>
+  </dmn:inputData>
+
+  <dmn:inputData id="Input_ProductInfo" name="productInfo">
+    <dmn:variable id="Var_ProductInfo" name="productInfo" typeRef="Any"/>
+  </dmn:inputData>
+
+  <dmn:businessKnowledgeModel id="BKM_PickValue" name="pickValue">
+    <dmn:variable id="Var_BKM_PickValue" name="pickValue" typeRef="Any"/>
+    <dmn:encapsulatedLogic id="Fn_PickValue" kind="FEEL">
+      <dmn:formalParameter id="Param_Pick_Ctx" name="ctx" typeRef="Any"/>
+      <dmn:formalParameter id="Param_Pick_Primary" name="primaryKey" typeRef="string"/>
+      <dmn:formalParameter id="Param_Pick_Secondary" name="secondaryKey" typeRef="string"/>
+      <dmn:literalExpression id="Expr_PickValue">
+        <dmn:text>if get value(ctx, primaryKey) != null then get value(ctx, primaryKey) else get value(ctx, secondaryKey)</dmn:text>
+      </dmn:literalExpression>
+    </dmn:encapsulatedLogic>
+  </dmn:businessKnowledgeModel>
+
+  <dmn:businessKnowledgeModel id="BKM_FinalStatus" name="finalStatus">
+    <dmn:variable id="Var_BKM_FinalStatus" name="finalStatus" typeRef="Any"/>
+    <dmn:encapsulatedLogic id="Fn_FinalStatus" kind="FEEL">
+      <dmn:formalParameter id="Param_FS_1" name="s1" typeRef="string"/>
+      <dmn:formalParameter id="Param_FS_2" name="s2" typeRef="string"/>
+      <dmn:formalParameter id="Param_FS_3" name="s3" typeRef="string"/>
+      <dmn:formalParameter id="Param_FS_4" name="s4" typeRef="string"/>
+      <dmn:formalParameter id="Param_FS_5" name="s5" typeRef="string"/>
+      <dmn:formalParameter id="Param_FS_6" name="s6" typeRef="string"/>
+      <dmn:literalExpression id="Expr_FinalStatus">
+        <dmn:text><![CDATA[
+if s1 = "REJECT" or s2 = "REJECT" or s3 = "REJECT" or s4 = "REJECT" or s5 = "REJECT" or s6 = "REJECT" then "REJECT"
+else if s1 = "REVIEW" or s2 = "REVIEW" or s3 = "REVIEW" or s4 = "REVIEW" or s5 = "REVIEW" or s6 = "REVIEW" then "REVIEW"
+else "PASS"
+        ]]></dmn:text>
+      </dmn:literalExpression>
+    </dmn:encapsulatedLogic>
+  </dmn:businessKnowledgeModel>
+
+  <dmn:businessKnowledgeModel id="BKM_ResolvePassRate" name="resolvePassRate">
+    <dmn:variable id="Var_BKM_ResolvePassRate" name="resolvePassRate" typeRef="Any"/>
+    <dmn:encapsulatedLogic id="Fn_ResolvePassRate" kind="FEEL">
+      <dmn:formalParameter id="Param_RP_1" name="pInfo" typeRef="Any"/>
+      <dmn:formalParameter id="Param_RP_2" name="pRule" typeRef="Any"/>
+      <dmn:literalExpression id="Expr_ResolvePassRate">
+        <dmn:text>if get value(pInfo, "passRate") != null then get value(pInfo, "passRate") else if get value(pRule, "通过率（%）") != null then get value(pRule, "通过率（%）") else get value(pRule, "通过率")</dmn:text>
+      </dmn:literalExpression>
+    </dmn:encapsulatedLogic>
+  </dmn:businessKnowledgeModel>
+
+  <dmn:decision id="Decision_PreCheck" name="PreCheckDecision">
+    <dmn:variable id="Var_PreCheck" name="PreCheckDecision" typeRef="Any"/>
+    <dmn:informationRequirement id="IR_PreCheck_Applicant">
+      <dmn:requiredInput href="#Input_ApplicantProfile"/>
+    </dmn:informationRequirement>
+    <dmn:knowledgeRequirement id="KR_PreCheck_Pick">
+      <dmn:requiredKnowledge href="#BKM_PickValue"/>
+    </dmn:knowledgeRequirement>
+    <dmn:literalExpression id="Expr_PreCheck">
+      <dmn:text><![CDATA[
+if get value(applicantProfile, "blacklisted") = true or get value(applicantProfile, "是否命中黑名单") = true
+then {status: "REJECT", failReasons: ["命中黑名单"], hitReasons: [], riskTags: ["黑名单"]}
+else if get value(applicantProfile, "hitForbiddenIndustry") = true or get value(applicantProfile, "是否命中基础禁入行业") = true
+then {status: "REJECT", failReasons: ["命中基础禁入行业"], hitReasons: [], riskTags: ["禁入行业"]}
+else if pickValue(applicantProfile, "age", "申请人年龄") = null
+     or pickValue(applicantProfile, "industry", "所属行业") = null
+     or pickValue(applicantProfile, "regionCode", "申请地区") = null
+then {status: "REVIEW", failReasons: ["申请人画像字段不完整"], hitReasons: [], riskTags: ["信息缺失"]}
+else {status: "PASS", failReasons: [], hitReasons: ["公共预校验通过"], riskTags: []}
+      ]]></dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+
+  <dmn:decision id="Decision_CandidateFilter" name="CandidateFilterDecision">
+    <dmn:variable id="Var_CandidateFilter" name="CandidateFilterDecision" typeRef="Any"/>
+    <dmn:informationRequirement id="IR_Candidate_Applicant">
+      <dmn:requiredInput href="#Input_ApplicantProfile"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="IR_Candidate_ProductRule">
+      <dmn:requiredInput href="#Input_ProductRule"/>
+    </dmn:informationRequirement>
+    <dmn:knowledgeRequirement id="KR_Candidate_Pick">
+      <dmn:requiredKnowledge href="#BKM_PickValue"/>
+    </dmn:knowledgeRequirement>
+    <dmn:literalExpression id="Expr_CandidateFilter">
+      <dmn:text><![CDATA[
+if get value(productRule, "适用地区") != null
+   and pickValue(applicantProfile, "申请地区", "regionCode") != null
+   and not(contains(string(get value(productRule, "适用地区")), string(pickValue(applicantProfile, "申请地区", "regionCode"))))
+then {status: "REJECT", failReasons: ["不在产品适用地区"], hitReasons: [], riskTags: ["候选过滤"]}
+else if get value(productRule, "授信行业限制") != null
+        and pickValue(applicantProfile, "所属行业", "industry") != null
+        and (
+          (contains(string(get value(productRule, "授信行业限制")), "只限")
+            and not(contains(string(get value(productRule, "授信行业限制")), string(pickValue(applicantProfile, "所属行业", "industry")))))
+          or
+          (contains(string(get value(productRule, "授信行业限制")), "不做")
+            and contains(string(get value(productRule, "授信行业限制")), string(pickValue(applicantProfile, "所属行业", "industry"))))
+        )
+then {status: "REJECT", failReasons: ["命中行业限制"], hitReasons: [], riskTags: ["候选过滤"]}
+else if get value(productRule, "放款账户要求") != null
+        and pickValue(applicantProfile, "放款账户类型", "loanAccountType") != null
+        and not(contains(string(get value(productRule, "放款账户要求")), string(pickValue(applicantProfile, "放款账户类型", "loanAccountType"))))
+        and not(contains(string(pickValue(applicantProfile, "放款账户类型", "loanAccountType")), string(get value(productRule, "放款账户要求"))))
+then {status: "REJECT", failReasons: ["放款账户要求不匹配"], hitReasons: [], riskTags: ["候选过滤"]}
+else if get value(productRule, "如何申请（扫码or线下）") != null
+        and pickValue(applicantProfile, "申请方式偏好", "applyMethodPreference") != null
+        and not(contains(string(get value(productRule, "如何申请（扫码or线下）")), string(pickValue(applicantProfile, "申请方式偏好", "applyMethodPreference"))))
+        and not(contains(string(pickValue(applicantProfile, "申请方式偏好", "applyMethodPreference")), string(get value(productRule, "如何申请（扫码or线下）"))))
+then {status: "REJECT", failReasons: ["申请方式不匹配"], hitReasons: [], riskTags: ["候选过滤"]}
+else if get value(productRule, "企业标签要求") != null
+        and pickValue(applicantProfile, "企业标签等级", "enterpriseTagLevel") != null
+        and pickValue(applicantProfile, "企业标签等级", "enterpriseTagLevel") < get value(productRule, "企业标签要求")
+then {status: "REJECT", failReasons: ["企业标签要求不满足"], hitReasons: [], riskTags: ["候选过滤"]}
+else if (get value(productRule, "适用地区") != null and pickValue(applicantProfile, "申请地区", "regionCode") = null)
+     or (get value(productRule, "授信行业限制") != null and pickValue(applicantProfile, "所属行业", "industry") = null)
+     or (get value(productRule, "企业标签要求") != null and pickValue(applicantProfile, "企业标签等级", "enterpriseTagLevel") = null)
+then {status: "REVIEW", failReasons: ["候选过滤关键信息缺失"], hitReasons: [], riskTags: ["候选过滤"]}
+else {status: "PASS", failReasons: [], hitReasons: ["命中轻过滤候选集"], riskTags: []}
+      ]]></dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+
+  <dmn:decision id="Decision_SubjectDomain" name="SubjectDomainDecision">
+    <dmn:variable id="Var_SubjectDomain" name="SubjectDomainDecision" typeRef="Any"/>
+    <dmn:informationRequirement id="IR_Subject_Applicant">
+      <dmn:requiredInput href="#Input_ApplicantProfile"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="IR_Subject_ProductRule">
+      <dmn:requiredInput href="#Input_ProductRule"/>
+    </dmn:informationRequirement>
+    <dmn:knowledgeRequirement id="KR_Subject_Pick">
+      <dmn:requiredKnowledge href="#BKM_PickValue"/>
+    </dmn:knowledgeRequirement>
+    <dmn:literalExpression id="Expr_SubjectDomain">
+      <dmn:text><![CDATA[
+if (get value(productRule, "最低年龄要求") != null and pickValue(applicantProfile, "申请人年龄", "age") != null and pickValue(applicantProfile, "申请人年龄", "age") < get value(productRule, "最低年龄要求"))
+   or (get value(productRule, "最高年龄要求") != null and pickValue(applicantProfile, "申请人年龄", "age") != null and pickValue(applicantProfile, "申请人年龄", "age") > get value(productRule, "最高年龄要求"))
+   or (get value(productRule, "最低成立时间（月）") != null and pickValue(applicantProfile, "成立时间（月）", "enterpriseEstablishedMonths") != null and pickValue(applicantProfile, "成立时间（月）", "enterpriseEstablishedMonths") < get value(productRule, "最低成立时间（月）"))
+   or (get value(productRule, "注册资金要求（万）") != null and pickValue(applicantProfile, "注册资金(万)", "registeredCapital") != null and pickValue(applicantProfile, "注册资金(万)", "registeredCapital") < get value(productRule, "注册资金要求（万）"))
+   or (get value(productRule, "注册实缴要求（万）") != null and pickValue(applicantProfile, "注册实缴(万)", "paidInCapital") != null and pickValue(applicantProfile, "注册实缴(万)", "paidInCapital") < get value(productRule, "注册实缴要求（万）"))
+then {status: "REJECT", failReasons: ["主体基础准入不通过"], hitReasons: [], riskTags: ["主体准入"]}
+else if (get value(productRule, "最低年龄要求") != null and pickValue(applicantProfile, "申请人年龄", "age") = null)
+     or (get value(productRule, "最高年龄要求") != null and pickValue(applicantProfile, "申请人年龄", "age") = null)
+     or (get value(productRule, "最低成立时间（月）") != null and pickValue(applicantProfile, "成立时间（月）", "enterpriseEstablishedMonths") = null)
+then {status: "REVIEW", failReasons: ["主体基础字段缺失"], hitReasons: [], riskTags: ["主体准入"]}
+else {status: "PASS", failReasons: [], hitReasons: ["主体基础准入通过"], riskTags: []}
+      ]]></dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+
+  <dmn:decision id="Decision_InvoiceDomain" name="InvoiceDomainDecision">
+    <dmn:variable id="Var_InvoiceDomain" name="InvoiceDomainDecision" typeRef="Any"/>
+    <dmn:informationRequirement id="IR_Invoice_Applicant">
+      <dmn:requiredInput href="#Input_ApplicantProfile"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="IR_Invoice_ProductRule">
+      <dmn:requiredInput href="#Input_ProductRule"/>
+    </dmn:informationRequirement>
+    <dmn:knowledgeRequirement id="KR_Invoice_Pick">
+      <dmn:requiredKnowledge href="#BKM_PickValue"/>
+    </dmn:knowledgeRequirement>
+    <dmn:literalExpression id="Expr_InvoiceDomain">
+      <dmn:text><![CDATA[
+if (get value(productRule, "最低近12个月开票金额（万）") != null and pickValue(applicantProfile, "近12个月开票金额（万）", "invoiceAmount12m") != null and pickValue(applicantProfile, "近12个月开票金额（万）", "invoiceAmount12m") < get value(productRule, "最低近12个月开票金额（万）"))
+   or (get value(productRule, "最低当年开票要求（万）") != null and pickValue(applicantProfile, "当年开票金额（万）", "invoiceAmountCurrentYear") != null and pickValue(applicantProfile, "当年开票金额（万）", "invoiceAmountCurrentYear") < get value(productRule, "最低当年开票要求（万）"))
+   or (get value(productRule, "近一年有开票月数要求") != null and pickValue(applicantProfile, "近一年有开票月数", "invoicedMonths1y") != null and pickValue(applicantProfile, "近一年有开票月数", "invoicedMonths1y") < get value(productRule, "近一年有开票月数要求"))
+then {status: "REJECT", failReasons: ["开票经营指标不达标"], hitReasons: [], riskTags: ["开票经营"]}
+else if (get value(productRule, "最低近12个月开票金额（万）") != null and pickValue(applicantProfile, "近12个月开票金额（万）", "invoiceAmount12m") = null)
+     or (get value(productRule, "最低当年开票要求（万）") != null and pickValue(applicantProfile, "当年开票金额（万）", "invoiceAmountCurrentYear") = null)
+then {status: "REVIEW", failReasons: ["开票经营字段缺失"], hitReasons: [], riskTags: ["开票经营"]}
+else {status: "PASS", failReasons: [], hitReasons: ["开票经营通过"], riskTags: []}
+      ]]></dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+
+  <dmn:decision id="Decision_TaxDomain" name="TaxDomainDecision">
+    <dmn:variable id="Var_TaxDomain" name="TaxDomainDecision" typeRef="Any"/>
+    <dmn:informationRequirement id="IR_Tax_Applicant">
+      <dmn:requiredInput href="#Input_ApplicantProfile"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="IR_Tax_ProductRule">
+      <dmn:requiredInput href="#Input_ProductRule"/>
+    </dmn:informationRequirement>
+    <dmn:knowledgeRequirement id="KR_Tax_Pick">
+      <dmn:requiredKnowledge href="#BKM_PickValue"/>
+    </dmn:knowledgeRequirement>
+    <dmn:literalExpression id="Expr_TaxDomain">
+      <dmn:text><![CDATA[
+if (get value(productRule, "近12个月纳税月份数下限") != null and pickValue(applicantProfile, "近12个月纳税月份数", "taxMonths12m") != null and pickValue(applicantProfile, "近12个月纳税月份数", "taxMonths12m") < get value(productRule, "近12个月纳税月份数下限"))
+   or (get value(productRule, "近24个月纳税月份数下限") != null and pickValue(applicantProfile, "近24个月纳税月份数", "taxMonths24m") != null and pickValue(applicantProfile, "近24个月纳税月份数", "taxMonths24m") < get value(productRule, "近24个月纳税月份数下限"))
+   or (get value(productRule, "近12个月纳税金额（万）下限") != null and pickValue(applicantProfile, "近12个月纳税金额（万）", "taxAmount12m") != null and pickValue(applicantProfile, "近12个月纳税金额（万）", "taxAmount12m") < get value(productRule, "近12个月纳税金额（万）下限"))
+then {status: "REJECT", failReasons: ["纳税经营指标不达标"], hitReasons: [], riskTags: ["纳税经营"]}
+else if (get value(productRule, "近12个月纳税月份数下限") != null and pickValue(applicantProfile, "近12个月纳税月份数", "taxMonths12m") = null)
+     or (get value(productRule, "近12个月纳税金额（万）下限") != null and pickValue(applicantProfile, "近12个月纳税金额（万）", "taxAmount12m") = null)
+then {status: "REVIEW", failReasons: ["纳税经营字段缺失"], hitReasons: [], riskTags: ["纳税经营"]}
+else {status: "PASS", failReasons: [], hitReasons: ["纳税经营通过"], riskTags: []}
+      ]]></dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+
+  <dmn:decision id="Decision_FinancialDomain" name="FinancialDomainDecision">
+    <dmn:variable id="Var_FinancialDomain" name="FinancialDomainDecision" typeRef="Any"/>
+    <dmn:informationRequirement id="IR_Financial_Applicant">
+      <dmn:requiredInput href="#Input_ApplicantProfile"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="IR_Financial_ProductRule">
+      <dmn:requiredInput href="#Input_ProductRule"/>
+    </dmn:informationRequirement>
+    <dmn:knowledgeRequirement id="KR_Financial_Pick">
+      <dmn:requiredKnowledge href="#BKM_PickValue"/>
+    </dmn:knowledgeRequirement>
+    <dmn:literalExpression id="Expr_FinancialDomain">
+      <dmn:text><![CDATA[
+if (get value(productRule, "近一年利润下限") != null and pickValue(applicantProfile, "近一年利润", "profit1y") != null and pickValue(applicantProfile, "近一年利润", "profit1y") < get value(productRule, "近一年利润下限"))
+   or (get value(productRule, "当年利润率下限") != null and pickValue(applicantProfile, "当年利润率", "profitRateCurrentYear") != null and pickValue(applicantProfile, "当年利润率", "profitRateCurrentYear") < get value(productRule, "当年利润率下限"))
+   or (get value(productRule, "最新财报资产负债率上限") != null and pickValue(applicantProfile, "最新财报资产负债率", "assetLiabilityRatioLatest") != null and pickValue(applicantProfile, "最新财报资产负债率", "assetLiabilityRatioLatest") > get value(productRule, "最新财报资产负债率上限"))
+then {status: "REVIEW", failReasons: ["财报利润指标偏弱，建议人工复核"], hitReasons: [], riskTags: ["财报利润"]}
+else if (get value(productRule, "近一年利润下限") != null and pickValue(applicantProfile, "近一年利润", "profit1y") = null)
+then {status: "REVIEW", failReasons: ["财报利润字段缺失"], hitReasons: [], riskTags: ["财报利润"]}
+else {status: "PASS", failReasons: [], hitReasons: ["财报利润通过"], riskTags: []}
+      ]]></dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+
+  <dmn:decision id="Decision_CreditDomain" name="CreditDomainDecision">
+    <dmn:variable id="Var_CreditDomain" name="CreditDomainDecision" typeRef="Any"/>
+    <dmn:informationRequirement id="IR_Credit_Applicant">
+      <dmn:requiredInput href="#Input_ApplicantProfile"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="IR_Credit_ProductRule">
+      <dmn:requiredInput href="#Input_ProductRule"/>
+    </dmn:informationRequirement>
+    <dmn:knowledgeRequirement id="KR_Credit_Pick">
+      <dmn:requiredKnowledge href="#BKM_PickValue"/>
+    </dmn:knowledgeRequirement>
+    <dmn:literalExpression id="Expr_CreditDomain">
+      <dmn:text><![CDATA[
+if (get value(productRule, "1月查询次要求上限") != null and pickValue(applicantProfile, "1月查询次", "query1m") != null and pickValue(applicantProfile, "1月查询次", "query1m") > get value(productRule, "1月查询次要求上限"))
+   or (get value(productRule, "12个月查询次要求上限") != null and pickValue(applicantProfile, "12个月查询次", "query12m") != null and pickValue(applicantProfile, "12个月查询次", "query12m") > get value(productRule, "12个月查询次要求上限"))
+   or (get value(productRule, "近12个月逾期次数上限") != null and pickValue(applicantProfile, "近12个月逾期次数", "overdueCount12m") != null and pickValue(applicantProfile, "近12个月逾期次数", "overdueCount12m") > get value(productRule, "近12个月逾期次数上限"))
+then {status: "REJECT", failReasons: ["征信查询或逾期不达标"], hitReasons: [], riskTags: ["征信逾期"]}
+else if (get value(productRule, "1月查询次要求上限") != null and pickValue(applicantProfile, "1月查询次", "query1m") = null)
+     or (get value(productRule, "近12个月逾期次数上限") != null and pickValue(applicantProfile, "近12个月逾期次数", "overdueCount12m") = null)
+then {status: "REVIEW", failReasons: ["征信字段缺失"], hitReasons: [], riskTags: ["征信逾期"]}
+else {status: "PASS", failReasons: [], hitReasons: ["征信与逾期通过"], riskTags: []}
+      ]]></dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+
+  <dmn:decision id="Decision_DebtDomain" name="DebtDomainDecision">
+    <dmn:variable id="Var_DebtDomain" name="DebtDomainDecision" typeRef="Any"/>
+    <dmn:informationRequirement id="IR_Debt_Applicant">
+      <dmn:requiredInput href="#Input_ApplicantProfile"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="IR_Debt_ProductRule">
+      <dmn:requiredInput href="#Input_ProductRule"/>
+    </dmn:informationRequirement>
+    <dmn:knowledgeRequirement id="KR_Debt_Pick">
+      <dmn:requiredKnowledge href="#BKM_PickValue"/>
+    </dmn:knowledgeRequirement>
+    <dmn:literalExpression id="Expr_DebtDomain">
+      <dmn:text><![CDATA[
+if (get value(productRule, "企业负债合计上限") != null and pickValue(applicantProfile, "企业负债合计", "enterpriseDebtTotal") != null and pickValue(applicantProfile, "企业负债合计", "enterpriseDebtTotal") > get value(productRule, "企业负债合计上限"))
+   or (get value(productRule, "个人负债合计上限（含担保）") != null and pickValue(applicantProfile, "个人负债合计（含担保）", "personalDebtWithGuarantee") != null and pickValue(applicantProfile, "个人负债合计（含担保）", "personalDebtWithGuarantee") > get value(productRule, "个人负债合计上限（含担保）"))
+   or (get value(productRule, "当前信用卡使用率上限") != null and pickValue(applicantProfile, "当前信用卡使用率", "currentCreditCardUsageRate") != null and pickValue(applicantProfile, "当前信用卡使用率", "currentCreditCardUsageRate") > get value(productRule, "当前信用卡使用率上限"))
+then {status: "REJECT", failReasons: ["负债敞口超限"], hitReasons: [], riskTags: ["负债敞口"]}
+else if (get value(productRule, "企业负债合计上限") != null and pickValue(applicantProfile, "企业负债合计", "enterpriseDebtTotal") = null)
+     or (get value(productRule, "个人负债合计上限（含担保）") != null and pickValue(applicantProfile, "个人负债合计（含担保）", "personalDebtWithGuarantee") = null)
+then {status: "REVIEW", failReasons: ["负债敞口字段缺失"], hitReasons: [], riskTags: ["负债敞口"]}
+else {status: "PASS", failReasons: [], hitReasons: ["负债敞口通过"], riskTags: []}
+      ]]></dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+
+  <dmn:decision id="Decision_FinalProduct" name="FinalProductDecision">
+    <dmn:variable id="Var_FinalProduct" name="FinalProductDecision" typeRef="Any"/>
+    <dmn:informationRequirement id="IR_Final_ProductInfo">
+      <dmn:requiredInput href="#Input_ProductInfo"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="IR_Final_ProductRule">
+      <dmn:requiredInput href="#Input_ProductRule"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="IR_Final_Subject">
+      <dmn:requiredDecision href="#Decision_SubjectDomain"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="IR_Final_Invoice">
+      <dmn:requiredDecision href="#Decision_InvoiceDomain"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="IR_Final_Tax">
+      <dmn:requiredDecision href="#Decision_TaxDomain"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="IR_Final_Financial">
+      <dmn:requiredDecision href="#Decision_FinancialDomain"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="IR_Final_Credit">
+      <dmn:requiredDecision href="#Decision_CreditDomain"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="IR_Final_Debt">
+      <dmn:requiredDecision href="#Decision_DebtDomain"/>
+    </dmn:informationRequirement>
+    <dmn:knowledgeRequirement id="KR_Final_FinalStatus">
+      <dmn:requiredKnowledge href="#BKM_FinalStatus"/>
+    </dmn:knowledgeRequirement>
+    <dmn:knowledgeRequirement id="KR_Final_ResolvePassRate">
+      <dmn:requiredKnowledge href="#BKM_ResolvePassRate"/>
+    </dmn:knowledgeRequirement>
+    <dmn:literalExpression id="Expr_FinalProduct">
+      <dmn:text><![CDATA[
+{
+  domainDecisions: [
+    {domain: "轻过滤层-主体基础准入域", status: SubjectDomainDecision.status, hitReasons: SubjectDomainDecision.hitReasons, failReasons: SubjectDomainDecision.failReasons, riskTags: SubjectDomainDecision.riskTags},
+    {domain: "重过滤层-开票经营域", status: InvoiceDomainDecision.status, hitReasons: InvoiceDomainDecision.hitReasons, failReasons: InvoiceDomainDecision.failReasons, riskTags: InvoiceDomainDecision.riskTags},
+    {domain: "重过滤层-纳税经营域", status: TaxDomainDecision.status, hitReasons: TaxDomainDecision.hitReasons, failReasons: TaxDomainDecision.failReasons, riskTags: TaxDomainDecision.riskTags},
+    {domain: "重过滤层-财报利润域", status: FinancialDomainDecision.status, hitReasons: FinancialDomainDecision.hitReasons, failReasons: FinancialDomainDecision.failReasons, riskTags: FinancialDomainDecision.riskTags},
+    {domain: "重过滤层-征信查询与逾期域", status: CreditDomainDecision.status, hitReasons: CreditDomainDecision.hitReasons, failReasons: CreditDomainDecision.failReasons, riskTags: CreditDomainDecision.riskTags},
+    {domain: "重过滤层-负债敞口域", status: DebtDomainDecision.status, hitReasons: DebtDomainDecision.hitReasons, failReasons: DebtDomainDecision.failReasons, riskTags: DebtDomainDecision.riskTags}
+  ],
+  decision: finalStatus(SubjectDomainDecision.status, InvoiceDomainDecision.status, TaxDomainDecision.status, FinancialDomainDecision.status, CreditDomainDecision.status, DebtDomainDecision.status),
+  score: if finalStatus(SubjectDomainDecision.status, InvoiceDomainDecision.status, TaxDomainDecision.status, FinancialDomainDecision.status, CreditDomainDecision.status, DebtDomainDecision.status) = "REJECT" then 0
+         else if finalStatus(SubjectDomainDecision.status, InvoiceDomainDecision.status, TaxDomainDecision.status, FinancialDomainDecision.status, CreditDomainDecision.status, DebtDomainDecision.status) = "REVIEW" then 65
+         else 85,
+  passRate: resolvePassRate(productInfo, productRule),
+  hitReasons: [
+    if SubjectDomainDecision.status = "PASS" then "主体基础准入通过" else null,
+    if InvoiceDomainDecision.status = "PASS" then "开票经营通过" else null,
+    if TaxDomainDecision.status = "PASS" then "纳税经营通过" else null,
+    if FinancialDomainDecision.status = "PASS" then "财报利润通过" else null,
+    if CreditDomainDecision.status = "PASS" then "征信逾期通过" else null,
+    if DebtDomainDecision.status = "PASS" then "负债敞口通过" else null
+  ],
+  failReasons: [
+    if SubjectDomainDecision.status != "PASS" then SubjectDomainDecision.failReasons[1] else null,
+    if InvoiceDomainDecision.status != "PASS" then InvoiceDomainDecision.failReasons[1] else null,
+    if TaxDomainDecision.status != "PASS" then TaxDomainDecision.failReasons[1] else null,
+    if FinancialDomainDecision.status != "PASS" then FinancialDomainDecision.failReasons[1] else null,
+    if CreditDomainDecision.status != "PASS" then CreditDomainDecision.failReasons[1] else null,
+    if DebtDomainDecision.status != "PASS" then DebtDomainDecision.failReasons[1] else null
+  ],
+  riskTags: [
+    if SubjectDomainDecision.status != "PASS" then "主体准入" else null,
+    if InvoiceDomainDecision.status != "PASS" then "开票经营" else null,
+    if TaxDomainDecision.status != "PASS" then "纳税经营" else null,
+    if FinancialDomainDecision.status != "PASS" then "财报利润" else null,
+    if CreditDomainDecision.status != "PASS" then "征信逾期" else null,
+    if DebtDomainDecision.status != "PASS" then "负债敞口" else null
+  ],
+  estimatedAmount: if get value(productInfo, "maxAmount") != null then get value(productInfo, "maxAmount") else get value(productRule, "最高额度(万）"),
+  estimatedRateRange: if get value(productInfo, "interestRateRange") != null then get value(productInfo, "interestRateRange") else null,
+  estimatedTermMonths: if get value(productInfo, "loanTerm") != null then get value(productInfo, "loanTerm") else if get value(productRule, "放款期限（年）") != null then get value(productRule, "放款期限（年）") * 12 else null,
+  repaymentMethod: if get value(productInfo, "repaymentMethod") != null then get value(productInfo, "repaymentMethod") else get value(productRule, "还款方式"),
+  fastestWorkdays: if get value(productInfo, "fastestWorkdays") != null then get value(productInfo, "fastestWorkdays") else get value(productRule, "申请到放款最快所需工作日"),
+  quotaValidityMonths: if get value(productInfo, "quotaValidityMonths") != null then get value(productInfo, "quotaValidityMonths") else get value(productRule, "额度有效期（月）"),
+  loanAccountRequirement: if get value(productInfo, "loanAccountRequirement") != null then get value(productInfo, "loanAccountRequirement") else get value(productRule, "放款账户要求"),
+  applyMethod: if get value(productInfo, "applyMethod") != null then get value(productInfo, "applyMethod") else get value(productRule, "如何申请（扫码or线下）"),
+  onsiteInvestigation: if get value(productInfo, "onsiteInvestigation") != null then get value(productInfo, "onsiteInvestigation") else get value(productRule, "是否下户实地调查"),
+  entrustedPaymentRequired: if get value(productInfo, "entrustedPaymentRequired") != null then get value(productInfo, "entrustedPaymentRequired") else get value(productRule, "是否需要受托支付")
+}
+      ]]></dmn:text>
+    </dmn:literalExpression>
+  </dmn:decision>
+
+  <dmn:decisionService id="DS_PreCheck" name="PreCheckService">
+    <dmn:variable id="Var_DS_PreCheck" name="PreCheckService" typeRef="Any"/>
+    <dmn:outputDecision href="#Decision_PreCheck"/>
+    <dmn:inputData href="#Input_ApplicantProfile"/>
+  </dmn:decisionService>
+
+  <dmn:decisionService id="DS_CandidateFilter" name="CandidateFilterService">
+    <dmn:variable id="Var_DS_CandidateFilter" name="CandidateFilterService" typeRef="Any"/>
+    <dmn:outputDecision href="#Decision_CandidateFilter"/>
+    <dmn:inputData href="#Input_ApplicantProfile"/>
+    <dmn:inputData href="#Input_ProductRule"/>
+  </dmn:decisionService>
+
+  <dmn:decisionService id="DS_ProductDecision" name="ProductDecisionService">
+    <dmn:variable id="Var_DS_ProductDecision" name="ProductDecisionService" typeRef="Any"/>
+    <dmn:outputDecision href="#Decision_FinalProduct"/>
+    <dmn:inputData href="#Input_ApplicantProfile"/>
+    <dmn:inputData href="#Input_ProductRule"/>
+    <dmn:inputData href="#Input_ProductInfo"/>
+  </dmn:decisionService>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_1" name="QhrProductMatchingDiagram">
+      <dmndi:DMNShape id="dmnshape-Input_ApplicantProfile" dmnElementRef="Input_ApplicantProfile" isCollapsed="false">
+        <dc:Bounds x="80" y="650" width="120" height="50"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-Input_ProductRule" dmnElementRef="Input_ProductRule" isCollapsed="false">
+        <dc:Bounds x="300" y="650" width="120" height="50"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-Input_ProductInfo" dmnElementRef="Input_ProductInfo" isCollapsed="false">
+        <dc:Bounds x="520" y="650" width="120" height="50"/>
+      </dmndi:DMNShape>
+
+      <dmndi:DMNShape id="dmnshape-BKM_PickValue" dmnElementRef="BKM_PickValue" isCollapsed="false">
+        <dc:Bounds x="80" y="560" width="120" height="50"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-BKM_FinalStatus" dmnElementRef="BKM_FinalStatus" isCollapsed="false">
+        <dc:Bounds x="300" y="560" width="120" height="50"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-BKM_ResolvePassRate" dmnElementRef="BKM_ResolvePassRate" isCollapsed="false">
+        <dc:Bounds x="520" y="560" width="120" height="50"/>
+      </dmndi:DMNShape>
+
+      <dmndi:DMNShape id="dmnshape-Decision_PreCheck" dmnElementRef="Decision_PreCheck" isCollapsed="false">
+        <dc:Bounds x="80" y="450" width="140" height="60"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-Decision_CandidateFilter" dmnElementRef="Decision_CandidateFilter" isCollapsed="false">
+        <dc:Bounds x="260" y="450" width="160" height="60"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-Decision_SubjectDomain" dmnElementRef="Decision_SubjectDomain" isCollapsed="false">
+        <dc:Bounds x="460" y="450" width="150" height="60"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-Decision_InvoiceDomain" dmnElementRef="Decision_InvoiceDomain" isCollapsed="false">
+        <dc:Bounds x="640" y="450" width="150" height="60"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-Decision_TaxDomain" dmnElementRef="Decision_TaxDomain" isCollapsed="false">
+        <dc:Bounds x="820" y="450" width="150" height="60"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-Decision_FinancialDomain" dmnElementRef="Decision_FinancialDomain" isCollapsed="false">
+        <dc:Bounds x="460" y="330" width="150" height="60"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-Decision_CreditDomain" dmnElementRef="Decision_CreditDomain" isCollapsed="false">
+        <dc:Bounds x="640" y="330" width="150" height="60"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-Decision_DebtDomain" dmnElementRef="Decision_DebtDomain" isCollapsed="false">
+        <dc:Bounds x="820" y="330" width="150" height="60"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-Decision_FinalProduct" dmnElementRef="Decision_FinalProduct" isCollapsed="false">
+        <dc:Bounds x="650" y="200" width="170" height="70"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-DS_PreCheck" dmnElementRef="DS_PreCheck" isCollapsed="false">
+        <dc:Bounds x="80" y="100" width="140" height="60"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-DS_CandidateFilter" dmnElementRef="DS_CandidateFilter" isCollapsed="false">
+        <dc:Bounds x="260" y="100" width="170" height="60"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-DS_ProductDecision" dmnElementRef="DS_ProductDecision" isCollapsed="false">
+        <dc:Bounds x="470" y="100" width="180" height="60"/>
+      </dmndi:DMNShape>
+
+      <dmndi:DMNEdge id="dmnedge-IR_PreCheck_Applicant" dmnElementRef="IR_PreCheck_Applicant">
+        <di:waypoint x="140" y="650"/>
+        <di:waypoint x="150" y="510"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-KR_PreCheck_Pick" dmnElementRef="KR_PreCheck_Pick">
+        <di:waypoint x="140" y="560"/>
+        <di:waypoint x="150" y="510"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Candidate_Applicant" dmnElementRef="IR_Candidate_Applicant">
+        <di:waypoint x="140" y="650"/>
+        <di:waypoint x="340" y="510"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Candidate_ProductRule" dmnElementRef="IR_Candidate_ProductRule">
+        <di:waypoint x="360" y="650"/>
+        <di:waypoint x="340" y="510"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-KR_Candidate_Pick" dmnElementRef="KR_Candidate_Pick">
+        <di:waypoint x="140" y="560"/>
+        <di:waypoint x="340" y="510"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Subject_Applicant" dmnElementRef="IR_Subject_Applicant">
+        <di:waypoint x="140" y="650"/>
+        <di:waypoint x="535" y="510"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Subject_ProductRule" dmnElementRef="IR_Subject_ProductRule">
+        <di:waypoint x="360" y="650"/>
+        <di:waypoint x="535" y="510"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-KR_Subject_Pick" dmnElementRef="KR_Subject_Pick">
+        <di:waypoint x="140" y="560"/>
+        <di:waypoint x="535" y="510"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Invoice_Applicant" dmnElementRef="IR_Invoice_Applicant">
+        <di:waypoint x="140" y="650"/>
+        <di:waypoint x="715" y="510"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Invoice_ProductRule" dmnElementRef="IR_Invoice_ProductRule">
+        <di:waypoint x="360" y="650"/>
+        <di:waypoint x="715" y="510"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-KR_Invoice_Pick" dmnElementRef="KR_Invoice_Pick">
+        <di:waypoint x="140" y="560"/>
+        <di:waypoint x="715" y="510"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Tax_Applicant" dmnElementRef="IR_Tax_Applicant">
+        <di:waypoint x="140" y="650"/>
+        <di:waypoint x="895" y="510"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Tax_ProductRule" dmnElementRef="IR_Tax_ProductRule">
+        <di:waypoint x="360" y="650"/>
+        <di:waypoint x="895" y="510"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-KR_Tax_Pick" dmnElementRef="KR_Tax_Pick">
+        <di:waypoint x="140" y="560"/>
+        <di:waypoint x="895" y="510"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Financial_Applicant" dmnElementRef="IR_Financial_Applicant">
+        <di:waypoint x="140" y="650"/>
+        <di:waypoint x="535" y="390"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Financial_ProductRule" dmnElementRef="IR_Financial_ProductRule">
+        <di:waypoint x="360" y="650"/>
+        <di:waypoint x="535" y="390"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-KR_Financial_Pick" dmnElementRef="KR_Financial_Pick">
+        <di:waypoint x="140" y="560"/>
+        <di:waypoint x="535" y="390"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Credit_Applicant" dmnElementRef="IR_Credit_Applicant">
+        <di:waypoint x="140" y="650"/>
+        <di:waypoint x="715" y="390"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Credit_ProductRule" dmnElementRef="IR_Credit_ProductRule">
+        <di:waypoint x="360" y="650"/>
+        <di:waypoint x="715" y="390"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-KR_Credit_Pick" dmnElementRef="KR_Credit_Pick">
+        <di:waypoint x="140" y="560"/>
+        <di:waypoint x="715" y="390"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Debt_Applicant" dmnElementRef="IR_Debt_Applicant">
+        <di:waypoint x="140" y="650"/>
+        <di:waypoint x="895" y="390"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Debt_ProductRule" dmnElementRef="IR_Debt_ProductRule">
+        <di:waypoint x="360" y="650"/>
+        <di:waypoint x="895" y="390"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-KR_Debt_Pick" dmnElementRef="KR_Debt_Pick">
+        <di:waypoint x="140" y="560"/>
+        <di:waypoint x="895" y="390"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Final_ProductInfo" dmnElementRef="IR_Final_ProductInfo">
+        <di:waypoint x="580" y="650"/>
+        <di:waypoint x="735" y="270"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Final_ProductRule" dmnElementRef="IR_Final_ProductRule">
+        <di:waypoint x="360" y="650"/>
+        <di:waypoint x="735" y="270"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Final_Subject" dmnElementRef="IR_Final_Subject">
+        <di:waypoint x="535" y="450"/>
+        <di:waypoint x="735" y="270"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Final_Invoice" dmnElementRef="IR_Final_Invoice">
+        <di:waypoint x="715" y="450"/>
+        <di:waypoint x="735" y="270"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Final_Tax" dmnElementRef="IR_Final_Tax">
+        <di:waypoint x="895" y="450"/>
+        <di:waypoint x="735" y="270"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Final_Financial" dmnElementRef="IR_Final_Financial">
+        <di:waypoint x="535" y="330"/>
+        <di:waypoint x="735" y="270"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Final_Credit" dmnElementRef="IR_Final_Credit">
+        <di:waypoint x="715" y="330"/>
+        <di:waypoint x="735" y="270"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-IR_Final_Debt" dmnElementRef="IR_Final_Debt">
+        <di:waypoint x="895" y="330"/>
+        <di:waypoint x="735" y="270"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-KR_Final_FinalStatus" dmnElementRef="KR_Final_FinalStatus">
+        <di:waypoint x="360" y="560"/>
+        <di:waypoint x="735" y="270"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-KR_Final_ResolvePassRate" dmnElementRef="KR_Final_ResolvePassRate">
+        <di:waypoint x="580" y="560"/>
+        <di:waypoint x="735" y="270"/>
+      </dmndi:DMNEdge>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</dmn:definitions>

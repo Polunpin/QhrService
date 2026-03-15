@@ -1,18 +1,26 @@
 package com.qhr.vo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.math.BigDecimal;
 
 /**
  * 申请人测试。
  */
 public record Person(
-        /*公司名称*/
-        @JsonProperty("status")
-        String status,
-        /*条件一：是否为注销*/
-        @JsonProperty("t1")
-        Boolean t1,
-        /*条件二：是否为黑名单*/
-        @JsonProperty("t2")
-        Boolean t2) {
+        String address,
+        String companyStatus,
+        BigDecimal establishDate,
+        String industry,
+        Boolean abnormal,
+        Boolean illegal,
+        Boolean judicialRisk) {
 }
+
+//{
+//        "address": "北京",
+//        "companyStatus": "存续",
+//        "establishDate": 18,
+//        "industry": "科技服务",
+//        "abnormal": false,
+//        "illegal": false,
+//        "judicialRisk": false
+//        }

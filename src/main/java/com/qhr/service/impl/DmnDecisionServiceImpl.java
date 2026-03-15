@@ -1,11 +1,14 @@
 package com.qhr.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qhr.config.ApiCode;
 import com.qhr.config.ApiException;
 import com.qhr.service.DmnDecisionService;
 import com.qhr.vo.Person;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.kie.dmn.api.core.DMNResult;
 import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
@@ -21,9 +24,11 @@ import java.util.Set;
 @ApplicationScoped
 public class DmnDecisionServiceImpl implements DmnDecisionService {
 
-  private static final String DMN_RESOURCE = "/dmn/common_precheck.dmn";
+  private static final String DMN_RESOURCE = "/dmn/TestDmn.dmn";
 
   private DmnDecisionModel decisionModel;
+  @Inject
+  ObjectMapper objectMapper;
 
   @PostConstruct
   void init() {
@@ -45,11 +50,7 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
 
   @Override
   public Object evaluate(Person request) {
-    Map<String, Object> personMap = Map.of(
-        "status", request.status(),
-        "t1", request.t1(),
-        "t2", request.t2());
-    Map<String, Object> input = Map.of("Person", personMap);
+    Map<String, Object> input = objectMapper.convertValue(request, new TypeReference<>() {});
 
     DMNResult result = decisionModel.evaluateAll(decisionModel.newContext(input));
     if (result.hasErrors()) {
@@ -59,6 +60,7 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
               .orElse("DMN evaluation failed");
       throw new ApiException(ApiCode.BAD_REQUEST, message);
     }
-    return result.getDecisionResultByName("Decision").getResult();
+
+    return result.getDecisionResultByName("common_precheck").getResult();
   }
 }
