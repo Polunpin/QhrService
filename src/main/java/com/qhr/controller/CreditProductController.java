@@ -3,7 +3,7 @@ package com.qhr.controller;
 import com.qhr.config.*;
 import com.qhr.dto.MatchProductsRequest;
 import com.qhr.dto.UpdateProductStatusRequest;
-import com.qhr.model.CreditProduct;
+import com.qhr.model.Product;
 import com.qhr.service.CreditProductService;
 import com.qhr.vo.CreditProductStats;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -27,7 +27,7 @@ public class CreditProductController {
   @GET
   @Path("/{id}")
   public ApiResponse getById(@PathParam("id") Long id) {
-    CreditProduct product = creditProductService.getById(id);
+    Product product = creditProductService.getById(id);
     ApiAssert.notNull(product, ApiCode.NOT_FOUND, "产品不存在");
     return ApiResponse.ok(product);
   }
@@ -50,7 +50,7 @@ public class CreditProductController {
                           @QueryParam("page") Integer page,
                           @QueryParam("size") Integer size) {
     PageBounds bounds = PageBounds.of(page, size);
-    List<CreditProduct> products = creditProductService.list(status, productType, bankName,
+    List<Product> products = creditProductService.list(status, productType, bankName,
         bounds.offset(), bounds.size());
     long total = creditProductService.count(status, productType, bankName);
     return ApiResponse.ok(PageResult.of(products, total, bounds.page(), bounds.size()));
@@ -58,7 +58,7 @@ public class CreditProductController {
 
   /** 创建产品 */
   @POST
-  public ApiResponse create(CreditProduct product) {
+  public ApiResponse create(Product product) {
     Long id = creditProductService.create(product);
     return ApiResponse.ok(id);
   }
@@ -66,7 +66,7 @@ public class CreditProductController {
   /** 更新产品 */
   @PUT
   @Path("/{id}")
-  public ApiResponse update(@PathParam("id") Long id, CreditProduct product) {
+  public ApiResponse update(@PathParam("id") Long id, Product product) {
     ApiAssert.isTrue(creditProductService.update(product.withId(id)), ApiCode.NOT_FOUND, "产品不存在");
     return ApiResponse.ok(true);
   }
@@ -96,7 +96,7 @@ public class CreditProductController {
                                    @QueryParam("page") Integer page,
                                    @QueryParam("size") Integer size) {
     PageBounds bounds = PageBounds.of(page, size);
-    List<CreditProduct> products = creditProductService.findEligibleProducts(
+    List<Product> products = creditProductService.findEligibleProducts(
         request.expectedAmount(), request.expectedTerm(), request.productType(),
         bounds.offset(), bounds.size());
     long total = creditProductService.countEligibleProducts(

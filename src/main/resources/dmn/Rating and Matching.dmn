@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20230324/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20230324/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:kie="https://kie.org/dmn/extensions/1.0" expressionLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/" namespace="https://kie.org/dmn/_27C9B202-D2A9-4044-87FF-F0FA1FBBFA8C" id="_F8CC89FC-88E3-422F-96DE-532298E631EB" name="DMN_0993BD76-F887-4ABB-9DA1-2619280B37F0">
+  <itemDefinition id="_51F80C76-367E-4314-9791-E87DEE2979A2" name="tApplicantProfile" isCollection="false" typeLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/">
+    <description>申请人画像</description>
+    <itemComponent id="_24DCB6E8-C16F-4E98-A792-3FED2334C3F7" name="legalPersonShareRatio" isCollection="false" typeLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/">
+      <typeRef>number</typeRef>
+    </itemComponent>
+    <itemComponent id="_BAA6FBF7-7AEB-47CD-82BD-2E69457D8856" name="legalPersonChangeCount" isCollection="false" typeLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/">
+      <typeRef>number</typeRef>
+    </itemComponent>
+  </itemDefinition>
+  <itemDefinition id="_41387EA2-3461-4138-A1A0-8E7AF9CE2732" name="tProductRule" isCollection="true" typeLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/">
+    <description>信贷产品规则</description>
+    <itemComponent id="_B0D3E9A2-2396-40B9-B69E-4358B6335257" name="productCode" isCollection="false" typeLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/">
+      <typeRef>number</typeRef>
+    </itemComponent>
+    <itemComponent id="_A0B81465-EF19-4ACC-90FB-CCA65903074C" name="gsMaxLegalRepChangeCount2y" isCollection="false" typeLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/">
+      <typeRef>number</typeRef>
+    </itemComponent>
+    <itemComponent id="_D0E514BB-EB7E-4DE4-9682-507C5F30FC8A" name="gsMinLegalRepChangeGapMonths" isCollection="false" typeLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/">
+      <typeRef>number</typeRef>
+    </itemComponent>
+  </itemDefinition>
+  <decision name="ProductFilter" id="_81DBE45B-E658-49C8-8DD4-2C14DB2DD30F">
+    <variable name="ProductFilter" id="_DA146BE4-EDAA-4D7F-B49F-FF9860A767D8" typeRef="tProductRule" />
+    <informationRequirement id="_81A5B778-C311-46A2-B79D-F67917C2E26B">
+      <requiredInput href="#_14E389A5-CD5D-474E-86F8-2A477B79C068" />
+    </informationRequirement>
+    <informationRequirement id="_94D3C1C0-D59C-4A69-A77C-4A79EA37AEF8">
+      <requiredInput href="#_83E1B456-14AD-4AA4-917A-1B100552E010" />
+    </informationRequirement>
+    <filter id="_50A398AC-556B-4B72-9758-C673431D2A20" label="ProductFilter" typeRef="tProductRule">
+      <in id="_B38FEBEE-A6EF-4260-BB4D-A96FB8BB9BC1">
+        <literalExpression id="_AE599B1A-F2FE-4343-8CD4-C0716C45299E" label="Expression Name">
+          <text>ProductRule</text>
+        </literalExpression>
+      </in>
+      <match id="_73D17F78-8176-42FF-881A-9E301E8947F7">
+        <literalExpression id="_F37ACC06-5603-466E-AA65-97BA163F8973" label="Expression Name">
+          <text>gsMaxLegalRepChangeCount2y &gt;= ApplicantProfile.legalPersonShareRatio and gsMinLegalRepChangeGapMonths = ApplicantProfile.legalPersonChangeCount</text>
+        </literalExpression>
+      </match>
+    </filter>
+  </decision>
+  <inputData name="ApplicantProfile" id="_14E389A5-CD5D-474E-86F8-2A477B79C068">
+    <variable name="ApplicantProfile" id="_985429D7-36E8-45AF-848D-AB400FAEDB11" typeRef="tApplicantProfile" />
+  </inputData>
+  <inputData name="ProductRule" id="_83E1B456-14AD-4AA4-917A-1B100552E010">
+    <variable name="ProductRule" id="_1D58CF5E-AEA0-4A56-BE24-2C9E95253D7F" typeRef="tProductRule" />
+  </inputData>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="_48B970D8-9761-4CFE-BAC8-D909D187DE6E" name="Portrait Rating" useAlternativeInputDataShape="false">
+      <di:extension>
+        <kie:ComponentsWidthsExtension>
+          <kie:ComponentWidths dmnElementRef="_AE599B1A-F2FE-4343-8CD4-C0716C45299E">
+            <kie:width>903</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_F37ACC06-5603-466E-AA65-97BA163F8973">
+            <kie:width>863</kie:width>
+          </kie:ComponentWidths>
+        </kie:ComponentsWidthsExtension>
+      </di:extension>
+      <dmndi:DMNShape id="_1D0F3F49-C853-45C0-8718-94B8F0941C37" dmnElementRef="_14E389A5-CD5D-474E-86F8-2A477B79C068" isCollapsed="false" isListedInputData="false">
+        <dc:Bounds x="332" y="292" width="160" height="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="_BDC7CA9A-699D-4AFE-B871-90C8125DBE31" dmnElementRef="_81DBE45B-E658-49C8-8DD4-2C14DB2DD30F" isCollapsed="false" isListedInputData="false">
+        <dc:Bounds x="112" y="112" width="160" height="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="_221E4FF8-97A3-4116-983F-99E8DCE5C992" dmnElementRef="_83E1B456-14AD-4AA4-917A-1B100552E010" isCollapsed="false" isListedInputData="false">
+        <dc:Bounds x="112" y="292" width="160" height="80" />
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="_B44695A5-8D2C-403F-8C1F-2C081D837FCC" dmnElementRef="_81A5B778-C311-46A2-B79D-F67917C2E26B" sourceElement="_1D0F3F49-C853-45C0-8718-94B8F0941C37" targetElement="_BDC7CA9A-699D-4AFE-B871-90C8125DBE31">
+        <di:waypoint x="412" y="292" />
+        <di:waypoint x="192" y="192" />
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="_F0776E11-5077-4048-A627-42E8244F8180" dmnElementRef="_94D3C1C0-D59C-4A69-A77C-4A79EA37AEF8" sourceElement="_221E4FF8-97A3-4116-983F-99E8DCE5C992" targetElement="_BDC7CA9A-699D-4AFE-B871-90C8125DBE31">
+        <di:waypoint x="192" y="292" />
+        <di:waypoint x="192" y="192" />
+      </dmndi:DMNEdge>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

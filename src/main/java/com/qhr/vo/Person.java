@@ -15,12 +15,3 @@ public record Person(
         Boolean judicialRisk) {
 }
 
-//{
-//        "address": "北京",
-//        "companyStatus": "存续",
-//        "establishDate": 18,
-//        "industry": "科技服务",
-//        "abnormal": false,
-//        "illegal": false,
-//        "judicialRisk": false
-//        }

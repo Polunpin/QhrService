@@ -1,7 +1,7 @@
 package com.qhr.service.impl;
 
 import com.qhr.dao.CreditProductsMapper;
-import com.qhr.model.CreditProduct;
+import com.qhr.model.Product;
 import com.qhr.service.CreditProductService;
 import com.qhr.vo.CreditProductStats;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,12 +19,12 @@ public class CreditProductServiceImpl implements CreditProductService {
   }
 
   @Override
-  public CreditProduct getById(Long id) {
+  public Product getById(Long id) {
     return creditProductsMapper.getById(id);
   }
 
   @Override
-  public List<CreditProduct> getByIds(List<Long> ids) {
+  public List<Product> getByIds(List<Long> ids) {
     if (ids == null || ids.isEmpty()) {
       return List.of();
     }
@@ -32,13 +32,13 @@ public class CreditProductServiceImpl implements CreditProductService {
   }
 
   @Override
-  public Long create(CreditProduct product) {
+  public Long create(Product product) {
     creditProductsMapper.insert(product);
     return creditProductsMapper.lastInsertId();
   }
 
   @Override
-  public boolean update(CreditProduct product) {
+  public boolean update(Product product) {
     return creditProductsMapper.update(product) > 0;
   }
 
@@ -53,7 +53,7 @@ public class CreditProductServiceImpl implements CreditProductService {
   }
 
   @Override
-  public List<CreditProduct> list(Integer status, String productType, String bankName, Integer offset, Integer size) {
+  public List<Product> list(Integer status, String productType, String bankName, Integer offset, Integer size) {
     return creditProductsMapper.list(status, productType, bankName, offset, size);
   }
 
@@ -63,11 +63,11 @@ public class CreditProductServiceImpl implements CreditProductService {
   }
 
   @Override
-  public List<CreditProduct> findEligibleProducts(BigDecimal expectedAmount,
-                                                  Integer expectedTerm,
-                                                  String productType,
-                                                  Integer offset,
-                                                  Integer size) {
+  public List<Product> findEligibleProducts(BigDecimal expectedAmount,
+                                            Integer expectedTerm,
+                                            String productType,
+                                            Integer offset,
+                                            Integer size) {
     return creditProductsMapper.findEligibleProducts(expectedAmount, expectedTerm, productType, offset, size);
   }
 

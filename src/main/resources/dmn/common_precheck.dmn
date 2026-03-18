@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <definitions xmlns="https://www.omg.org/spec/DMN/20230324/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20230324/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:kie="https://kie.org/dmn/extensions/1.0" expressionLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/" namespace="https://qhr.tencent.com/dmn/test-precheck" id="_B8013991-BE43-40AB-BD62-17ECA64BD0D7" name="TestDmn">
   <itemDefinition id="_E1E8E80C-A2C9-48F1-9E8D-BE4E9D1D0E11" name="tCompany" isCollection="false" typeLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/">
+    <description>公司信息</description>
     <itemComponent id="_A9490204-BD57-4C70-BB18-6920AB6A1872" name="address" isCollection="false" typeLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/">
       <typeRef>string</typeRef>
     </itemComponent>
     <itemComponent id="_A34D44CB-B341-4DB9-B0A3-A3CF89CF71CA" name="companyStatus" isCollection="false" typeLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/">
+      <description>公司状态 </description>
       <typeRef>string</typeRef>
     </itemComponent>
     <itemComponent id="_2B979031-0986-43FD-98F7-B7D2D289352D" name="establishDate" isCollection="false" typeLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/">
       <typeRef>number</typeRef>
     </itemComponent>
     <itemComponent id="_A806A15D-4D19-4023-808B-7706D6788B12" name="industry" isCollection="false" typeLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/">
+      <description>&quot;房地产&quot;, &quot;金融&quot;, &quot;投资公司&quot;, &quot;P2P&quot;, &quot;娱乐场所&quot;</description>
       <typeRef>string</typeRef>
     </itemComponent>
     <itemComponent id="_2A3F7B57-5F3C-451A-B1E7-821CB8D56A85" name="abnormal" isCollection="false" typeLanguage="https://www.omg.org/spec/DMN/20230324/FEEL/">
@@ -36,307 +39,299 @@
     <informationRequirement id="_4AE03F53-0878-4865-BD1F-F53CC3D5AB66">
       <requiredInput href="#_D2A227B0-01E8-4A6A-BA98-2701A80D434F" />
     </informationRequirement>
-    <decisionTable id="_B4FE3E88-E3F0-446C-BE3A-1BE3F0C91B93" typeRef="tPrecheckResult" hitPolicy="UNIQUE" label="common_precheck">
-      <input id="_33C6E102-8D65-47DB-AF33-CF640C4080F0">
-        <inputExpression id="_E2019B0D-6358-49D4-B328-120C5768E78A" typeRef="string">
+    <decisionTable id="_3BB54A92-5ABC-4487-96E9-84670EF24CFF" typeRef="tPrecheckResult" hitPolicy="UNIQUE" label="common_precheck">
+      <input id="_22639FC1-A63D-4C12-A867-7966AE2164FC">
+        <inputExpression id="_7CD484F9-AA21-494B-89A7-33AC99FB5E1F" typeRef="context">
           <text>Company.address</text>
         </inputExpression>
       </input>
-      <input id="_B8326A70-3126-4C4E-AF4C-6E7A7B9EC154">
-        <inputExpression id="_0C603BA5-4E35-4FD1-96FA-33D337D1C246" typeRef="string">
+      <input id="_BFCA4145-4690-4335-B415-100E7E7D2517">
+        <inputExpression id="_C28AF537-0C69-4DD6-A9F2-7484144EB2E8" typeRef="context">
           <text>Company.companyStatus</text>
         </inputExpression>
       </input>
-      <input id="_5D56A34E-7D58-48A9-B79A-663BC6574F70">
-        <inputExpression id="_220A8D9C-AB09-4C3F-A6F3-1590A204A070" typeRef="number">
+      <input id="_71CBD4AB-EF1A-4C2B-8DD1-B0255A6DD6CA">
+        <inputExpression id="_38FAEB2A-2590-4B11-B4DF-F0973D8B65D5" typeRef="number">
           <text>Company.establishDate</text>
         </inputExpression>
       </input>
-      <input id="_B537B8B6-C415-4A59-8E2B-A98DB63B76ED">
-        <inputExpression id="_05B6D665-39D8-4210-9203-EF6325910659" typeRef="string">
+      <input id="_C2E52E30-3770-4637-BF09-46F5F1F062FB">
+        <inputExpression id="_84D400A3-FFBF-4848-8081-8366856D75D2" typeRef="context">
           <text>Company.industry</text>
         </inputExpression>
       </input>
-      <input id="_C48DAE4E-8B7F-4248-B461-4D0FD7CD60A7">
-        <inputExpression id="_86F145A4-5D55-4702-A7C2-E5D553BB95D6" typeRef="boolean">
+      <input id="_2C4B586E-641B-47DD-B967-2404599F2ABB">
+        <inputExpression id="_3B4E4DA1-914C-41D1-8B0E-05EEA4DABF11" typeRef="boolean">
           <text>Company.abnormal</text>
         </inputExpression>
       </input>
-      <input id="_8A6C7077-22A0-4C8E-A373-F36DE12EA171">
-        <inputExpression id="_96BCE91A-3798-42D1-AC58-2E43E0DFA1E6" typeRef="boolean">
+      <input id="_D8DDFF43-E3D9-402C-9148-9DABC231F996">
+        <inputExpression id="_97951933-A6BB-46AA-8230-407AA16C2C50" typeRef="boolean">
           <text>Company.illegal</text>
         </inputExpression>
       </input>
-      <input id="_C3468143-9D62-4C8D-BD64-8605FB4D1ED3">
-        <inputExpression id="_47D0A8B1-B96A-46B7-96FC-96F69A5D7FF8" typeRef="boolean">
+      <input id="_FD191E40-09C3-4C56-88F0-A9305C4CADD2">
+        <inputExpression id="_24FED22E-7E82-4026-94B4-FFEA8EBA8D13" typeRef="boolean">
           <text>Company.judicialRisk</text>
         </inputExpression>
       </input>
-      <output id="_D1593D53-C98A-4D0D-8251-5E0E1AC4E8D8" name="result" typeRef="boolean">
-        <defaultOutputEntry id="_2849A62D-8538-4A1F-AFF3-AB54F5AAF537">
-          <text>false</text>
-        </defaultOutputEntry>
-      </output>
-      <output id="_0BE365C7-8243-482A-88F8-4C65896BC080" name="why" typeRef="string">
-        <defaultOutputEntry id="_34732BE3-C263-4CE1-B8BC-1BC3AD2F3CD1">
-          <text>&quot;默认值-失败&quot;</text>
-        </defaultOutputEntry>
-      </output>
-      <annotation name="rule" />
-      <rule id="_AC422A32-01EE-4775-80D0-6D7984BBD450">
-        <inputEntry id="_9ED6AFC4-0AAB-4339-B644-D19D4710BC98">
+      <output id="_AECBE2E7-329F-484F-8CE4-79DF11ECC2BA" name="result" typeRef="boolean" />
+      <output id="_B5EC48D4-EC2D-470B-9D11-C12C3A04F287" name="why" typeRef="string" />
+      <annotation name="Annotations" />
+      <rule id="_F4414F63-B1A0-4CC4-A59B-F34BDA0094DB">
+        <inputEntry id="_F050331D-0B84-40D0-AF42-E6485580FC94">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_4C43D53F-4BDF-4B9C-9D7D-21A4991A34C0">
+        <inputEntry id="_9929FD4A-387D-4A2E-A589-D30A197D83BF">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_07D9100A-42D1-4DFF-888D-58F400731599">
+        <inputEntry id="_152F4FC2-47D7-406B-99B3-ACCCC7AAE370">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_A03FDE25-447F-4428-8144-F48AB5424133">
+        <inputEntry id="_FEA5E75E-0843-408D-9C7E-B7903F705559">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_55B8CC74-49D5-4036-B804-365D1AF4F67F">
+        <inputEntry id="_17925457-8D06-4781-A7E4-D293C77AD9F6">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_31901939-E435-44C2-9D37-4E1A53D68075">
+        <inputEntry id="_D3CF3C57-49B1-4D09-98E3-901281142B24">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_7E4D3832-B88D-40B7-AC9D-2B2DF0283510">
+        <inputEntry id="_FBA6816D-DBC0-4A6C-A86E-67C76417F4A9">
           <text>true</text>
         </inputEntry>
-        <outputEntry id="_6F815C87-1233-4798-8F39-89CAFE36B31D">
+        <outputEntry id="_1D18BDB0-3F39-491D-B503-38CF72D031A7">
           <text>false</text>
         </outputEntry>
-        <outputEntry id="_BA0649DE-8B4E-4489-A5AD-6AE085A9C74F">
+        <outputEntry id="_3828CD53-A9D8-47BA-AD3C-39F9991738C2">
           <text>&quot;存在重大司法风险&quot;</text>
         </outputEntry>
         <annotationEntry>
-          <text>R1</text>
+          <text>// Your annotations here</text>
         </annotationEntry>
       </rule>
-      <rule id="_E403917F-9CEB-4C47-8880-11A2430D4D48">
-        <inputEntry id="_E8CC2637-BA74-4168-B074-2F2DB8177496">
+      <rule id="_9ABB0E1D-27A3-4FC6-86C2-E4983F4ADBFE">
+        <inputEntry id="_0A879154-BC1B-45F8-B86E-B78C95D4BA5F">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_C691D8AA-E2FB-4FB8-B09D-86FB573C3523">
+        <inputEntry id="_604982FD-56D9-48C6-AAB6-F2C97CB051A8">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_6C70A0E5-041F-41F8-B8ED-E81E601A6DA6">
+        <inputEntry id="_DE97157D-F39A-41CF-B1CA-0FD94D89EB0A">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_A4D98C98-D911-4136-8D8A-DB0A2B4E6FA6">
+        <inputEntry id="_0892A08E-5CAF-4DDE-91D0-9D54889BE81A">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_E7E0D7B8-13DA-484F-B722-AE530827F61A">
+        <inputEntry id="_A11B7441-5DD4-4DBB-A9C3-C775E96F66BE">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_E76A1A1D-E30D-4296-930D-CA95198F3D7A">
+        <inputEntry id="_F8439608-1B32-47B9-8867-32FD279F2D39">
           <text>true</text>
         </inputEntry>
-        <inputEntry id="_718900A5-3B57-4CFC-91B2-E31B71851977">
+        <inputEntry id="_67BE08A0-62C2-4B77-BEA2-C0586D4BB648">
           <text>false</text>
         </inputEntry>
-        <outputEntry id="_185A8998-FBCB-4698-9E7D-68240E091B40">
+        <outputEntry id="_1CF08E38-6643-445D-B530-9C47AC69DF3B">
           <text>false</text>
         </outputEntry>
-        <outputEntry id="_2920C0C5-20E2-462B-AE0F-B7FB7DCBA9BB">
+        <outputEntry id="_ECECFC16-BB8E-4378-9235-BC98C9325640">
           <text>&quot;存在严重违法记录&quot;</text>
         </outputEntry>
         <annotationEntry>
-          <text>R2</text>
+          <text></text>
         </annotationEntry>
       </rule>
-      <rule id="_C02BF33D-E0CD-4FE2-B29A-4EBF425B4FFB">
-        <inputEntry id="_57A6A4F8-44D1-412E-B9E3-B3B0E38C3EB4">
+      <rule id="_D207144A-CC21-4F5F-B28E-EE2C8B6A1735">
+        <inputEntry id="_E9955D1A-8F06-44BB-B194-5FB8514AA60A">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_E63D6FEA-5C38-4E5D-A1EF-E68C65F10A6B">
+        <inputEntry id="_7AB5193C-AD0F-425F-8A75-3D647538D163">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_585F8268-F66D-4D12-BB43-E28D229C3545">
+        <inputEntry id="_DD4110F3-114F-4F39-BE65-AEC244A83862">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_42FF1217-08A9-4DF6-84C7-316BC4D51C0E">
+        <inputEntry id="_94D3F8AD-F896-4A1C-A843-5347B03D91E0">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_AE3521C8-95D8-4A3C-9E8F-BD3E53F560E5">
+        <inputEntry id="_AD9F36D4-5372-4BD1-92CC-091A2A2978BB">
           <text>true</text>
         </inputEntry>
-        <inputEntry id="_35F11A5C-64DE-486A-BD90-B4BA0EBE4C62">
+        <inputEntry id="_21F8CB0C-F060-4A7E-A2A8-1410AF51486B">
           <text>false</text>
         </inputEntry>
-        <inputEntry id="_7A1F1150-07B0-46EF-B7E9-40D2992D36C3">
+        <inputEntry id="_0746642C-CDE8-4C05-B431-A840F41CDA2A">
           <text>false</text>
         </inputEntry>
-        <outputEntry id="_BA0849D1-2EA7-4613-91CF-D2B2EE35C09D">
+        <outputEntry id="_05B8D9D0-EB54-48AB-9D9D-E7957DC2048A">
           <text>false</text>
         </outputEntry>
-        <outputEntry id="_911A4339-A15D-48FD-AB84-D3BBF10DC1E9">
+        <outputEntry id="_5521F44E-9E13-4899-9EDF-975ADD149573">
           <text>&quot;企业经营异常&quot;</text>
         </outputEntry>
         <annotationEntry>
-          <text>R3</text>
+          <text></text>
         </annotationEntry>
       </rule>
-      <rule id="_C99D5F68-C614-4996-985E-E61BFC8286A3">
-        <inputEntry id="_A9900485-7E98-4E5E-8931-8842CF5D6870">
+      <rule id="_2828181E-E237-44E5-B7EE-E2E0C0FEA5BA">
+        <inputEntry id="_AD5C3B73-B552-41B1-B129-FCB171D47E2A">
           <text>not(&quot;北京&quot;)</text>
         </inputEntry>
-        <inputEntry id="_54B2A32D-B64E-4DAD-A25D-35E4BB7714A6">
+        <inputEntry id="_9A22F5A6-A518-47DA-A680-D5FDCD0C4106">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_C254F24C-F24A-4168-B2E0-1C1B89827377">
+        <inputEntry id="_48CDE99F-33E4-4945-B175-170AD85E1984">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_CFB42E3D-87BC-4B74-925D-E261C7D55681">
+        <inputEntry id="_0FFB171B-6776-441A-96F1-C610A8786D9C">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_2D347C29-9A99-4A3C-9D72-E6E1DA4CF13B">
+        <inputEntry id="_DB7A5A04-92BF-49D6-8C8A-C3C35CC2CC92">
           <text>false</text>
         </inputEntry>
-        <inputEntry id="_F5DA8B6C-CC2C-483C-97B5-A9F151145A4A">
+        <inputEntry id="_F59E179D-4746-40FF-8CD5-F4FB938E90BB">
           <text>false</text>
         </inputEntry>
-        <inputEntry id="_2D949FE5-899A-4E78-B487-B4082218CFF0">
+        <inputEntry id="_5BC5D5CD-782B-4221-9974-3784055319BA">
           <text>false</text>
         </inputEntry>
-        <outputEntry id="_49EF6DDE-2B0A-422F-A6A6-72D50C15D4B3">
+        <outputEntry id="_A3D6C5E8-6B5D-4455-9454-170A2BBC49A5">
           <text>false</text>
         </outputEntry>
-        <outputEntry id="_D2E71744-1F72-4872-8C7B-C368399C57B4">
+        <outputEntry id="_64AB49AC-128F-4CAB-97B6-EB85C038E176">
           <text>&quot;注册地不符合准入要求&quot;</text>
         </outputEntry>
         <annotationEntry>
-          <text>R4</text>
+          <text></text>
         </annotationEntry>
       </rule>
-      <rule id="_4EBAABFA-FF37-430B-99EF-BDB413581077">
-        <inputEntry id="_7754A513-D64B-40E1-8335-55EF6A5044B3">
+      <rule id="_031DEC6F-83A8-49BE-BD70-68C52D872EEA">
+        <inputEntry id="_5262790A-F1D0-406B-8940-9A9E1D307F88">
           <text>&quot;北京&quot;</text>
         </inputEntry>
-        <inputEntry id="_5E703BE7-4A1D-4B84-BB9F-5005324A3795">
+        <inputEntry id="_57DD586D-F04D-4E0B-A5E1-9DC4825EE0FE">
           <text>not(&quot;存续&quot;, &quot;在业&quot;, &quot;开业&quot;)</text>
         </inputEntry>
-        <inputEntry id="_88AF8EAA-5C6D-44FE-BE8D-C01C8E4CF0CB">
+        <inputEntry id="_2C3101F4-882F-4C0A-A114-2F3AFCAFF0E5">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_CBC2A3FA-DFD2-4144-80CF-C1F9FE37A388">
+        <inputEntry id="_2356E043-14F3-430B-B061-BA4496A1BBC7">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_0E5F16B2-5F22-418E-BB0F-F96C36D7D633">
+        <inputEntry id="_DB057041-CA72-451A-B44F-5B03976E2FD4">
           <text>false</text>
         </inputEntry>
-        <inputEntry id="_7E7F194F-FA57-4425-ADFC-2928038D8D17">
+        <inputEntry id="_CAE0941E-1597-4AB7-B562-7B4BAAF27457">
           <text>false</text>
         </inputEntry>
-        <inputEntry id="_E0B31759-2861-4D1A-BD93-C8B201744A32">
+        <inputEntry id="_42F1BA26-D6AF-446E-9AC9-ECD99FC9467A">
           <text>false</text>
         </inputEntry>
-        <outputEntry id="_CC8C526D-B949-4160-BBDB-5299216B93E7">
+        <outputEntry id="_A32F56C3-9353-4770-A97A-E2EC6D417100">
           <text>false</text>
         </outputEntry>
-        <outputEntry id="_77534138-D539-4AF8-BF0B-E61512D77377">
+        <outputEntry id="_D03A6CF8-A3F6-4BEC-98DE-FAFD35E56C56">
           <text>&quot;企业状态异常&quot;</text>
         </outputEntry>
         <annotationEntry>
-          <text>R5</text>
+          <text></text>
         </annotationEntry>
       </rule>
-      <rule id="_D5ED3FB0-78C2-4975-B34D-FC7496D7AC61">
-        <inputEntry id="_28A8375A-E32E-4207-B21B-9C846CBD8084">
+      <rule id="_EFD92402-E8DA-4ABE-B06A-781E07975B1A">
+        <inputEntry id="_E2930D86-7992-40F1-A3C9-38A9B4F77AD5">
           <text>&quot;北京&quot;</text>
         </inputEntry>
-        <inputEntry id="_A10AA603-7848-4118-B1E8-A45D75CD26F7">
+        <inputEntry id="_4C2EB608-397B-4A51-8505-2F90AEFD906C">
           <text>&quot;存续&quot;, &quot;在业&quot;, &quot;开业&quot;</text>
         </inputEntry>
-        <inputEntry id="_9967013D-3B0B-4CC4-9CB4-57D4E5DCA6E9">
+        <inputEntry id="_54D68E00-1B44-4106-B322-4E795444DE67">
           <text>&lt; 12</text>
         </inputEntry>
-        <inputEntry id="_3F9124F5-D1E4-43D8-B60D-2F1B58A5E3E7">
+        <inputEntry id="_0AF72B73-A994-4C22-BCB5-377B4B6038EB">
           <text>-</text>
         </inputEntry>
-        <inputEntry id="_DAD6408F-C2B7-4FC0-9DBE-EB0E033AFC1A">
+        <inputEntry id="_946B98F5-9AB5-417E-8081-9E65AC5DC6AF">
           <text>false</text>
         </inputEntry>
-        <inputEntry id="_F32BB5A9-C71C-47ED-9C3A-E2A58C29B081">
+        <inputEntry id="_E260FD9E-96DA-4453-AD51-A85C2592EE32">
           <text>false</text>
         </inputEntry>
-        <inputEntry id="_80A4B09C-F136-4906-924B-260099E878D0">
+        <inputEntry id="_AD78C8C1-1C70-4CF1-A0EB-8BCC7E28457F">
           <text>false</text>
         </inputEntry>
-        <outputEntry id="_5B146F5B-E685-484D-B623-E927FF19A07A">
+        <outputEntry id="_D8D71023-BBE3-4C81-A7D2-97C8A502F424">
           <text>false</text>
         </outputEntry>
-        <outputEntry id="_09EE8768-658A-4EC1-8A8E-56F10D10AC89">
+        <outputEntry id="_30630801-5B83-489D-8571-057B5F017D08">
           <text>&quot;成立时间不足12个月&quot;</text>
         </outputEntry>
         <annotationEntry>
-          <text>R6</text>
+          <text></text>
         </annotationEntry>
       </rule>
-      <rule id="_B586CCF4-6646-4C67-A252-EF6F93A5EAD2">
-        <inputEntry id="_104A1B26-47CA-4037-A345-A4A5F0D22F17">
+      <rule id="_CA1EEECE-70A7-4355-BA03-056A1E446DEA">
+        <inputEntry id="_853F0B85-2D32-424E-8DD4-FD1DBDCDDF83">
           <text>&quot;北京&quot;</text>
         </inputEntry>
-        <inputEntry id="_8D22802D-23D6-430C-A39A-8E8257583F8E">
+        <inputEntry id="_CB4760D4-39B5-41CE-8D79-3AA019BC04AB">
           <text>&quot;存续&quot;, &quot;在业&quot;, &quot;开业&quot;</text>
         </inputEntry>
-        <inputEntry id="_CFC8BDA0-FF12-45EF-BFF1-E931B6FE16E8">
+        <inputEntry id="_CBB85E86-5AB1-4798-867A-6E4F6641E838">
           <text>&gt;= 12</text>
         </inputEntry>
-        <inputEntry id="_E29B1FF3-A97A-44D2-808A-CE58F17C7718">
+        <inputEntry id="_E6F09E4E-372C-4FA7-8D79-D4702BBAF61C">
           <text>&quot;房地产&quot;, &quot;金融&quot;, &quot;投资公司&quot;, &quot;P2P&quot;, &quot;娱乐场所&quot;</text>
         </inputEntry>
-        <inputEntry id="_2E7C0F1D-F6A3-448A-8739-FA270F264D49">
+        <inputEntry id="_9D5055F6-4A8B-4ABA-A90D-B30958005D2A">
           <text>false</text>
         </inputEntry>
-        <inputEntry id="_AB569CB2-A726-4458-9F8D-B6253412D0CA">
+        <inputEntry id="_B5FA0128-B238-4DA9-9BF5-F59DB83B2FD8">
           <text>false</text>
         </inputEntry>
-        <inputEntry id="_18273298-BB24-480D-B6F7-D5971F7450D4">
+        <inputEntry id="_860CDE53-D8CD-4289-9BA3-19ABEEFABB8C">
           <text>false</text>
         </inputEntry>
-        <outputEntry id="_B2D9A8A9-F3C5-45A6-B91E-504E111B31A9">
+        <outputEntry id="_D0734797-3BDC-4682-A79B-0655BAF90497">
           <text>false</text>
         </outputEntry>
-        <outputEntry id="_809CB093-3D59-400C-B3D5-A9D447626527">
+        <outputEntry id="_BF6CBC18-CB11-4C91-B321-F2CED904B1FA">
           <text>&quot;属于限制行业&quot;</text>
         </outputEntry>
         <annotationEntry>
-          <text>R7</text>
+          <text></text>
         </annotationEntry>
       </rule>
-      <rule id="_EFD35135-43E9-4646-9739-2C3F385E34E0">
-        <inputEntry id="_EA50FB2C-16D8-4B80-8E44-6C559909DB8B">
+      <rule id="_1AFD4AE0-9E5C-4753-8B97-19A8AECBAE42">
+        <inputEntry id="_EDAEA84F-51A1-4AC2-8503-5ED7D7982366">
           <text>&quot;北京&quot;</text>
         </inputEntry>
-        <inputEntry id="_ACB117C1-0249-4D12-8F1C-EAE27BC1D752">
+        <inputEntry id="_85441CD5-61CA-432D-B375-9AD3D7938C16">
           <text>&quot;存续&quot;, &quot;在业&quot;, &quot;开业&quot;</text>
         </inputEntry>
-        <inputEntry id="_9EF06CF2-66F4-47D4-B7F9-4724D08DBA92">
+        <inputEntry id="_A3D2686D-8534-4B9B-9AB7-DD2AE5E5A79A">
           <text>&gt;= 12</text>
         </inputEntry>
-        <inputEntry id="_731A1CA2-2791-4B8A-AAD4-5B23E1D9FFB6">
+        <inputEntry id="_30EFE2EB-5C2A-4FF0-A84B-FC42CB399ADC">
           <text>not(&quot;房地产&quot;, &quot;金融&quot;, &quot;投资公司&quot;, &quot;P2P&quot;, &quot;娱乐场所&quot;)</text>
         </inputEntry>
-        <inputEntry id="_F55A0F2D-11E7-442F-8344-7247F9C75647">
+        <inputEntry id="_232E33FE-C15E-4C07-B4E4-59C546EFC386">
           <text>false</text>
         </inputEntry>
-        <inputEntry id="_10C1818F-0A49-4A3D-AE13-F765DD26DE65">
+        <inputEntry id="_44E3FD21-0D38-4BD5-83BE-9484F13EA574">
           <text>false</text>
         </inputEntry>
-        <inputEntry id="_B878FC78-823F-4B2C-B131-E8D4FA87EC2A">
+        <inputEntry id="_7D69821C-F035-46C4-B191-3376B79A45B7">
           <text>false</text>
         </inputEntry>
-        <outputEntry id="_35D1B472-C8A7-4E86-94FF-741DF32846E1">
+        <outputEntry id="_794276FD-516C-45D9-9F97-C91B25372F41">
           <text>true</text>
         </outputEntry>
-        <outputEntry id="_BA2FB170-79E2-4CC1-AF50-2CCFF1AA1DDC">
-          <text>&quot;&quot;</text>
+        <outputEntry id="_95363E13-C8FC-4E60-AC8E-808C5E69E747">
+          <text>&quot;预审通过，符合基本准入条件&quot;</text>
         </outputEntry>
         <annotationEntry>
-          <text>R8</text>
+          <text></text>
         </annotationEntry>
       </rule>
     </decisionTable>
@@ -348,18 +343,18 @@
     <dmndi:DMNDiagram id="_742479C5-D0E4-47EC-ABDF-EB0F07C6DB97" name="TestDmn" useAlternativeInputDataShape="false">
       <di:extension>
         <kie:ComponentsWidthsExtension>
-          <kie:ComponentWidths dmnElementRef="_B4FE3E88-E3F0-446C-BE3A-1BE3F0C91B93">
+          <kie:ComponentWidths dmnElementRef="_3BB54A92-5ABC-4487-96E9-84670EF24CFF">
             <kie:width>60</kie:width>
-            <kie:width>120</kie:width>
+            <kie:width>212</kie:width>
+            <kie:width>324</kie:width>
             <kie:width>160</kie:width>
+            <kie:width>545</kie:width>
+            <kie:width>126</kie:width>
             <kie:width>120</kie:width>
-            <kie:width>180</kie:width>
-            <kie:width>100</kie:width>
-            <kie:width>100</kie:width>
-            <kie:width>120</kie:width>
-            <kie:width>100</kie:width>
-            <kie:width>220</kie:width>
-            <kie:width>80</kie:width>
+            <kie:width>153</kie:width>
+            <kie:width>118</kie:width>
+            <kie:width>118</kie:width>
+            <kie:width>240</kie:width>
           </kie:ComponentWidths>
         </kie:ComponentsWidthsExtension>
       </di:extension>

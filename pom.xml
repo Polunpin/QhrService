@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.tencent</groupId>
-    <artifactId>QhrService</artifactId>
+    <artifactId>qhr-api</artifactId>
     <version>1.0</version>
-    <name>QhrService</name>
-    <description>Service project for Quarkus</description>
+    <name>qhr-api</name>
+    <description>企会融API for Quarkus</description>
 
     <properties>
         <java.version>21</java.version>

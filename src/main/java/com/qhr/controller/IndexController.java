@@ -11,6 +11,6 @@ public class IndexController {
   @GET
   @Produces(MediaType.TEXT_PLAIN)
   public String index() {
-    return "QhrService is running";
+    return "qhr-api is running";
   }
 }

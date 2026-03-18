@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qhr.dao.ProductRulesMapper">
+
+    <resultMap id="ProductRuleMap" type="com.qhr.model.ProductRule">
+        <constructor>
+            <idArg column="id" javaType="java.lang.Long" name="id"/>
+            <arg column="product_id" javaType="java.lang.Long" name="productId"/>
+            <arg column="rule_version" javaType="java.lang.Integer" name="ruleVersion"/>
+            <arg column="rule_name" javaType="java.lang.String" name="ruleName"/>
+            <arg column="is_active" javaType="java.lang.Integer" name="isActive"/>
+            <arg column="effective_start_time" javaType="java.time.LocalDateTime" name="effectiveStartTime"/>
+            <arg column="effective_end_time" javaType="java.time.LocalDateTime" name="effectiveEndTime"/>
+            <arg column="remark" javaType="java.lang.String" name="remark"/>
+            <arg column="gs_min_establish_months" javaType="java.lang.Integer" name="gsMinEstablishMonths"/>
+            <arg column="gs_min_registered_capital" javaType="java.math.BigDecimal" name="gsMinRegisteredCapital"/>
+            <arg column="gs_min_paid_in_capital" javaType="java.math.BigDecimal" name="gsMinPaidInCapital"/>
+            <arg column="gs_max_legal_rep_change_count_2y" javaType="java.lang.Integer" name="gsMaxLegalRepChangeCount2y"/>
+            <arg column="gs_min_legal_rep_change_gap_months" javaType="java.lang.Integer" name="gsMinLegalRepChangeGapMonths"/>
+            <arg column="gs_min_legal_rep_share_ratio" javaType="java.math.BigDecimal" name="gsMinLegalRepShareRatio"/>
+            <arg column="gs_allow_legal_rep_no_joint_liability" javaType="java.lang.Integer" name="gsAllowLegalRepNoJointLiability"/>
+            <arg column="gs_allow_shareholder_replace_joint_liability" javaType="java.lang.Integer" name="gsAllowShareholderReplaceJointLiability"/>
+            <arg column="gs_min_shareholder_replace_share_ratio" javaType="java.math.BigDecimal" name="gsMinShareholderReplaceShareRatio"/>
+            <arg column="tax_min_tax_months_12m" javaType="java.lang.Integer" name="taxMinTaxMonths12m"/>
+            <arg column="tax_min_tax_months_24m" javaType="java.lang.Integer" name="taxMinTaxMonths24m"/>
+            <arg column="tax_max_zero_declare_streak" javaType="java.lang.Integer" name="taxMaxZeroDeclareStreak"/>
+            <arg column="tax_min_tax_amount_12m" javaType="java.math.BigDecimal" name="taxMinTaxAmount12m"/>
+            <arg column="tax_min_tax_amount_ytd" javaType="java.math.BigDecimal" name="taxMinTaxAmountYtd"/>
+            <arg column="tax_min_tax_amount_last_year" javaType="java.math.BigDecimal" name="taxMinTaxAmountLastYear"/>
+            <arg column="tax_max_tax_burden_ratio" javaType="java.math.BigDecimal" name="taxMaxTaxBurdenRatio"/>
+            <arg column="tax_min_tax_burden_ratio_yoy" javaType="java.math.BigDecimal" name="taxMinTaxBurdenRatioYoy"/>
+            <arg column="tax_min_total_declares" javaType="java.lang.Integer" name="taxMinTotalDeclares"/>
+            <arg column="jud_reject_if_major_lawsuit" javaType="java.lang.Integer" name="judRejectIfMajorLawsuit"/>
+            <arg column="jud_reject_if_executed" javaType="java.lang.Integer" name="judRejectIfExecuted"/>
+            <arg column="jud_reject_if_dishonest_person" javaType="java.lang.Integer" name="judRejectIfDishonestPerson"/>
+            <arg column="jud_reject_if_equity_frozen" javaType="java.lang.Integer" name="judRejectIfEquityFrozen"/>
+            <arg column="jud_max_execution_count_24m" javaType="java.lang.Integer" name="judMaxExecutionCount24m"/>
+            <arg column="jud_max_court_announcement_count_12m" javaType="java.lang.Integer" name="judMaxCourtAnnouncementCount12m"/>
+            <arg column="jud_max_admin_penalty_count_12m" javaType="java.lang.Integer" name="judMaxAdminPenaltyCount12m"/>
+            <arg column="jud_reject_if_major_judicial_risk" javaType="java.lang.Integer" name="judRejectIfMajorJudicialRisk"/>
+            <arg column="jud_reject_if_restriction_high_consumption" javaType="java.lang.Integer" name="judRejectIfRestrictionHighConsumption"/>
+            <arg column="ind_match_mode_code" javaType="java.lang.String" name="indMatchModeCode"/>
+            <arg column="ind_max_risk_level" javaType="java.lang.Integer" name="indMaxRiskLevel"/>
+            <arg column="ind_require_enterprise_tag" javaType="java.lang.Integer" name="indRequireEnterpriseTag"/>
+            <arg column="ind_min_tag_valid_months" javaType="java.lang.Integer" name="indMinTagValidMonths"/>
+            <arg column="ind_require_region_match" javaType="java.lang.Integer" name="indRequireRegionMatch"/>
+            <arg column="ind_require_actual_business_address" javaType="java.lang.Integer" name="indRequireActualBusinessAddress"/>
+            <arg column="ind_reject_if_high_pollution" javaType="java.lang.Integer" name="indRejectIfHighPollution"/>
+            <arg column="ind_reject_if_high_energy_consumption" javaType="java.lang.Integer" name="indRejectIfHighEnergyConsumption"/>
+            <arg column="ind_reject_if_sensitive_industry" javaType="java.lang.Integer" name="indRejectIfSensitiveIndustry"/>
+            <arg column="ec_max_total_liability" javaType="java.math.BigDecimal" name="ecMaxTotalLiability"/>
+            <arg column="ec_max_credit_liability" javaType="java.math.BigDecimal" name="ecMaxCreditLiability"/>
+            <arg column="ec_max_mortgage_liability" javaType="java.math.BigDecimal" name="ecMaxMortgageLiability"/>
+            <arg column="ec_max_external_guarantee_amount" javaType="java.math.BigDecimal" name="ecMaxExternalGuaranteeAmount"/>
+            <arg column="ec_max_loan_org_count" javaType="java.lang.Integer" name="ecMaxLoanOrgCount"/>
+            <arg column="ec_max_query_count_6m" javaType="java.lang.Integer" name="ecMaxQueryCount6m"/>
+            <arg column="ec_max_overdue_count_12m" javaType="java.lang.Integer" name="ecMaxOverdueCount12m"/>
+            <arg column="ec_max_overdue_months_24m" javaType="java.lang.Integer" name="ecMaxOverdueMonths24m"/>
+            <arg column="ec_min_no_overdue_days" javaType="java.lang.Integer" name="ecMinNoOverdueDays"/>
+            <arg column="ec_allow_abnormal_credit_account" javaType="java.lang.Integer" name="ecAllowAbnormalCreditAccount"/>
+            <arg column="pc_max_query_count_1m" javaType="java.lang.Integer" name="pcMaxQueryCount1m"/>
+            <arg column="pc_max_query_count_3m" javaType="java.lang.Integer" name="pcMaxQueryCount3m"/>
+            <arg column="pc_max_query_count_6m" javaType="java.lang.Integer" name="pcMaxQueryCount6m"/>
+            <arg column="pc_max_loan_query_count_1m" javaType="java.lang.Integer" name="pcMaxLoanQueryCount1m"/>
+            <arg column="pc_max_credit_card_query_count_1m" javaType="java.lang.Integer" name="pcMaxCreditCardQueryCount1m"/>
+            <arg column="pc_max_overdue_count_12m" javaType="java.lang.Integer" name="pcMaxOverdueCount12m"/>
+            <arg column="pc_max_overdue_months_24m" javaType="java.lang.Integer" name="pcMaxOverdueMonths24m"/>
+            <arg column="pc_max_total_overdue_terms_5y" javaType="java.lang.Integer" name="pcMaxTotalOverdueTerms5y"/>
+            <arg column="pc_max_non_bank_loan_count" javaType="java.lang.Integer" name="pcMaxNonBankLoanCount"/>
+            <arg column="pc_max_credit_card_utilization" javaType="java.math.BigDecimal" name="pcMaxCreditCardUtilization"/>
+            <arg column="ext_json" javaType="java.lang.String" name="extJson"/>
+            <arg column="created_at" javaType="java.time.LocalDateTime" name="createdAt"/>
+            <arg column="updated_at" javaType="java.time.LocalDateTime" name="updatedAt"/>
+        </constructor>
+    </resultMap>
+
+    <sql id="ProductRule_Columns">
+        id, product_id, rule_version, rule_name, is_active, effective_start_time, effective_end_time,
+        remark, gs_min_establish_months, gs_min_registered_capital, gs_min_paid_in_capital,
+        gs_max_legal_rep_change_count_2y, gs_min_legal_rep_change_gap_months, gs_min_legal_rep_share_ratio,
+        gs_allow_legal_rep_no_joint_liability, gs_allow_shareholder_replace_joint_liability,
+        gs_min_shareholder_replace_share_ratio, tax_min_tax_months_12m, tax_min_tax_months_24m,
+        tax_max_zero_declare_streak, tax_min_tax_amount_12m, tax_min_tax_amount_ytd,
+        tax_min_tax_amount_last_year, tax_max_tax_burden_ratio, tax_min_tax_burden_ratio_yoy,
+        tax_min_total_declares, jud_reject_if_major_lawsuit, jud_reject_if_executed,
+        jud_reject_if_dishonest_person, jud_reject_if_equity_frozen, jud_max_execution_count_24m,
+        jud_max_court_announcement_count_12m, jud_max_admin_penalty_count_12m,
+        jud_reject_if_major_judicial_risk, jud_reject_if_restriction_high_consumption, ind_match_mode_code,
+        ind_max_risk_level, ind_require_enterprise_tag, ind_min_tag_valid_months, ind_require_region_match,
+        ind_require_actual_business_address, ind_reject_if_high_pollution,
+        ind_reject_if_high_energy_consumption, ind_reject_if_sensitive_industry,
+        ec_max_total_liability, ec_max_credit_liability, ec_max_mortgage_liability,
+        ec_max_external_guarantee_amount, ec_max_loan_org_count, ec_max_query_count_6m,
+        ec_max_overdue_count_12m, ec_max_overdue_months_24m, ec_min_no_overdue_days,
+        ec_allow_abnormal_credit_account, pc_max_query_count_1m, pc_max_query_count_3m,
+        pc_max_query_count_6m, pc_max_loan_query_count_1m, pc_max_credit_card_query_count_1m,
+        pc_max_overdue_count_12m, pc_max_overdue_months_24m, pc_max_total_overdue_terms_5y,
+        pc_max_non_bank_loan_count, pc_max_credit_card_utilization, ext_json, created_at, updated_at
+    </sql>
+
+    <select id="getById" resultMap="ProductRuleMap" parameterType="java.lang.Long">
+        SELECT <include refid="ProductRule_Columns"/>
+        FROM product_rule
+        WHERE id = #{id}
+    </select>
+
+    <select id="getByProductIdAndRuleVersion" resultMap="ProductRuleMap">
+        SELECT <include refid="ProductRule_Columns"/>
+        FROM product_rule
+        WHERE product_id = #{productId}
+          AND rule_version = #{ruleVersion}
+    </select>
+
+    <select id="list" resultMap="ProductRuleMap">
+        SELECT <include refid="ProductRule_Columns"/>
+        FROM product_rule
+        <where>
+            <if test="productId != null"> AND product_id = #{productId}</if>
+            <if test="ruleVersion != null"> AND rule_version = #{ruleVersion}</if>
+            <if test="ruleName != null and ruleName != ''"> AND rule_name LIKE CONCAT('%', #{ruleName}, '%')</if>
+            <if test="isActive != null"> AND is_active = #{isActive}</if>
+        </where>
+        ORDER BY product_id ASC, rule_version DESC, id DESC
+        <if test="offset != null and size != null">
+            LIMIT #{offset}, #{size}
+        </if>
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(1)
+        FROM product_rule
+        <where>
+            <if test="productId != null"> AND product_id = #{productId}</if>
+            <if test="ruleVersion != null"> AND rule_version = #{ruleVersion}</if>
+            <if test="ruleName != null and ruleName != ''"> AND rule_name LIKE CONCAT('%', #{ruleName}, '%')</if>
+            <if test="isActive != null"> AND is_active = #{isActive}</if>
+        </where>
+    </select>
+
+    <insert id="insert" parameterType="com.qhr.model.ProductRule">
+        INSERT INTO product_rule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null">product_id,</if>
+            <if test="ruleVersion != null">rule_version,</if>
+            <if test="ruleName != null">rule_name,</if>
+            <if test="isActive != null">is_active,</if>
+            <if test="effectiveStartTime != null">effective_start_time,</if>
+            <if test="effectiveEndTime != null">effective_end_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="gsMinEstablishMonths != null">gs_min_establish_months,</if>
+            <if test="gsMinRegisteredCapital != null">gs_min_registered_capital,</if>
+            <if test="gsMinPaidInCapital != null">gs_min_paid_in_capital,</if>
+            <if test="gsMaxLegalRepChangeCount2y != null">gs_max_legal_rep_change_count_2y,</if>
+            <if test="gsMinLegalRepChangeGapMonths != null">gs_min_legal_rep_change_gap_months,</if>
+            <if test="gsMinLegalRepShareRatio != null">gs_min_legal_rep_share_ratio,</if>
+            <if test="gsAllowLegalRepNoJointLiability != null">gs_allow_legal_rep_no_joint_liability,</if>
+            <if test="gsAllowShareholderReplaceJointLiability != null">gs_allow_shareholder_replace_joint_liability,</if>
+            <if test="gsMinShareholderReplaceShareRatio != null">gs_min_shareholder_replace_share_ratio,</if>
+            <if test="taxMinTaxMonths12m != null">tax_min_tax_months_12m,</if>
+            <if test="taxMinTaxMonths24m != null">tax_min_tax_months_24m,</if>
+            <if test="taxMaxZeroDeclareStreak != null">tax_max_zero_declare_streak,</if>
+            <if test="taxMinTaxAmount12m != null">tax_min_tax_amount_12m,</if>
+            <if test="taxMinTaxAmountYtd != null">tax_min_tax_amount_ytd,</if>
+            <if test="taxMinTaxAmountLastYear != null">tax_min_tax_amount_last_year,</if>
+            <if test="taxMaxTaxBurdenRatio != null">tax_max_tax_burden_ratio,</if>
+            <if test="taxMinTaxBurdenRatioYoy != null">tax_min_tax_burden_ratio_yoy,</if>
+            <if test="taxMinTotalDeclares != null">tax_min_total_declares,</if>
+            <if test="judRejectIfMajorLawsuit != null">jud_reject_if_major_lawsuit,</if>
+            <if test="judRejectIfExecuted != null">jud_reject_if_executed,</if>
+            <if test="judRejectIfDishonestPerson != null">jud_reject_if_dishonest_person,</if>
+            <if test="judRejectIfEquityFrozen != null">jud_reject_if_equity_frozen,</if>
+            <if test="judMaxExecutionCount24m != null">jud_max_execution_count_24m,</if>
+            <if test="judMaxCourtAnnouncementCount12m != null">jud_max_court_announcement_count_12m,</if>
+            <if test="judMaxAdminPenaltyCount12m != null">jud_max_admin_penalty_count_12m,</if>
+            <if test="judRejectIfMajorJudicialRisk != null">jud_reject_if_major_judicial_risk,</if>
+            <if test="judRejectIfRestrictionHighConsumption != null">jud_reject_if_restriction_high_consumption,</if>
+            <if test="indMatchModeCode != null">ind_match_mode_code,</if>
+            <if test="indMaxRiskLevel != null">ind_max_risk_level,</if>
+            <if test="indRequireEnterpriseTag != null">ind_require_enterprise_tag,</if>
+            <if test="indMinTagValidMonths != null">ind_min_tag_valid_months,</if>
+            <if test="indRequireRegionMatch != null">ind_require_region_match,</if>
+            <if test="indRequireActualBusinessAddress != null">ind_require_actual_business_address,</if>
+            <if test="indRejectIfHighPollution != null">ind_reject_if_high_pollution,</if>
+            <if test="indRejectIfHighEnergyConsumption != null">ind_reject_if_high_energy_consumption,</if>
+            <if test="indRejectIfSensitiveIndustry != null">ind_reject_if_sensitive_industry,</if>
+            <if test="ecMaxTotalLiability != null">ec_max_total_liability,</if>
+            <if test="ecMaxCreditLiability != null">ec_max_credit_liability,</if>
+            <if test="ecMaxMortgageLiability != null">ec_max_mortgage_liability,</if>
+            <if test="ecMaxExternalGuaranteeAmount != null">ec_max_external_guarantee_amount,</if>
+            <if test="ecMaxLoanOrgCount != null">ec_max_loan_org_count,</if>
+            <if test="ecMaxQueryCount6m != null">ec_max_query_count_6m,</if>
+            <if test="ecMaxOverdueCount12m != null">ec_max_overdue_count_12m,</if>
+            <if test="ecMaxOverdueMonths24m != null">ec_max_overdue_months_24m,</if>
+            <if test="ecMinNoOverdueDays != null">ec_min_no_overdue_days,</if>
+            <if test="ecAllowAbnormalCreditAccount != null">ec_allow_abnormal_credit_account,</if>
+            <if test="pcMaxQueryCount1m != null">pc_max_query_count_1m,</if>
+            <if test="pcMaxQueryCount3m != null">pc_max_query_count_3m,</if>
+            <if test="pcMaxQueryCount6m != null">pc_max_query_count_6m,</if>
+            <if test="pcMaxLoanQueryCount1m != null">pc_max_loan_query_count_1m,</if>
+            <if test="pcMaxCreditCardQueryCount1m != null">pc_max_credit_card_query_count_1m,</if>
+            <if test="pcMaxOverdueCount12m != null">pc_max_overdue_count_12m,</if>
+            <if test="pcMaxOverdueMonths24m != null">pc_max_overdue_months_24m,</if>
+            <if test="pcMaxTotalOverdueTerms5y != null">pc_max_total_overdue_terms_5y,</if>
+            <if test="pcMaxNonBankLoanCount != null">pc_max_non_bank_loan_count,</if>
+            <if test="pcMaxCreditCardUtilization != null">pc_max_credit_card_utilization,</if>
+            <if test="extJson != null">ext_json,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="productId != null">#{productId},</if>
+            <if test="ruleVersion != null">#{ruleVersion},</if>
+            <if test="ruleName != null">#{ruleName},</if>
+            <if test="isActive != null">#{isActive},</if>
+            <if test="effectiveStartTime != null">#{effectiveStartTime},</if>
+            <if test="effectiveEndTime != null">#{effectiveEndTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="gsMinEstablishMonths != null">#{gsMinEstablishMonths},</if>
+            <if test="gsMinRegisteredCapital != null">#{gsMinRegisteredCapital},</if>
+            <if test="gsMinPaidInCapital != null">#{gsMinPaidInCapital},</if>
+            <if test="gsMaxLegalRepChangeCount2y != null">#{gsMaxLegalRepChangeCount2y},</if>
+            <if test="gsMinLegalRepChangeGapMonths != null">#{gsMinLegalRepChangeGapMonths},</if>
+            <if test="gsMinLegalRepShareRatio != null">#{gsMinLegalRepShareRatio},</if>
+            <if test="gsAllowLegalRepNoJointLiability != null">#{gsAllowLegalRepNoJointLiability},</if>
+            <if test="gsAllowShareholderReplaceJointLiability != null">#{gsAllowShareholderReplaceJointLiability},</if>
+            <if test="gsMinShareholderReplaceShareRatio != null">#{gsMinShareholderReplaceShareRatio},</if>
+            <if test="taxMinTaxMonths12m != null">#{taxMinTaxMonths12m},</if>
+            <if test="taxMinTaxMonths24m != null">#{taxMinTaxMonths24m},</if>
+            <if test="taxMaxZeroDeclareStreak != null">#{taxMaxZeroDeclareStreak},</if>
+            <if test="taxMinTaxAmount12m != null">#{taxMinTaxAmount12m},</if>
+            <if test="taxMinTaxAmountYtd != null">#{taxMinTaxAmountYtd},</if>
+            <if test="taxMinTaxAmountLastYear != null">#{taxMinTaxAmountLastYear},</if>
+            <if test="taxMaxTaxBurdenRatio != null">#{taxMaxTaxBurdenRatio},</if>
+            <if test="taxMinTaxBurdenRatioYoy != null">#{taxMinTaxBurdenRatioYoy},</if>
+            <if test="taxMinTotalDeclares != null">#{taxMinTotalDeclares},</if>
+            <if test="judRejectIfMajorLawsuit != null">#{judRejectIfMajorLawsuit},</if>
+            <if test="judRejectIfExecuted != null">#{judRejectIfExecuted},</if>
+            <if test="judRejectIfDishonestPerson != null">#{judRejectIfDishonestPerson},</if>
+            <if test="judRejectIfEquityFrozen != null">#{judRejectIfEquityFrozen},</if>
+            <if test="judMaxExecutionCount24m != null">#{judMaxExecutionCount24m},</if>
+            <if test="judMaxCourtAnnouncementCount12m != null">#{judMaxCourtAnnouncementCount12m},</if>
+            <if test="judMaxAdminPenaltyCount12m != null">#{judMaxAdminPenaltyCount12m},</if>
+            <if test="judRejectIfMajorJudicialRisk != null">#{judRejectIfMajorJudicialRisk},</if>
+            <if test="judRejectIfRestrictionHighConsumption != null">#{judRejectIfRestrictionHighConsumption},</if>
+            <if test="indMatchModeCode != null">#{indMatchModeCode},</if>
+            <if test="indMaxRiskLevel != null">#{indMaxRiskLevel},</if>
+            <if test="indRequireEnterpriseTag != null">#{indRequireEnterpriseTag},</if>
+            <if test="indMinTagValidMonths != null">#{indMinTagValidMonths},</if>
+            <if test="indRequireRegionMatch != null">#{indRequireRegionMatch},</if>
+            <if test="indRequireActualBusinessAddress != null">#{indRequireActualBusinessAddress},</if>
+            <if test="indRejectIfHighPollution != null">#{indRejectIfHighPollution},</if>
+            <if test="indRejectIfHighEnergyConsumption != null">#{indRejectIfHighEnergyConsumption},</if>
+            <if test="indRejectIfSensitiveIndustry != null">#{indRejectIfSensitiveIndustry},</if>
+            <if test="ecMaxTotalLiability != null">#{ecMaxTotalLiability},</if>
+            <if test="ecMaxCreditLiability != null">#{ecMaxCreditLiability},</if>
+            <if test="ecMaxMortgageLiability != null">#{ecMaxMortgageLiability},</if>
+            <if test="ecMaxExternalGuaranteeAmount != null">#{ecMaxExternalGuaranteeAmount},</if>
+            <if test="ecMaxLoanOrgCount != null">#{ecMaxLoanOrgCount},</if>
+            <if test="ecMaxQueryCount6m != null">#{ecMaxQueryCount6m},</if>
+            <if test="ecMaxOverdueCount12m != null">#{ecMaxOverdueCount12m},</if>
+            <if test="ecMaxOverdueMonths24m != null">#{ecMaxOverdueMonths24m},</if>
+            <if test="ecMinNoOverdueDays != null">#{ecMinNoOverdueDays},</if>
+            <if test="ecAllowAbnormalCreditAccount != null">#{ecAllowAbnormalCreditAccount},</if>
+            <if test="pcMaxQueryCount1m != null">#{pcMaxQueryCount1m},</if>
+            <if test="pcMaxQueryCount3m != null">#{pcMaxQueryCount3m},</if>
+            <if test="pcMaxQueryCount6m != null">#{pcMaxQueryCount6m},</if>
+            <if test="pcMaxLoanQueryCount1m != null">#{pcMaxLoanQueryCount1m},</if>
+            <if test="pcMaxCreditCardQueryCount1m != null">#{pcMaxCreditCardQueryCount1m},</if>
+            <if test="pcMaxOverdueCount12m != null">#{pcMaxOverdueCount12m},</if>
+            <if test="pcMaxOverdueMonths24m != null">#{pcMaxOverdueMonths24m},</if>
+            <if test="pcMaxTotalOverdueTerms5y != null">#{pcMaxTotalOverdueTerms5y},</if>
+            <if test="pcMaxNonBankLoanCount != null">#{pcMaxNonBankLoanCount},</if>
+            <if test="pcMaxCreditCardUtilization != null">#{pcMaxCreditCardUtilization},</if>
+            <if test="extJson != null">#{extJson},</if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.qhr.model.ProductRule">
+        UPDATE product_rule
+        <set>
+            updated_at = CURRENT_TIMESTAMP,
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="ruleVersion != null">rule_version = #{ruleVersion},</if>
+            <if test="ruleName != null">rule_name = #{ruleName},</if>
+            <if test="isActive != null">is_active = #{isActive},</if>
+            <if test="effectiveStartTime != null">effective_start_time = #{effectiveStartTime},</if>
+            <if test="effectiveEndTime != null">effective_end_time = #{effectiveEndTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="gsMinEstablishMonths != null">gs_min_establish_months = #{gsMinEstablishMonths},</if>
+            <if test="gsMinRegisteredCapital != null">gs_min_registered_capital = #{gsMinRegisteredCapital},</if>
+            <if test="gsMinPaidInCapital != null">gs_min_paid_in_capital = #{gsMinPaidInCapital},</if>
+            <if test="gsMaxLegalRepChangeCount2y != null">gs_max_legal_rep_change_count_2y = #{gsMaxLegalRepChangeCount2y},</if>
+            <if test="gsMinLegalRepChangeGapMonths != null">gs_min_legal_rep_change_gap_months = #{gsMinLegalRepChangeGapMonths},</if>
+            <if test="gsMinLegalRepShareRatio != null">gs_min_legal_rep_share_ratio = #{gsMinLegalRepShareRatio},</if>
+            <if test="gsAllowLegalRepNoJointLiability != null">gs_allow_legal_rep_no_joint_liability = #{gsAllowLegalRepNoJointLiability},</if>
+            <if test="gsAllowShareholderReplaceJointLiability != null">gs_allow_shareholder_replace_joint_liability = #{gsAllowShareholderReplaceJointLiability},</if>
+            <if test="gsMinShareholderReplaceShareRatio != null">gs_min_shareholder_replace_share_ratio = #{gsMinShareholderReplaceShareRatio},</if>
+            <if test="taxMinTaxMonths12m != null">tax_min_tax_months_12m = #{taxMinTaxMonths12m},</if>
+            <if test="taxMinTaxMonths24m != null">tax_min_tax_months_24m = #{taxMinTaxMonths24m},</if>
+            <if test="taxMaxZeroDeclareStreak != null">tax_max_zero_declare_streak = #{taxMaxZeroDeclareStreak},</if>
+            <if test="taxMinTaxAmount12m != null">tax_min_tax_amount_12m = #{taxMinTaxAmount12m},</if>
+            <if test="taxMinTaxAmountYtd != null">tax_min_tax_amount_ytd = #{taxMinTaxAmountYtd},</if>
+            <if test="taxMinTaxAmountLastYear != null">tax_min_tax_amount_last_year = #{taxMinTaxAmountLastYear},</if>
+            <if test="taxMaxTaxBurdenRatio != null">tax_max_tax_burden_ratio = #{taxMaxTaxBurdenRatio},</if>
+            <if test="taxMinTaxBurdenRatioYoy != null">tax_min_tax_burden_ratio_yoy = #{taxMinTaxBurdenRatioYoy},</if>
+            <if test="taxMinTotalDeclares != null">tax_min_total_declares = #{taxMinTotalDeclares},</if>
+            <if test="judRejectIfMajorLawsuit != null">jud_reject_if_major_lawsuit = #{judRejectIfMajorLawsuit},</if>
+            <if test="judRejectIfExecuted != null">jud_reject_if_executed = #{judRejectIfExecuted},</if>
+            <if test="judRejectIfDishonestPerson != null">jud_reject_if_dishonest_person = #{judRejectIfDishonestPerson},</if>
+            <if test="judRejectIfEquityFrozen != null">jud_reject_if_equity_frozen = #{judRejectIfEquityFrozen},</if>
+            <if test="judMaxExecutionCount24m != null">jud_max_execution_count_24m = #{judMaxExecutionCount24m},</if>
+            <if test="judMaxCourtAnnouncementCount12m != null">jud_max_court_announcement_count_12m = #{judMaxCourtAnnouncementCount12m},</if>
+            <if test="judMaxAdminPenaltyCount12m != null">jud_max_admin_penalty_count_12m = #{judMaxAdminPenaltyCount12m},</if>
+            <if test="judRejectIfMajorJudicialRisk != null">jud_reject_if_major_judicial_risk = #{judRejectIfMajorJudicialRisk},</if>
+            <if test="judRejectIfRestrictionHighConsumption != null">jud_reject_if_restriction_high_consumption = #{judRejectIfRestrictionHighConsumption},</if>
+            <if test="indMatchModeCode != null">ind_match_mode_code = #{indMatchModeCode},</if>
+            <if test="indMaxRiskLevel != null">ind_max_risk_level = #{indMaxRiskLevel},</if>
+            <if test="indRequireEnterpriseTag != null">ind_require_enterprise_tag = #{indRequireEnterpriseTag},</if>
+            <if test="indMinTagValidMonths != null">ind_min_tag_valid_months = #{indMinTagValidMonths},</if>
+            <if test="indRequireRegionMatch != null">ind_require_region_match = #{indRequireRegionMatch},</if>
+            <if test="indRequireActualBusinessAddress != null">ind_require_actual_business_address = #{indRequireActualBusinessAddress},</if>
+            <if test="indRejectIfHighPollution != null">ind_reject_if_high_pollution = #{indRejectIfHighPollution},</if>
+            <if test="indRejectIfHighEnergyConsumption != null">ind_reject_if_high_energy_consumption = #{indRejectIfHighEnergyConsumption},</if>
+            <if test="indRejectIfSensitiveIndustry != null">ind_reject_if_sensitive_industry = #{indRejectIfSensitiveIndustry},</if>
+            <if test="ecMaxTotalLiability != null">ec_max_total_liability = #{ecMaxTotalLiability},</if>
+            <if test="ecMaxCreditLiability != null">ec_max_credit_liability = #{ecMaxCreditLiability},</if>
+            <if test="ecMaxMortgageLiability != null">ec_max_mortgage_liability = #{ecMaxMortgageLiability},</if>
+            <if test="ecMaxExternalGuaranteeAmount != null">ec_max_external_guarantee_amount = #{ecMaxExternalGuaranteeAmount},</if>
+            <if test="ecMaxLoanOrgCount != null">ec_max_loan_org_count = #{ecMaxLoanOrgCount},</if>
+            <if test="ecMaxQueryCount6m != null">ec_max_query_count_6m = #{ecMaxQueryCount6m},</if>
+            <if test="ecMaxOverdueCount12m != null">ec_max_overdue_count_12m = #{ecMaxOverdueCount12m},</if>
+            <if test="ecMaxOverdueMonths24m != null">ec_max_overdue_months_24m = #{ecMaxOverdueMonths24m},</if>
+            <if test="ecMinNoOverdueDays != null">ec_min_no_overdue_days = #{ecMinNoOverdueDays},</if>
+            <if test="ecAllowAbnormalCreditAccount != null">ec_allow_abnormal_credit_account = #{ecAllowAbnormalCreditAccount},</if>
+            <if test="pcMaxQueryCount1m != null">pc_max_query_count_1m = #{pcMaxQueryCount1m},</if>
+            <if test="pcMaxQueryCount3m != null">pc_max_query_count_3m = #{pcMaxQueryCount3m},</if>
+            <if test="pcMaxQueryCount6m != null">pc_max_query_count_6m = #{pcMaxQueryCount6m},</if>
+            <if test="pcMaxLoanQueryCount1m != null">pc_max_loan_query_count_1m = #{pcMaxLoanQueryCount1m},</if>
+            <if test="pcMaxCreditCardQueryCount1m != null">pc_max_credit_card_query_count_1m = #{pcMaxCreditCardQueryCount1m},</if>
+            <if test="pcMaxOverdueCount12m != null">pc_max_overdue_count_12m = #{pcMaxOverdueCount12m},</if>
+            <if test="pcMaxOverdueMonths24m != null">pc_max_overdue_months_24m = #{pcMaxOverdueMonths24m},</if>
+            <if test="pcMaxTotalOverdueTerms5y != null">pc_max_total_overdue_terms_5y = #{pcMaxTotalOverdueTerms5y},</if>
+            <if test="pcMaxNonBankLoanCount != null">pc_max_non_bank_loan_count = #{pcMaxNonBankLoanCount},</if>
+            <if test="pcMaxCreditCardUtilization != null">pc_max_credit_card_utilization = #{pcMaxCreditCardUtilization},</if>
+            <if test="extJson != null">ext_json = #{extJson},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM product_rule
+        WHERE id = #{id}
+    </delete>
+
+    <select id="lastInsertId" resultType="long">
+        SELECT LAST_INSERT_ID()
+    </select>
+
+</mapper>
