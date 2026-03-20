@@ -24,6 +24,7 @@ import org.kie.dmn.api.core.DMNResult;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.dmn.core.compiler.DMNCompilerConfigurationImpl;
 import org.kie.dmn.core.compiler.DMNCompilerImpl;
+import org.kie.dmn.core.compiler.DMNEvaluatorCompiler;
 import org.kie.dmn.core.compiler.RuntimeTypeCheckOption;
 import org.kie.dmn.core.internal.utils.DMNRuntimeBuilder;
 import org.kie.dmn.feel.util.EvalHelper;
@@ -137,6 +138,8 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
     DMNCompilerConfigurationImpl compilerConfiguration = (DMNCompilerConfigurationImpl) configuration;
     compilerConfiguration.setProperty(DMN_EXEC_MODEL_PROPERTY, Boolean.FALSE.toString());
     compilerConfiguration.setProperty(DMN_ALPHA_NETWORK_PROPERTY, Boolean.FALSE.toString());
+    compilerConfiguration.setDecisionLogicCompilerFactory(
+        (compiler, ignored) -> new InterpretedDmnEvaluatorCompiler(compiler));
     return new DMNCompilerImpl(compilerConfiguration);
   }
 
@@ -222,5 +225,12 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
   }
 
   private record LoadedDecisionModel(DMNRuntime runtime, DMNModel model) {
+  }
+
+  private static final class InterpretedDmnEvaluatorCompiler extends DMNEvaluatorCompiler {
+
+    private InterpretedDmnEvaluatorCompiler(DMNCompilerImpl compiler) {
+      super(compiler);
+    }
   }
 }
