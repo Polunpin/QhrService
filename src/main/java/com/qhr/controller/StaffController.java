@@ -7,18 +7,14 @@ import com.qhr.service.StaffService;
 import com.qhr.vo.Staffs;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
-import org.jboss.logging.Logger;
 
 @ApplicationScoped
 @Path("/api/staffs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class StaffController {
-  private static final Logger LOG = Logger.getLogger(StaffController.class);
 
   private final StaffService staffService;
   public StaffController(StaffService staffService) {
@@ -28,10 +24,7 @@ public class StaffController {
   /** 查询员工详情 */
   @GET
   @Path("/{id}")
-  public ApiResponse getById(@Context HttpHeaders headers,
-                             @PathParam("id") Long id) {
-    headers.getRequestHeaders()
-        .forEach((name, values) -> LOG.infof("------请求头------ header %s=%s", name, values));
+  public ApiResponse getById(@PathParam("id") Long id) {
     Staff staff = staffService.getById(id);
     ApiAssert.notNull(staff, ApiCode.NOT_FOUND, "员工不存在");
     return ApiResponse.ok(staff);
