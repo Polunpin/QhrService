@@ -1,4 +1,4 @@
-package com.qhr.controller;
+package com.qhr.controller.jichu;
 
 import com.qhr.config.*;
 import com.qhr.dto.MatchProductsRequest;
@@ -16,10 +16,10 @@ import java.util.List;
 @Path("/api/products")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class CreditProductController {
+public class ProductController {
 
   private final CreditProductService creditProductService;
-  public CreditProductController(CreditProductService creditProductService) {
+  public ProductController(CreditProductService creditProductService) {
     this.creditProductService = creditProductService;
   }
 

@@ -36,7 +36,7 @@
 
     <select id="getById" resultMap="MatchRecordsMap" parameterType="java.lang.Long">
         SELECT <include refid="MatchRecord_Columns"/>
-        FROM y_match_records
+        FROM z_match_records
         WHERE id = #{id}
     </select>
 
@@ -49,9 +49,9 @@
         ymr.risk_level as riskLevel,
         ymr.status as status,
         ymr.created_at as matchTime
-        from y_match_records ymr
-        left join p_users pu on ymr.user_id=pu.id
-        left join y_enterprises ye on ymr.enterprise_id=ye.id
+        from z_match_records ymr
+        left join jc_users pu on ymr.user_id=pu.id
+        left join jc_enterprises ye on ymr.enterprise_id=ye.id
         <where>
             <if test="enterpriseId != null"> AND ymr.enterprise_id = #{enterpriseId}</if>
             <if test="intentionId != null"> AND ymr.intention_id = #{intentionId}</if>
@@ -65,7 +65,7 @@
 
     <select id="count" resultType="long">
         SELECT COUNT(1)
-        FROM y_match_records
+        FROM z_match_records
         <where>
             <if test="enterpriseId != null"> AND enterprise_id = #{enterpriseId}</if>
             <if test="intentionId != null"> AND intention_id = #{intentionId}</if>
@@ -74,14 +74,14 @@
     </select>
 
     <insert id="insert" parameterType="com.qhr.model.MatchRecord">
-        INSERT INTO y_match_records (user_id, enterprise_id, intention_id, product_ids,
+        INSERT INTO z_match_records (user_id, enterprise_id, intention_id, product_ids,
                                    match_score, risk_type, risk_level, status)
         VALUES (#{userId}, #{enterpriseId}, #{intentionId}, #{productIds},
                 #{matchScore}, #{riskType}, #{riskLevel}, #{status})
     </insert>
 
     <update id="update" parameterType="com.qhr.model.MatchRecord">
-        UPDATE y_match_records
+        UPDATE z_match_records
         <set>
             <if test="enterpriseId != null">enterprise_id = #{enterpriseId},</if>
             <if test="intentionId != null">intention_id = #{intentionId},</if>
@@ -95,12 +95,12 @@
     </update>
 
     <update id="updateStatus">
-        UPDATE y_match_records SET status = #{status}
+        UPDATE z_match_records SET status = #{status}
         WHERE id = #{id}
     </update>
 
     <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM y_match_records WHERE id = #{id}
+        DELETE FROM z_match_records WHERE id = #{id}
     </delete>
 
     <select id="lastInsertId" resultType="long">

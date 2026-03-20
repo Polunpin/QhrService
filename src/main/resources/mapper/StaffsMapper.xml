@@ -22,13 +22,13 @@
 
     <select id="getById" resultMap="StaffsMap" parameterType="java.lang.Long">
         SELECT <include refid="Staff_Columns"/>
-        FROM p_staffs
+        FROM jc_staffs
         WHERE id = #{id}
     </select>
 
     <select id="getByMobile" resultMap="StaffsMap" parameterType="java.lang.String">
         SELECT <include refid="Staff_Columns"/>
-        FROM p_staffs
+        FROM jc_staffs
         WHERE mobile = #{mobile}
     </select>
 
@@ -40,7 +40,7 @@
         department,
         status,
         last_update_at as lastLogin
-        FROM p_staffs
+        FROM jc_staffs
         <where>
             <if test="role != null and role != ''"> AND role = #{role}</if>
             <if test="status != null"> AND status = #{status}</if>
@@ -55,7 +55,7 @@
 
     <select id="count" resultType="long">
         SELECT COUNT(1)
-        FROM p_staffs
+        FROM jc_staffs
         <where>
             <if test="role != null and role != ''"> AND role = #{role}</if>
             <if test="status != null"> AND status = #{status}</if>
@@ -65,12 +65,12 @@
     </select>
 
     <insert id="insert" parameterType="com.qhr.model.Staff">
-        INSERT INTO p_staffs (openid, real_name, mobile, role, department, status)
+        INSERT INTO jc_staffs (openid, real_name, mobile, role, department, status)
         VALUES (#{openid}, #{realName}, #{mobile}, #{role}, #{department}, #{status})
     </insert>
 
     <update id="update" parameterType="com.qhr.model.Staff">
-        UPDATE p_staffs
+        UPDATE jc_staffs
         <set>
             <if test="openid != null">openid = #{openid},</if>
             <if test="realName != null">real_name = #{realName},</if>
@@ -83,12 +83,12 @@
     </update>
 
     <update id="updateStatus">
-        UPDATE p_staffs SET status = #{status}
+        UPDATE jc_staffs SET status = #{status}
         WHERE id = #{id}
     </update>
 
     <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM p_staffs WHERE id = #{id}
+        DELETE FROM jc_staffs WHERE id = #{id}
     </delete>
 
     <select id="lastInsertId" resultType="long">

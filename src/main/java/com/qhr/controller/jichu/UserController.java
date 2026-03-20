@@ -1,4 +1,4 @@
-package com.qhr.controller;
+package com.qhr.controller.jichu;
 
 import com.qhr.config.*;
 import com.qhr.dto.BindEnterpriseRequest;
@@ -9,8 +9,9 @@ import com.qhr.service.UserService;
 import com.qhr.vo.Users;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-
+import jakarta.ws.rs.core.HttpHeaders;
 import java.util.List;
 
 @ApplicationScoped
@@ -49,10 +50,15 @@ public class UserController {
 
   /** 创建用户 */
   @POST
-  public ApiResponse create(User user) {
-    Long id = userService.create(user);
-    return ApiResponse.ok(id);
+  public ApiResponse create(@Context HttpHeaders headers) {
+    return ApiResponse.ok(
+            userService.create(
+                    headers.getHeaderString("x-wx-openid"),
+                    headers.getHeaderString("x-wx-unionid")
+            )
+    );
   }
+
 
   /** 更新用户 */
   @PUT

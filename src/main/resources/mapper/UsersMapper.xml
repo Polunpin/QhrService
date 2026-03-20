@@ -21,13 +21,13 @@
 
     <select id="getById" resultMap="UsersMap" parameterType="java.lang.Long">
         SELECT <include refid="User_Columns"/>
-        FROM p_users
+        FROM jc_users
         WHERE id = #{id}
     </select>
 
     <select id="getByOpenid" resultMap="UsersMap" parameterType="java.lang.String">
         SELECT <include refid="User_Columns"/>
-        FROM p_users
+        FROM jc_users
         WHERE openid = #{openid}
     </select>
 
@@ -36,14 +36,14 @@
         COALESCE(ue.enterprises, 0) AS enterprises,
         COALESCE(m.matchCount, 0) AS matchCount,
         m.lastMatch AS lastMatch
-        FROM p_users u
+        FROM jc_users u
         LEFT JOIN
         (SELECT user_id, COUNT(DISTINCT enterprise_id) AS enterprises
-        FROM p_user_enterprise_relation
+        FROM zj_user_enterprise_relation
         GROUP BY user_id) ue ON u.id = ue.user_id
         LEFT JOIN
         (SELECT user_id, COUNT(id) AS matchCount, MAX(created_at) AS lastMatch
-        FROM y_match_records
+        FROM z_match_records
         GROUP BY user_id) m ON u.id = m.user_id
         <where>
             <if test="status != null">AND status = #{status}</if>
@@ -58,7 +58,7 @@
 
     <select id="count" resultType="long">
         SELECT COUNT(1)
-        FROM p_users
+        FROM jc_users
         <where>
             <if test="status != null"> AND status = #{status}</if>
             <if test="mobile != null and mobile != ''"> AND mobile = #{mobile}</if>
@@ -68,8 +68,8 @@
 
     <select id="listByEnterpriseId" resultMap="UsersMap">
         SELECT u.id, u.openid, u.unionid, u.mobile, u.real_name, u.status, u.created_at, u.updated_at
-        FROM p_users u
-        JOIN p_user_enterprise_relation r ON u.id = r.user_id
+        FROM jc_users u
+        JOIN zj_user_enterprise_relation r ON u.id = r.user_id
         WHERE r.enterprise_id = #{enterpriseId}
         ORDER BY u.id DESC
         <if test="offset != null and size != null">
@@ -79,18 +79,18 @@
 
     <select id="countByEnterpriseId" resultType="long">
         SELECT COUNT(1)
-        FROM p_users u
-        JOIN p_user_enterprise_relation r ON u.id = r.user_id
+        FROM jc_users u
+        JOIN zj_user_enterprise_relation r ON u.id = r.user_id
         WHERE r.enterprise_id = #{enterpriseId}
     </select>
 
     <insert id="insert" parameterType="com.qhr.model.User">
-        INSERT INTO p_users (openid, unionid, mobile, real_name, status)
+        INSERT INTO jc_users (openid, unionid, mobile, real_name, status)
         VALUES (#{openid}, #{unionid}, #{mobile}, #{realName}, #{status})
     </insert>
 
     <update id="update" parameterType="com.qhr.model.User">
-        UPDATE p_users
+        UPDATE jc_users
         <set>
             <if test="openid != null">openid = #{openid},</if>
             <if test="unionid != null">unionid = #{unionid},</if>
@@ -102,11 +102,11 @@
     </update>
 
     <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM p_users WHERE id = #{id}
+        DELETE FROM jc_users WHERE id = #{id}
     </delete>
 
     <update id="updateStatus">
-        UPDATE p_users SET status = #{status}
+        UPDATE jc_users SET status = #{status}
         WHERE id = #{id}
     </update>
 

@@ -1,13 +1,15 @@
 package com.qhr.service.impl;
 
+import com.qhr.config.ApiAssert;
+import com.qhr.config.ApiCode;
 import com.qhr.dao.EnterprisesMapper;
 import com.qhr.dao.UserEnterpriseRelationMapper;
 import com.qhr.dao.UsersMapper;
-import com.qhr.vo.Users;
 import com.qhr.model.Enterprise;
 import com.qhr.model.User;
 import com.qhr.model.UserEnterpriseRelation;
 import com.qhr.service.UserService;
+import com.qhr.vo.Users;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Collections;
@@ -39,10 +41,20 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Long create(User user) {
+  public Long create(String openid, String unionid) {
+    ApiAssert.isTrue(openid != null && !openid.isBlank(), ApiCode.BAD_REQUEST, "openid请求头不能为空");
+    ApiAssert.isTrue(unionid != null && !unionid.isBlank(), ApiCode.BAD_REQUEST, "unionid请求头不能为空");
+
+    User existing = usersMapper.getByOpenid(openid);
+    if (existing != null) {
+      return existing.id();
+    }
+
+    User user = new User(null, openid, unionid, null, null, null, null, null);
     usersMapper.insert(user);
     return usersMapper.lastInsertId();
   }
+
 
   @Override
   public boolean update(User user) {

@@ -1,8 +1,8 @@
 package com.qhr.service;
 
-import com.qhr.vo.Users;
 import com.qhr.model.Enterprise;
 import com.qhr.model.User;
+import com.qhr.vo.Users;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public interface UserService {
   User getByOpenid(String openid);
 
   /** 创建用户并返回主键 */
-  Long create(User user);
+  Long create(String openid, String unionid);
 
   /** 更新用户 */
   boolean update(User user);
