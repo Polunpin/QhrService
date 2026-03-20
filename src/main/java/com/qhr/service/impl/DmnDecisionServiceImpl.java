@@ -12,22 +12,32 @@ import com.qhr.vo.Person;
 import com.qhr.vo.PrecheckResult;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.kie.api.io.Resource;
+import org.kie.api.io.ResourceType;
 import org.kie.dmn.api.core.DMNDecisionResult;
+import org.kie.dmn.api.core.DMNCompiler;
+import org.kie.dmn.api.core.DMNCompilerConfiguration;
+import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNMessage;
+import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.DMNResult;
-import org.kie.kogito.dmn.DMNKogito;
-import org.kie.kogito.dmn.DmnDecisionModel;
+import org.kie.dmn.api.core.DMNRuntime;
+import org.kie.dmn.core.compiler.DMNCompilerConfigurationImpl;
+import org.kie.dmn.core.compiler.DMNCompilerImpl;
+import org.kie.dmn.core.compiler.RuntimeTypeCheckOption;
+import org.kie.dmn.core.internal.utils.DMNRuntimeBuilder;
+import org.kie.dmn.feel.util.EvalHelper;
+import org.kie.internal.io.ResourceFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -40,6 +50,8 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
   private static final String COMPANY_INPUT_NAME = "Company";
   private static final String APPLICANT_PROFILE_INPUT_NAME = "ApplicantProfile";
   private static final String PRODUCT_RULE_INPUT_NAME = "ProductRule";
+  private static final String DMN_EXEC_MODEL_PROPERTY = "org.kie.dmn.compiler.execmodel";
+  private static final String DMN_ALPHA_NETWORK_PROPERTY = "org.kie.dmn.compiler.alphanetwork";
   private static final TypeReference<Map<String, Object>> MAP_TYPE = new TypeReference<>() {
   };
   private static final TypeReference<List<ProductRule>> PRODUCT_RULE_LIST_TYPE = new TypeReference<>() {
@@ -47,7 +59,7 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
 
   private final ObjectMapper objectMapper;
   private final ProductRuleService productRuleService;
-  private final Map<String, DmnDecisionModel> decisionModels = new HashMap<>();
+  private final Map<String, LoadedDecisionModel> decisionModels = new ConcurrentHashMap<>();
 
   /**
    * 注入 JSON 转换工具，供请求对象到 DMN 输入上下文的映射使用。
@@ -91,21 +103,41 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
   /**
    * 从 classpath 读取 DMN 文件并构建可复用的 Kogito 决策模型。
    */
-  private DmnDecisionModel loadDecisionModel(String resource) {
+  private LoadedDecisionModel loadDecisionModel(String resource) {
     try (InputStream inputStream = getClass().getResourceAsStream(resource)) {
       if (inputStream == null) {
         throw new ApiException(ApiCode.NOT_FOUND, "DMN文件不存在: " + resource);
       }
       try (Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
-        var runtime = DMNKogito.createGenericDMNRuntime(Set.of(), false, reader);
+        DMNRuntime runtime = createRuntime(resource, reader);
         var model = runtime.getModels().stream()
             .findFirst()
             .orElseThrow(() -> new ApiException(ApiCode.NOT_FOUND, "DMN模型未找到: " + resource));
-        return new DmnDecisionModel(runtime, model.getNamespace(), model.getName());
+        return new LoadedDecisionModel(runtime, model);
       }
     } catch (IOException exception) {
       throw new ApiException(ApiCode.INTERNAL_ERROR, "读取DMN文件失败: " + exception.getMessage());
     }
+  }
+
+  private DMNRuntime createRuntime(String resource, Reader reader) {
+    EvalHelper.clearGenericAccessorCache();
+    Resource dmnResource = ResourceFactory.newReaderResource(reader, StandardCharsets.UTF_8.name())
+        .setSourcePath(resource)
+        .setResourceType(ResourceType.DMN);
+    return DMNRuntimeBuilder.fromDefaults()
+        .setOption(new RuntimeTypeCheckOption(false))
+        .buildConfigurationUsingCustomCompiler(this::buildNativeSafeCompiler)
+        .fromResources(List.of(dmnResource))
+        .getOrElseThrow(exception -> new ApiException(ApiCode.INTERNAL_ERROR,
+            "初始化DMN运行时失败: " + resource + ", " + exception.getMessage()));
+  }
+
+  private DMNCompiler buildNativeSafeCompiler(DMNCompilerConfiguration configuration) {
+    DMNCompilerConfigurationImpl compilerConfiguration = (DMNCompilerConfigurationImpl) configuration;
+    compilerConfiguration.setProperty(DMN_EXEC_MODEL_PROPERTY, Boolean.FALSE.toString());
+    compilerConfiguration.setProperty(DMN_ALPHA_NETWORK_PROPERTY, Boolean.FALSE.toString());
+    return new DMNCompilerImpl(compilerConfiguration);
   }
 
   /**
@@ -115,14 +147,14 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
     return new LinkedHashMap<>(objectMapper.convertValue(request, MAP_TYPE));
   }
 
-  private DmnDecisionModel getDecisionModel(String resource) {
-    DmnDecisionModel model = decisionModels.get(resource);
+  private LoadedDecisionModel getDecisionModel(String resource) {
+    LoadedDecisionModel model = decisionModels.get(resource);
     if (model != null) {
       return model;
     }
-    DmnDecisionModel loadedModel = loadDecisionModel(resource);
-    decisionModels.put(resource, loadedModel);
-    return loadedModel;
+    LoadedDecisionModel loadedModel = loadDecisionModel(resource);
+    LoadedDecisionModel existingModel = decisionModels.putIfAbsent(resource, loadedModel);
+    return existingModel != null ? existingModel : loadedModel;
   }
 
   private <T> T evaluateDecision(String resource,
@@ -142,8 +174,10 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
   }
 
   private DMNResult evaluateDecision(String resource, Map<String, Object> input) {
-    DmnDecisionModel decisionModel = getDecisionModel(resource);
-    DMNResult result = decisionModel.evaluateAll(decisionModel.newContext(input));
+    LoadedDecisionModel decisionModel = getDecisionModel(resource);
+    DMNContext context = decisionModel.runtime().newContext();
+    input.forEach(context::set);
+    DMNResult result = decisionModel.runtime().evaluateAll(decisionModel.model(), context);
     assertEvaluationSucceeded(result);
     return result;
   }
@@ -185,5 +219,8 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
       return message;
     }
     return "DMN evaluation failed";
+  }
+
+  private record LoadedDecisionModel(DMNRuntime runtime, DMNModel model) {
   }
 }
