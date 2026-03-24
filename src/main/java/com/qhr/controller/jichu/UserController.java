@@ -1,7 +1,6 @@
 package com.qhr.controller.jichu;
 
 import com.qhr.config.*;
-import com.qhr.dto.BindEnterpriseRequest;
 import com.qhr.dto.UpdateStatusRequest;
 import com.qhr.model.Enterprise;
 import com.qhr.model.User;
@@ -10,8 +9,9 @@ import com.qhr.vo.Users;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+
 import java.util.List;
 
 /*用户管理*/

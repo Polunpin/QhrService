@@ -68,7 +68,7 @@
         SELECT COUNT(1)
         FROM jc_enterprise_basic_info e
         JOIN zj_user_enterprise_relation r ON e.id = r.enterprise_id
-        WHERE r.user_id = #{userId}
+        WHERE r.user_open_id = #{userId}
     </select>
 
     <insert id="insert" parameterType="com.qhr.model.Enterprise">

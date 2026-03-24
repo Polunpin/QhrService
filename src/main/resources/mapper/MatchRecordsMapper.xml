@@ -5,7 +5,7 @@
     <resultMap id="MatchRecordsMap" type="com.qhr.model.MatchRecord">
         <constructor>
             <idArg column="id" javaType="java.lang.Long" name="id"/>
-            <arg column="user_id" javaType="java.lang.String" name="userId"/>
+            <arg column="user_open_id" javaType="java.lang.String" name="userOpenId"/>
             <arg column="enterprise_id" javaType="java.lang.Long" name="enterpriseId"/>
             <arg column="intention_id" javaType="java.lang.Long" name="intentionId"/>
             <arg column="product_ids" javaType="java.lang.String" name="productIds"/>
@@ -30,7 +30,7 @@
     </resultMap>
 
     <sql id="MatchRecord_Columns">
-        id, user_id, enterprise_id, intention_id, product_ids, match_score,
+        id, user_open_id, enterprise_id, intention_id, product_ids, match_score,
         risk_type, risk_level, status, created_at
     </sql>
 
@@ -50,7 +50,7 @@
         ymr.status as status,
         ymr.created_at as matchTime
         from z_match_records ymr
-        left join jc_users pu on ymr.user_id=pu.id
+        left join jc_users pu on ymr.user_open_id=pu.id
         left join jc_enterprise_basic_info ye on ymr.enterprise_id=ye.id
         <where>
             <if test="enterpriseId != null"> AND ymr.enterprise_id = #{enterpriseId}</if>
@@ -74,9 +74,9 @@
     </select>
 
     <insert id="insert" parameterType="com.qhr.model.MatchRecord">
-        INSERT INTO z_match_records (user_id, enterprise_id, intention_id, product_ids,
+        INSERT INTO z_match_records (user_open_id, enterprise_id, intention_id, product_ids,
                                    match_score, risk_type, risk_level, status)
-        VALUES (#{userId}, #{enterpriseId}, #{intentionId}, #{productIds},
+        VALUES (#{userOpenId}, #{enterpriseId}, #{intentionId}, #{productIds},
                 #{matchScore}, #{riskType}, #{riskLevel}, #{status})
     </insert>
 

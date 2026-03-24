@@ -10,7 +10,7 @@
             <arg column="staff_id" javaType="java.lang.Long" name="staffId"/>
             <arg column="current_stage" javaType="java.lang.String" name="currentStage"/>
             <arg column="service_status" javaType="java.lang.String" name="serviceStatus"/>
-            <arg column="amount_range" javaType="java.math.BigDecimal" name="loanAmount"/>
+            <arg column="loan_amount" javaType="java.math.BigDecimal" name="loanAmount"/>
             <arg column="commission_amount" javaType="java.math.BigDecimal" name="commissionAmount"/>
             <arg column="service_cost" javaType="java.math.BigDecimal" name="serviceCost"/>
             <arg column="cost_details" javaType="java.lang.String" name="costDetails"/>
@@ -22,7 +22,7 @@
 
     <sql id="CustomServiceOrder_Columns">
         id, enterprise_id, intention_id, staff_id, current_stage, service_status,
-        amount_range, commission_amount, service_cost, cost_details, settle_status,
+        loan_amount, commission_amount, service_cost, cost_details, settle_status,
         last_update_at, created_at
     </sql>
 
@@ -62,7 +62,7 @@
 
     <insert id="insert" parameterType="com.qhr.model.CustomServiceOrder">
         INSERT INTO yw_custom_service_orders (enterprise_id, intention_id, staff_id, current_stage,
-                                           service_status, amount_range, commission_amount, service_cost,
+                                           service_status, loan_amount, commission_amount, service_cost,
                                            cost_details, settle_status)
         VALUES (#{enterpriseId}, #{intentionId}, #{staffId}, #{currentStage},
                 #{serviceStatus}, #{loanAmount}, #{commissionAmount}, #{serviceCost},
@@ -77,7 +77,7 @@
             <if test="staffId != null">staff_id = #{staffId},</if>
             <if test="currentStage != null">current_stage = #{currentStage},</if>
             <if test="serviceStatus != null">service_status = #{serviceStatus},</if>
-            <if test="loanAmount != null">amount_range = #{loanAmount},</if>
+            <if test="loanAmount != null">loan_amount = #{loanAmount},</if>
             <if test="commissionAmount != null">commission_amount = #{commissionAmount},</if>
             <if test="serviceCost != null">service_cost = #{serviceCost},</if>
             <if test="costDetails != null">cost_details = #{costDetails},</if>

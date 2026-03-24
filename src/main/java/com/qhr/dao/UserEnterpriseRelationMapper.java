@@ -19,7 +19,7 @@ public interface UserEnterpriseRelationMapper {
   int deleteByUserEnterprise(@Param("userId") Long userId,
                              @Param("enterpriseId") Long enterpriseId);
 
-  List<UserEnterpriseRelation> listByUserId(@Param("userId") Long userId);
+  List<UserEnterpriseRelation> listByUserOpenId(@Param("userId") Long userId);
 
   List<UserEnterpriseRelation> listByEnterpriseId(@Param("enterpriseId") Long enterpriseId);
 }

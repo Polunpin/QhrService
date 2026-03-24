@@ -23,7 +23,7 @@
         LIMIT 1
     </select>
 
-    <select id="listByuserOpenId" resultMap="RelationMap" parameterType="java.lang.Long">
+    <select id="listByUserOpenId" resultMap="RelationMap" parameterType="java.lang.Long">
         SELECT <include refid="Relation_Columns"/>
         FROM zj_user_enterprise_relation
         WHERE user_open_id = #{userOpenId}
