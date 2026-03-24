@@ -1,4 +1,4 @@
-package com.qhr.controller.yewu;
+package com.qhr.controller.jichu;
 
 import com.qhr.config.*;
 import com.qhr.dto.UpdateStringStatusRequest;
@@ -11,6 +11,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
 
+/*匹配记录*/
 @ApplicationScoped
 @Path("/api/matching")
 @Produces(MediaType.APPLICATION_JSON)

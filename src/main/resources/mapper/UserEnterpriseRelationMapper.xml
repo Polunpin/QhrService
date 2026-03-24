@@ -6,27 +6,27 @@
         <constructor>
             <idArg column="id" javaType="java.lang.Long" name="id"/>
             <arg column="enterprise_id" javaType="java.lang.Long" name="enterpriseId"/>
-            <arg column="user_id" javaType="java.lang.Long" name="userId"/>
+            <arg column="user_open_id" javaType="java.lang.String" name="userOpenId"/>
             <arg column="role" javaType="java.lang.String" name="role"/>
             <arg column="created_at" javaType="java.time.LocalDateTime" name="createdAt"/>
         </constructor>
     </resultMap>
 
     <sql id="Relation_Columns">
-        id, enterprise_id, user_id, role, created_at
+        id, enterprise_id, user_open_id, role, created_at
     </sql>
 
     <select id="getByUserEnterprise" resultMap="RelationMap">
         SELECT <include refid="Relation_Columns"/>
         FROM zj_user_enterprise_relation
-        WHERE user_id = #{userId} AND enterprise_id = #{enterpriseId}
+        WHERE user_open_id = #{userOpenId} AND enterprise_id = #{enterpriseId}
         LIMIT 1
     </select>
 
-    <select id="listByUserId" resultMap="RelationMap" parameterType="java.lang.Long">
+    <select id="listByuserOpenId" resultMap="RelationMap" parameterType="java.lang.Long">
         SELECT <include refid="Relation_Columns"/>
         FROM zj_user_enterprise_relation
-        WHERE user_id = #{userId}
+        WHERE user_open_id = #{userOpenId}
         ORDER BY id DESC
     </select>
 
@@ -38,8 +38,8 @@
     </select>
 
     <insert id="insert" parameterType="com.qhr.model.UserEnterpriseRelation">
-        INSERT INTO zj_user_enterprise_relation (enterprise_id, user_id, role)
-        VALUES (#{enterpriseId}, #{userId}, #{role})
+        INSERT INTO zj_user_enterprise_relation (enterprise_id, user_open_id, role)
+        VALUES (#{enterpriseId}, #{userOpenId}, #{role})
     </insert>
 
     <delete id="delete" parameterType="java.lang.Long">
@@ -48,7 +48,7 @@
 
     <delete id="deleteByUserEnterprise">
         DELETE FROM zj_user_enterprise_relation
-        WHERE user_id = #{userId} AND enterprise_id = #{enterpriseId}
+        WHERE user_open_id = #{userOpenId} AND enterprise_id = #{enterpriseId}
     </delete>
 
 </mapper>

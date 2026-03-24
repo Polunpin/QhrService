@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface UserEnterpriseRelationMapper {
 
-  UserEnterpriseRelation getByUserEnterprise(@Param("userId") Long userId,
+  UserEnterpriseRelation getByUserEnterprise(@Param("userOpenId") String userOpenId,
                                              @Param("enterpriseId") Long enterpriseId);
 
   int insert(UserEnterpriseRelation relation);

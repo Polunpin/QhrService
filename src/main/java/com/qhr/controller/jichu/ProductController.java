@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
 
+/*产品管理*/
 @ApplicationScoped
 @Path("/api/products")
 @Produces(MediaType.APPLICATION_JSON)

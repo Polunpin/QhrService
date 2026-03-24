@@ -1,4 +1,4 @@
-package com.qhr.controller.yewu;
+package com.qhr.controller.jichu;
 
 import com.qhr.config.ApiAssert;
 import com.qhr.config.ApiCode;
@@ -13,6 +13,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
 
+/*产品规则*/
 @ApplicationScoped
 @Path("/api/product-rules")
 @Produces(MediaType.APPLICATION_JSON)

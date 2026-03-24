@@ -82,13 +82,13 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public boolean bindEnterprise(Long userId, Long enterpriseId, String role) {
-    UserEnterpriseRelation existing = relationMapper.getByUserEnterprise(userId, enterpriseId);
+  public boolean bindEnterprise(String userOpenId, Long enterpriseId, String role) {
+    UserEnterpriseRelation existing = relationMapper.getByUserEnterprise(userOpenId, enterpriseId);
     if (existing != null) {
       return true;
     }
     String safeRole = role == null || role.trim().isEmpty() ? "owner" : role.trim();
-    UserEnterpriseRelation relation = new UserEnterpriseRelation(null, enterpriseId, userId, safeRole, null);
+    UserEnterpriseRelation relation = new UserEnterpriseRelation(null, enterpriseId, userOpenId, safeRole, null);
     return relationMapper.insert(relation) > 0;
   }
 

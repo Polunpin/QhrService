@@ -8,12 +8,12 @@ import java.time.LocalDateTime;
  */
 public record UserEnterpriseRelation(Long id,
                                      Long enterpriseId,
-                                     Long userId,
+                                     String userOpenId,
                                      String role,
                                      LocalDateTime createdAt) implements Serializable, WithId<UserEnterpriseRelation> {
 
   /** 复制并替换id。 */
   public UserEnterpriseRelation withId(Long id) {
-    return new UserEnterpriseRelation(id, enterpriseId, userId, role, createdAt);
+    return new UserEnterpriseRelation(id, enterpriseId, userOpenId, role, createdAt);
   }
 }

@@ -17,19 +17,17 @@ public interface EnterprisesMapper {
 
   int delete(@Param("id") Long id);
 
-  int updateMatchStatus(@Param("id") Long id, @Param("matchStatus") String matchStatus);
-
-  int updateProfileData(@Param("id") Long id, @Param("profileData") String profileData);
-
-  List<Enterprise> list(@Param("matchStatus") String matchStatus,
-                        @Param("industry") String industry,
-                        @Param("regionCode") String regionCode,
+  List<Enterprise> list(@Param("name") String name,
+                        @Param("creditCode") String creditCode,
+                        @Param("operName") String operName,
+                        @Param("status") String status,
                         @Param("offset") Integer offset,
                         @Param("size") Integer size);
 
-  long count(@Param("matchStatus") String matchStatus,
-             @Param("industry") String industry,
-             @Param("regionCode") String regionCode);
+  long count(@Param("name") String name,
+             @Param("creditCode") String creditCode,
+             @Param("operName") String operName,
+             @Param("status") String status);
 
   List<Enterprise> listByUserId(@Param("userId") Long userId,
                                 @Param("offset") Integer offset,

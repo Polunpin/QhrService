@@ -13,6 +13,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+/*DMN客户端*/
 @ApplicationScoped
 @Path("/api/dmn")
 @Produces(MediaType.APPLICATION_JSON)

@@ -39,23 +39,13 @@ public class EnterpriseServiceImpl implements EnterpriseService {
   }
 
   @Override
-  public boolean updateMatchStatus(Long id, String matchStatus) {
-    return enterprisesMapper.updateMatchStatus(id, matchStatus) > 0;
+  public List<Enterprise> list(String name, String creditCode, String operName, String status, Integer offset, Integer size) {
+    return enterprisesMapper.list(name, creditCode, operName, status, offset, size);
   }
 
   @Override
-  public boolean updateProfileData(Long id, String profileData) {
-    return enterprisesMapper.updateProfileData(id, profileData) > 0;
-  }
-
-  @Override
-  public List<Enterprise> list(String matchStatus, String industry, String regionCode, Integer offset, Integer size) {
-    return enterprisesMapper.list(matchStatus, industry, regionCode, offset, size);
-  }
-
-  @Override
-  public long count(String matchStatus, String industry, String regionCode) {
-    return enterprisesMapper.count(matchStatus, industry, regionCode);
+  public long count(String name, String creditCode, String operName, String status) {
+    return enterprisesMapper.count(name, creditCode, operName, status);
   }
 
   @Override

@@ -5,40 +5,35 @@
     <resultMap id="EnterprisesMap" type="com.qhr.model.Enterprise">
         <constructor>
             <idArg column="id" javaType="java.lang.Long" name="id"/>
-            <arg column="full_name" javaType="java.lang.String" name="fullName"/>
+            <arg column="name" javaType="java.lang.String" name="name"/>
             <arg column="credit_code" javaType="java.lang.String" name="creditCode"/>
-            <arg column="industry" javaType="java.lang.String" name="industry"/>
-            <arg column="tax_rating" javaType="java.lang.String" name="taxRating"/>
-            <arg column="region_code" javaType="java.lang.String" name="regionCode"/>
-            <arg column="annual_turnover" javaType="java.math.BigDecimal" name="annualTurnover"/>
-            <arg column="annual_tax_amount" javaType="java.math.BigDecimal" name="annualTaxAmount"/>
-            <arg column="existing_loan_balance" javaType="java.math.BigDecimal" name="existingLoanBalance"/>
-            <arg column="match_status" javaType="java.lang.String" name="matchStatus"/>
-            <arg column="profile_data" javaType="java.lang.String" name="profileData"/>
+            <arg column="start_date" javaType="java.lang.String" name="startDate"/>
+            <arg column="oper_name" javaType="java.lang.String" name="operName"/>
+            <arg column="status" javaType="java.lang.String" name="status"/>
+            <arg column="address" javaType="java.lang.String" name="address"/>
             <arg column="created_at" javaType="java.time.LocalDateTime" name="createdAt"/>
             <arg column="updated_at" javaType="java.time.LocalDateTime" name="updatedAt"/>
         </constructor>
     </resultMap>
 
     <sql id="Enterprise_Columns">
-        id, full_name, credit_code, industry, tax_rating, region_code,
-        annual_turnover, annual_tax_amount, existing_loan_balance, match_status,
-        profile_data, created_at, updated_at
+        id, name, credit_code, start_date, oper_name, status, address, created_at, updated_at
     </sql>
 
     <select id="getById" resultMap="EnterprisesMap" parameterType="java.lang.Long">
         SELECT <include refid="Enterprise_Columns"/>
-        FROM jc_enterprises
+        FROM jc_enterprise_basic_info
         WHERE id = #{id}
     </select>
 
     <select id="list" resultMap="EnterprisesMap">
         SELECT <include refid="Enterprise_Columns"/>
-        FROM jc_enterprises
+        FROM jc_enterprise_basic_info
         <where>
-            <if test="matchStatus != null and matchStatus != ''"> AND match_status = #{matchStatus}</if>
-            <if test="industry != null and industry != ''"> AND industry = #{industry}</if>
-            <if test="regionCode != null and regionCode != ''"> AND region_code = #{regionCode}</if>
+            <if test="name != null and name != ''"> AND name LIKE CONCAT('%', #{name}, '%')</if>
+            <if test="creditCode != null and creditCode != ''"> AND credit_code = #{creditCode}</if>
+            <if test="operName != null and operName != ''"> AND oper_name LIKE CONCAT('%', #{operName}, '%')</if>
+            <if test="status != null and status != ''"> AND status = #{status}</if>
         </where>
         ORDER BY id DESC
         <if test="offset != null and size != null">
@@ -48,19 +43,19 @@
 
     <select id="count" resultType="long">
         SELECT COUNT(1)
-        FROM jc_enterprises
+        FROM jc_enterprise_basic_info
         <where>
-            <if test="matchStatus != null and matchStatus != ''"> AND match_status = #{matchStatus}</if>
-            <if test="industry != null and industry != ''"> AND industry = #{industry}</if>
-            <if test="regionCode != null and regionCode != ''"> AND region_code = #{regionCode}</if>
+            <if test="name != null and name != ''"> AND name LIKE CONCAT('%', #{name}, '%')</if>
+            <if test="creditCode != null and creditCode != ''"> AND credit_code = #{creditCode}</if>
+            <if test="operName != null and operName != ''"> AND oper_name LIKE CONCAT('%', #{operName}, '%')</if>
+            <if test="status != null and status != ''"> AND status = #{status}</if>
         </where>
     </select>
 
     <select id="listByUserId" resultMap="EnterprisesMap">
-        SELECT e.id, e.full_name, e.credit_code, e.industry, e.tax_rating, e.region_code,
-               e.annual_turnover, e.annual_tax_amount, e.existing_loan_balance, e.match_status,
-               e.profile_data, e.created_at, e.updated_at
-        FROM jc_enterprises e
+        SELECT e.id, e.name, e.credit_code, e.start_date, e.oper_name, e.status,
+               e.address, e.created_at, e.updated_at
+        FROM jc_enterprise_basic_info e
         JOIN zj_user_enterprise_relation r ON e.id = r.enterprise_id
         WHERE r.user_id = #{userId}
         ORDER BY e.id DESC
@@ -71,49 +66,31 @@
 
     <select id="countByUserId">
         SELECT COUNT(1)
-        FROM jc_enterprises e
+        FROM jc_enterprise_basic_info e
         JOIN zj_user_enterprise_relation r ON e.id = r.enterprise_id
         WHERE r.user_id = #{userId}
     </select>
 
     <insert id="insert" parameterType="com.qhr.model.Enterprise">
-        INSERT INTO jc_enterprises (full_name, credit_code, industry, tax_rating, region_code,
-                                 annual_turnover, annual_tax_amount, existing_loan_balance,
-                                 match_status, profile_data)
-        VALUES (#{fullName}, #{creditCode}, #{industry}, #{taxRating}, #{regionCode},
-                #{annualTurnover}, #{annualTaxAmount}, #{existingLoanBalance},
-                #{matchStatus}, #{profileData})
+        INSERT INTO jc_enterprise_basic_info (name, credit_code, start_date, oper_name, status, address)
+        VALUES (#{name}, #{creditCode}, #{startDate}, #{operName}, #{status}, #{address})
     </insert>
 
     <update id="update" parameterType="com.qhr.model.Enterprise">
-        UPDATE jc_enterprises
+        UPDATE jc_enterprise_basic_info
         <set>
-            <if test="fullName != null">full_name = #{fullName},</if>
+            <if test="name != null">name = #{name},</if>
             <if test="creditCode != null">credit_code = #{creditCode},</if>
-            <if test="industry != null">industry = #{industry},</if>
-            <if test="taxRating != null">tax_rating = #{taxRating},</if>
-            <if test="regionCode != null">region_code = #{regionCode},</if>
-            <if test="annualTurnover != null">annual_turnover = #{annualTurnover},</if>
-            <if test="annualTaxAmount != null">annual_tax_amount = #{annualTaxAmount},</if>
-            <if test="existingLoanBalance != null">existing_loan_balance = #{existingLoanBalance},</if>
-            <if test="matchStatus != null">match_status = #{matchStatus},</if>
-            <if test="profileData != null">profile_data = #{profileData},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="operName != null">oper_name = #{operName},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="address != null">address = #{address},</if>
         </set>
         WHERE id = #{id}
     </update>
 
-    <update id="updateMatchStatus">
-        UPDATE jc_enterprises SET match_status = #{matchStatus}
-        WHERE id = #{id}
-    </update>
-
-    <update id="updateProfileData">
-        UPDATE jc_enterprises SET profile_data = #{profileData}
-        WHERE id = #{id}
-    </update>
-
     <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM jc_enterprises WHERE id = #{id}
+        DELETE FROM jc_enterprise_basic_info WHERE id = #{id}
     </delete>
 
     <select id="lastInsertId" resultType="long">

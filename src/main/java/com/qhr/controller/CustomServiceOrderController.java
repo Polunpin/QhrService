@@ -1,4 +1,4 @@
-package com.qhr.controller.yewu;
+package com.qhr.controller;
 
 import com.qhr.config.*;
 import com.qhr.dto.AdvanceStageRequest;
@@ -13,6 +13,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
 
+/*非标服务订单管理*/
 @ApplicationScoped
 @Path("/api/custom-service-orders")
 @Produces(MediaType.APPLICATION_JSON)

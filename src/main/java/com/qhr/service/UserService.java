@@ -33,7 +33,7 @@ public interface UserService {
   long count(Integer status, String mobile, String realName);
 
   /** 绑定用户与企业关系 */
-  boolean bindEnterprise(Long userId, Long enterpriseId, String role);
+  boolean bindEnterprise(String userOpenId, Long enterpriseId, String role);
 
   /** 解绑用户与企业关系 */
   boolean unbindEnterprise(Long userId, Long enterpriseId);

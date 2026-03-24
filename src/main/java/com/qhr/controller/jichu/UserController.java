@@ -14,6 +14,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.HttpHeaders;
 import java.util.List;
 
+/*用户管理*/
 @ApplicationScoped
 @Path("/api/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -84,15 +85,15 @@ public class UserController {
     return ApiResponse.ok(true);
   }
 
-  /** 绑定用户与企业关系 */
-  @POST
-  @Path("/{id}/enterprises/{enterpriseId}")
-  public ApiResponse bindEnterprise(@PathParam("id") Long id,
-                                    @PathParam("enterpriseId") Long enterpriseId,
-                                    BindEnterpriseRequest request) {
-    String role = request == null ? null : request.role();
-    return ApiResponse.ok(userService.bindEnterprise(id, enterpriseId, role));
-  }
+//  /** 绑定用户与企业关系 */
+//  @POST
+//  @Path("/{id}/enterprises/{enterpriseId}")
+//  public ApiResponse bindEnterprise(@PathParam("id") String id,
+//                                    @PathParam("enterpriseId") Long enterpriseId,
+//                                    BindEnterpriseRequest request) {
+//    String role = request == null ? null : request.role();
+//    return ApiResponse.ok(userService.bindEnterprise(id, enterpriseId, role));
+//  }
 
   /** 解绑用户与企业关系 */
   @DELETE

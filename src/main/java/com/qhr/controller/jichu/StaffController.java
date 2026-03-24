@@ -10,6 +10,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 
+/*员工管理*/
 @ApplicationScoped
 @Path("/api/staffs")
 @Produces(MediaType.APPLICATION_JSON)

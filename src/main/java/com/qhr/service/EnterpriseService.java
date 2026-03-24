@@ -18,17 +18,11 @@ public interface EnterpriseService {
   /** 删除企业 */
   boolean delete(Long id);
 
-  /** 更新企业匹配状态 */
-  boolean updateMatchStatus(Long id, String matchStatus);
-
-  /** 更新企业画像数据 */
-  boolean updateProfileData(Long id, String profileData);
-
   /** 分页查询企业列表 */
-  List<Enterprise> list(String matchStatus, String industry, String regionCode, Integer offset, Integer size);
+  List<Enterprise> list(String name, String creditCode, String operName, String status, Integer offset, Integer size);
 
   /** 统计企业数量 */
-  long count(String matchStatus, String industry, String regionCode);
+  long count(String name, String creditCode, String operName, String status);
 
   /** 分页查询用户关联企业 */
   List<Enterprise> listByUserId(Long userId, Integer offset, Integer size);

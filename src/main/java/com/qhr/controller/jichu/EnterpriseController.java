@@ -1,8 +1,6 @@
 package com.qhr.controller.jichu;
 
 import com.qhr.config.*;
-import com.qhr.dto.UpdateMatchStatusRequest;
-import com.qhr.dto.UpdateProfileDataRequest;
 import com.qhr.model.Enterprise;
 import com.qhr.service.EnterpriseService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -11,6 +9,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
 
+/*企业管理*/
 @ApplicationScoped
 @Path("/api/enterprises")
 @Produces(MediaType.APPLICATION_JSON)
@@ -34,14 +33,15 @@ public class EnterpriseController {
   /** 分页查询企业列表 */
   @GET
   @Path("/list")
-  public ApiResponse list(@QueryParam("matchStatus") String matchStatus,
-                          @QueryParam("industry") String industry,
-                          @QueryParam("regionCode") String regionCode,
+  public ApiResponse list(@QueryParam("name") String name,
+                          @QueryParam("creditCode") String creditCode,
+                          @QueryParam("operName") String operName,
+                          @QueryParam("status") String status,
                           @QueryParam("page") Integer page,
                           @QueryParam("size") Integer size) {
     PageBounds bounds = PageBounds.of(page, size);
-    List<Enterprise> enterprises = enterpriseService.list(matchStatus, industry, regionCode, bounds.offset(), bounds.size());
-    long total = enterpriseService.count(matchStatus, industry, regionCode);
+    List<Enterprise> enterprises = enterpriseService.list(name, creditCode, operName, status, bounds.offset(), bounds.size());
+    long total = enterpriseService.count(name, creditCode, operName, status);
     return ApiResponse.ok(PageResult.of(enterprises, total, bounds.page(), bounds.size()));
   }
 
@@ -77,26 +77,6 @@ public class EnterpriseController {
   @Path("/{id}")
   public ApiResponse delete(@PathParam("id") Long id) {
     ApiAssert.isTrue(enterpriseService.delete(id), ApiCode.NOT_FOUND, "企业不存在");
-    return ApiResponse.ok(true);
-  }
-
-  /** 更新企业匹配状态 */
-  @POST
-  @Path("/{id}/match-status")
-  public ApiResponse updateMatchStatus(@PathParam("id") Long id,
-                                       UpdateMatchStatusRequest request) {
-    ApiAssert.isTrue(enterpriseService.updateMatchStatus(id, request.matchStatus()),
-        ApiCode.NOT_FOUND, "企业不存在");
-    return ApiResponse.ok(true);
-  }
-
-  /** 更新企业画像数据 */
-  @POST
-  @Path("/{id}/profile-data")
-  public ApiResponse updateProfileData(@PathParam("id") Long id,
-                                       UpdateProfileDataRequest request) {
-    ApiAssert.isTrue(enterpriseService.updateProfileData(id, request.profileData()),
-        ApiCode.NOT_FOUND, "企业不存在");
     return ApiResponse.ok(true);
   }
 }

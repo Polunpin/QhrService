@@ -40,9 +40,9 @@
         WHERE id = #{id}
     </select>
 
-    <select id="list" parameterType="com.qhr.vo.MatchRecords" resultMap="MatchRecordsVoMap">
+        <select id="list" parameterType="com.qhr.vo.MatchRecords" resultMap="MatchRecordsVoMap">
         select ymr.id,
-        ye.full_name as enterprise,
+        ye.name as enterprise,
         pu.real_name as applicant,
         ymr.product_ids as products,
         ymr.risk_type as riskType,
@@ -51,7 +51,7 @@
         ymr.created_at as matchTime
         from z_match_records ymr
         left join jc_users pu on ymr.user_id=pu.id
-        left join jc_enterprises ye on ymr.enterprise_id=ye.id
+        left join jc_enterprise_basic_info ye on ymr.enterprise_id=ye.id
         <where>
             <if test="enterpriseId != null"> AND ymr.enterprise_id = #{enterpriseId}</if>
             <if test="intentionId != null"> AND ymr.intention_id = #{intentionId}</if>
