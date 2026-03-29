@@ -38,11 +38,8 @@ public class MeasureServiceImpl implements MeasureService {
   @Override
   @Transactional
   public MeasureSubmitResponse submit(MeasureSubmitRequest request, String openid, String unionid) {
-    ApiAssert.notNull(request, ApiCode.BAD_REQUEST, "请求体不能为空");
-    ApiAssert.notNull(request.enterprise(), ApiCode.BAD_REQUEST, "企业信息不能为空");
-
     //保存用户
-    Long userId = userService.create(openid, unionid);
+    userService.create(openid, unionid);
     //保存企业
     Long enterpriseId = upsertEnterprise(request.enterprise());
     //todo 逻辑可简化
@@ -70,8 +67,6 @@ public class MeasureServiceImpl implements MeasureService {
   }
 
   private Long upsertEnterprise(MeasureSubmitRequest.EnterprisePayload enterprisePayload) {
-//    ApiAssert.isTrue(enterprisePayload.name() != null && !enterprisePayload.name().isBlank(),
-//        ApiCode.BAD_REQUEST, "企业名称不能为空");
 
     Enterprise existing = findExistingEnterprise(enterprisePayload.creditCode());
     Enterprise enterprise = new Enterprise(

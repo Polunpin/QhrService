@@ -25,15 +25,6 @@ public class CustomServiceOrderController {
     this.orderService = orderService;
   }
 
-  /** 查询订单详情 */
-  @GET
-  @Path("/{id}")
-  public ApiResponse getById(@PathParam("id") Long id) {
-    CustomServiceOrder order = orderService.getById(id);
-    ApiAssert.notNull(order, ApiCode.NOT_FOUND, "订单不存在");
-    return ApiResponse.ok(order);
-  }
-
   /** 分页查询订单列表 */
   @GET
   @Path("/list")
@@ -54,24 +45,35 @@ public class CustomServiceOrderController {
   /** 创建订单 */
   @POST
   public ApiResponse create(CustomServiceOrder order) {
-    Long id = orderService.create(order);
-    return ApiResponse.ok(id);
+    ApiAssert.notNull(order, ApiCode.BAD_REQUEST, "请求体order不能为空");
+    return ApiResponse.ok(orderService.create(order));
   }
 
   /** 更新订单 */
   @PUT
   @Path("/{id}")
   public ApiResponse update(@PathParam("id") Long id, CustomServiceOrder order) {
-    ApiAssert.isTrue(orderService.update(order.withId(id)), ApiCode.NOT_FOUND, "订单不存在");
-    return ApiResponse.ok(true);
+    ApiAssert.notNull(id, ApiCode.BAD_REQUEST, "id不能为空");
+    ApiAssert.notNull(order, ApiCode.BAD_REQUEST, "请求体order不能为空");
+    return ApiResponse.ok(orderService.update(order.withId(id)));
   }
 
   /** 删除订单 */
   @DELETE
   @Path("/{id}")
   public ApiResponse delete(@PathParam("id") Long id) {
-    ApiAssert.isTrue(orderService.delete(id), ApiCode.NOT_FOUND, "订单不存在");
-    return ApiResponse.ok(true);
+    ApiAssert.notNull(id, ApiCode.BAD_REQUEST, "id不能为空");
+    return ApiResponse.ok(orderService.delete(id));
+  }
+
+  /**
+   * 查询订单详情
+   */
+  @GET
+  @Path("/{id}")
+  public ApiResponse getById(@PathParam("id") Long id) {
+    ApiAssert.notNull(id, ApiCode.BAD_REQUEST, "id不能为空");
+    return ApiResponse.ok(orderService.getById(id));
   }
 
   /** 指派订单负责人 */

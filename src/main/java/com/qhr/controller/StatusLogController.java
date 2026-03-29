@@ -21,15 +21,6 @@ public class StatusLogController {
     this.statusLogService = statusLogService;
   }
 
-  /** 查询日志详情 */
-  @GET
-  @Path("/{id}")
-  public ApiResponse getById(@PathParam("id") Long id) {
-    StatusLog log = statusLogService.getById(id);
-    ApiAssert.notNull(log, ApiCode.NOT_FOUND, "日志不存在");
-    return ApiResponse.ok(log);
-  }
-
   /** 分页查询订单日志 */
   @GET
   @Path("/order/{orderId}")
@@ -45,7 +36,17 @@ public class StatusLogController {
   /** 创建日志 */
   @POST
   public ApiResponse create(StatusLog log) {
-    Long id = statusLogService.create(log);
-    return ApiResponse.ok(id);
+    ApiAssert.notNull(log, ApiCode.BAD_REQUEST, "请求体log不能为空");
+    return ApiResponse.ok(statusLogService.create(log));
+  }
+
+  /**
+   * 查询日志详情
+   */
+  @GET
+  @Path("/{id}")
+  public ApiResponse getById(@PathParam("id") Long id) {
+    ApiAssert.notNull(id, ApiCode.BAD_REQUEST, "id不能为空");
+    return ApiResponse.ok(statusLogService.getById(id));
   }
 }

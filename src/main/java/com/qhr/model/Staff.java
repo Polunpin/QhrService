@@ -1,6 +1,11 @@
 package com.qhr.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -8,20 +13,24 @@ import java.time.LocalDateTime;
 /**
  * 内部员工实体。
  */
-public record Staff(Long id,
-                    String openid,
-                    @JsonProperty("name")
-                    String realName,
-                    @JsonProperty("phone")
-                    String mobile,
-                    String role,
-                    String department,
-                    Integer status,
-                    LocalDateTime lastUpdateAt,
-                    LocalDateTime createdAt) implements Serializable, WithId<Staff> {
+@Data
+@TableName("jc_staffs")
+public class Staff implements Serializable {
 
-  /** 复制并替换id。 */
-  public Staff withId(Long id) {
-    return new Staff(id, openid, realName, mobile, role, department, status, lastUpdateAt, createdAt);
-  }
+  @TableId(type = IdType.AUTO)
+  private Long id;
+  private String openid;
+  @JsonProperty("name")
+  @TableField("real_name")
+  private String realName;
+  @JsonProperty("phone")
+  private String mobile;
+  private String role;
+  private String department;
+  private Integer status;
+  @TableField("last_update_at")
+  private LocalDateTime lastUpdateAt;
+  @TableField("created_at")
+  private LocalDateTime createdAt;
+
 }

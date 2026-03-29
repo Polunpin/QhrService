@@ -1,22 +1,31 @@
 package com.qhr.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * 用户实体。
  */
-public record User(Long id,
-                   String openid,
-                   String unionid,
-                   String mobile,
-                   String realName,
-                   Integer status,
-                   LocalDateTime createdAt,
-                   LocalDateTime updatedAt) implements Serializable, WithId<User> {
+@Data
+@TableName("jc_users")
+public class User implements Serializable {
 
-  /** 复制并替换id。 */
-  public User withId(Long id) {
-    return new User(id, openid, unionid, mobile, realName, status, createdAt, updatedAt);
-  }
+    @TableId(type = IdType.AUTO)
+    private Long id;
+    private String openid;
+    private String unionid;
+    private String mobile;
+    @TableField("real_name")
+    private String realName;
+    private Integer status;
+    @TableField("created_at")
+    private LocalDateTime createdAt;
+    @TableField("updated_at")
+    private LocalDateTime updatedAt;
 }

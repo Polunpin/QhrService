@@ -17,33 +17,30 @@ public class FinancingIntentionServiceImpl implements FinancingIntentionService 
   }
 
   @Override
-  public FinancingIntention getById(Long id) {
-    return financingIntentionsMapper.getById(id);
-  }
-
-  @Override
-  public Long create(FinancingIntention intention) {
-    financingIntentionsMapper.insert(intention);
-    return financingIntentionsMapper.lastInsertId();
-  }
-
-  @Override
-  public boolean update(FinancingIntention intention) {
-    return financingIntentionsMapper.update(intention) > 0;
-  }
-
-  @Override
-  public boolean delete(Long id) {
-    return financingIntentionsMapper.delete(id) > 0;
-  }
-
-  @Override
   public List<FinancingIntention> list(Long enterpriseId, Integer offset, Integer size) {
     return financingIntentionsMapper.list(enterpriseId, offset, size);
   }
 
   @Override
-  public long count(Long enterpriseId) {
-    return financingIntentionsMapper.count(enterpriseId);
+  public Long create(FinancingIntention intention) {
+    financingIntentionsMapper.insert(intention);
+    return intention.getId();
   }
+
+  @Override
+  public boolean update(FinancingIntention intention) {
+    return financingIntentionsMapper.updateById(intention) > 0;
+  }
+
+  @Override
+  public boolean delete(Long id) {
+    return financingIntentionsMapper.deleteById(id) > 0;
+  }
+
+  @Override
+  public FinancingIntention getById(Long id) {
+    return financingIntentionsMapper.selectById(id);
+  }
+
+
 }

@@ -23,12 +23,6 @@
         created_at, updated_at
     </sql>
 
-    <select id="getById" resultMap="FinancingIntentionsMap" parameterType="java.lang.Long">
-        SELECT <include refid="FinancingIntention_Columns"/>
-        FROM yw_financing_intentions
-        WHERE id = #{id}
-    </select>
-
     <select id="list" resultMap="FinancingIntentionsMap">
         SELECT <include refid="FinancingIntention_Columns"/>
         FROM yw_financing_intentions
@@ -39,46 +33,6 @@
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
         </if>
-    </select>
-
-    <select id="count" resultType="long">
-        SELECT COUNT(1)
-        FROM yw_financing_intentions
-        <where>
-            <if test="enterpriseId != null"> AND enterprise_id = #{enterpriseId}</if>
-        </where>
-    </select>
-
-    <insert id="insert" parameterType="com.qhr.model.FinancingIntention">
-        INSERT INTO yw_financing_intentions (
-            enterprise_id, amount_range, property, property_mortgage,
-            spouse_support, tax_account, tax_password
-        ) VALUES (
-            #{enterpriseId}, #{amountRange}, #{property}, #{propertyMortgage},
-            #{spouseSupport}, #{taxAccount}, #{taxPassword}
-        )
-    </insert>
-
-    <update id="update" parameterType="com.qhr.model.FinancingIntention">
-        UPDATE yw_financing_intentions
-        <set>
-            <if test="enterpriseId != null">enterprise_id = #{enterpriseId},</if>
-            <if test="amountRange != null">amount_range = #{amountRange},</if>
-            <if test="property != null">property = #{property},</if>
-            <if test="propertyMortgage != null">property_mortgage = #{propertyMortgage},</if>
-            <if test="spouseSupport != null">spouse_support = #{spouseSupport},</if>
-            <if test="taxAccount != null">tax_account = #{taxAccount},</if>
-            <if test="taxPassword != null">tax_password = #{taxPassword},</if>
-        </set>
-        WHERE id = #{id}
-    </update>
-
-    <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM yw_financing_intentions WHERE id = #{id}
-    </delete>
-
-    <select id="lastInsertId" resultType="long">
-        SELECT LAST_INSERT_ID()
     </select>
 
 </mapper>

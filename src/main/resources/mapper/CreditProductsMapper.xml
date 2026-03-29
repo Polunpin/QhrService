@@ -29,21 +29,6 @@
         created_at, updated_at
     </sql>
 
-    <select id="getById" resultMap="CreditProductsMap" parameterType="java.lang.Long">
-        SELECT <include refid="CreditProduct_Columns"/>
-        FROM jc_products
-        WHERE id = #{id}
-    </select>
-
-    <select id="getByIds" resultMap="CreditProductsMap">
-        SELECT <include refid="CreditProduct_Columns"/>
-        FROM jc_products
-        WHERE id IN
-        <foreach collection="ids" item="id" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </select>
-
     <select id="list" resultMap="CreditProductsMap">
         SELECT <include refid="CreditProduct_Columns"/>
         FROM jc_products
@@ -56,92 +41,6 @@
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
         </if>
-    </select>
-
-    <select id="count" resultType="long">
-        SELECT COUNT(1)
-        FROM jc_products
-        <where>
-            <if test="status != null"> AND status = #{status}</if>
-            <if test="productType != null and productType != ''"> AND product_type = #{productType}</if>
-            <if test="bankName != null and bankName != ''"> AND bank_name LIKE CONCAT('%', #{bankName}, '%')</if>
-        </where>
-    </select>
-
-    <select id="findEligibleProducts" resultMap="CreditProductsMap">
-        SELECT <include refid="CreditProduct_Columns"/>
-        FROM jc_products
-        <where>
-            AND status = 1
-            <if test="expectedAmount != null"> AND min_amount &lt;= #{expectedAmount} AND max_amount &gt;= #{expectedAmount}</if>
-            <if test="expectedTerm != null"> AND loan_term &gt;= #{expectedTerm}</if>
-            <if test="productType != null and productType != ''"> AND product_type = #{productType}</if>
-        </where>
-        ORDER BY id DESC
-        <if test="offset != null and size != null">
-            LIMIT #{offset}, #{size}
-        </if>
-    </select>
-
-    <select id="countEligibleProducts" resultType="long">
-        SELECT COUNT(1)
-        FROM jc_products
-        <where>
-            AND status = 1
-            <if test="expectedAmount != null"> AND min_amount &lt;= #{expectedAmount} AND max_amount &gt;= #{expectedAmount}</if>
-            <if test="expectedTerm != null"> AND loan_term &gt;= #{expectedTerm}</if>
-            <if test="productType != null and productType != ''"> AND product_type = #{productType}</if>
-        </where>
-    </select>
-
-    <insert id="insert" parameterType="com.qhr.model.Product">
-        INSERT INTO jc_products (bank_name, product_name, product_type, min_amount, max_amount,
-                                     interest_rate_range, loan_term, credit_validity, disbursement_account,
-                                     scene, online, repayment_method, status)
-        VALUES (#{bankName}, #{productName}, #{productType}, #{minAmount}, #{maxAmount},
-                #{interestRateRange}, #{loanTerm}, #{creditValidity}, #{disbursementAccount},
-                #{scene}, #{online}, #{repaymentMethod}, #{status})
-    </insert>
-
-    <update id="update" parameterType="com.qhr.model.Product">
-        UPDATE jc_products
-        <set>
-            <if test="bankName != null">bank_name = #{bankName},</if>
-            <if test="productName != null">product_name = #{productName},</if>
-            <if test="productType != null">product_type = #{productType},</if>
-            <if test="minAmount != null">min_amount = #{minAmount},</if>
-            <if test="maxAmount != null">max_amount = #{maxAmount},</if>
-            <if test="interestRateRange != null">interest_rate_range = #{interestRateRange},</if>
-            <if test="loanTerm != null">loan_term = #{loanTerm},</if>
-            <if test="creditValidity != null">credit_validity = #{creditValidity},</if>
-            <if test="disbursementAccount != null">disbursement_account = #{disbursementAccount},</if>
-            <if test="scene != null">scene = #{scene},</if>
-            <if test="online != null">online = #{online},</if>
-            <if test="repaymentMethod != null">repayment_method = #{repaymentMethod},</if>
-            <if test="status != null">status = #{status},</if>
-        </set>
-        WHERE id = #{id}
-    </update>
-
-    <update id="updateStatus">
-        UPDATE jc_products SET status = #{status}
-        WHERE id = #{id}
-    </update>
-
-    <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM jc_products WHERE id = #{id}
-    </delete>
-
-    <select id="lastInsertId" resultType="long">
-        SELECT LAST_INSERT_ID()
-    </select>
-    <select id="getStats" resultType="com.qhr.vo.CreditProductStats">
-        SELECT (SELECT COUNT(DISTINCT bank_name) FROM jc_products)                       AS bankNameCount,
-               (SELECT COUNT(*) FROM jc_products)                                        AS productCount,
-               (SELECT COUNT(*) FROM z_match_records WHERE WEEK(created_at) = WEEK(CURDATE())) AS matchCount,
-               (SELECT IF(COUNT(*) = 0, '0.00%', CONCAT(ROUND(SUM(IF(status = 1, 1, 0)) / COUNT(*) * 100, 2), '%'))
-                FROM z_match_records
-                WHERE WEEK(created_at) = WEEK(CURDATE()))                                      AS matchRate
     </select>
 
 </mapper>

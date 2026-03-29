@@ -1,42 +1,17 @@
 package com.qhr.dao;
 
-import com.qhr.vo.Users;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.qhr.model.User;
+import com.qhr.vo.Users;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 @Mapper
-public interface UsersMapper {
+public interface UsersMapper extends BaseMapper<User> {
 
-  User getById(@Param("id") Long id);
-
-  User getByOpenid(@Param("openid") String openid);
-
-  int insert(User user);
-
-  int update(User user);
-
-  int delete(@Param("id") Long id);
-
-  int updateStatus(@Param("id") Long id, @Param("status") Integer status);
-
-  List<Users> list(@Param("status") Integer status,
-                   @Param("mobile") String mobile,
-                   @Param("realName") String realName,
-                   @Param("offset") Integer offset,
+  List<Users> list(@Param("offset") Integer offset,
                    @Param("size") Integer size);
 
-  long count(@Param("status") Integer status,
-             @Param("mobile") String mobile,
-             @Param("realName") String realName);
-
-  List<User> listByEnterpriseId(@Param("enterpriseId") Long enterpriseId,
-                                @Param("offset") Integer offset,
-                                @Param("size") Integer size);
-
-  long countByEnterpriseId(@Param("enterpriseId") Long enterpriseId);
-
-  long lastInsertId();
 }

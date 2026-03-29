@@ -34,13 +34,7 @@
         risk_type, risk_level, status, created_at
     </sql>
 
-    <select id="getById" resultMap="MatchRecordsMap" parameterType="java.lang.Long">
-        SELECT <include refid="MatchRecord_Columns"/>
-        FROM z_match_records
-        WHERE id = #{id}
-    </select>
-
-        <select id="list" parameterType="com.qhr.vo.MatchRecords" resultMap="MatchRecordsVoMap">
+    <select id="list" parameterType="com.qhr.vo.MatchRecords" resultMap="MatchRecordsVoMap">
         select ymr.id,
         ye.name as enterprise,
         pu.real_name as applicant,
@@ -53,58 +47,13 @@
         left join jc_users pu on ymr.user_open_id=pu.id
         left join jc_enterprise_basic_info ye on ymr.enterprise_id=ye.id
         <where>
-            <if test="enterpriseId != null"> AND ymr.enterprise_id = #{enterpriseId}</if>
-            <if test="intentionId != null"> AND ymr.intention_id = #{intentionId}</if>
-            <if test="status != null and status != ''"> AND ymr.status = #{status}</if>
+            <if test="enterpriseId != null">AND ymr.enterprise_id = #{enterpriseId}</if>
+            <if test="intentionId != null">AND ymr.intention_id = #{intentionId}</if>
+            <if test="status != null and status != ''">AND ymr.status = #{status}</if>
         </where>
         ORDER BY ymr.id DESC
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
         </if>
     </select>
-
-    <select id="count" resultType="long">
-        SELECT COUNT(1)
-        FROM z_match_records
-        <where>
-            <if test="enterpriseId != null"> AND enterprise_id = #{enterpriseId}</if>
-            <if test="intentionId != null"> AND intention_id = #{intentionId}</if>
-            <if test="status != null and status != ''"> AND status = #{status}</if>
-        </where>
-    </select>
-
-    <insert id="insert" parameterType="com.qhr.model.MatchRecord">
-        INSERT INTO z_match_records (user_open_id, enterprise_id, intention_id, product_ids,
-                                   match_score, risk_type, risk_level, status)
-        VALUES (#{userOpenId}, #{enterpriseId}, #{intentionId}, #{productIds},
-                #{matchScore}, #{riskType}, #{riskLevel}, #{status})
-    </insert>
-
-    <update id="update" parameterType="com.qhr.model.MatchRecord">
-        UPDATE z_match_records
-        <set>
-            <if test="enterpriseId != null">enterprise_id = #{enterpriseId},</if>
-            <if test="intentionId != null">intention_id = #{intentionId},</if>
-            <if test="productIds != null">product_ids = #{productIds},</if>
-            <if test="matchScore != null">match_score = #{matchScore},</if>
-            <if test="riskType != null">risk_type = #{riskType},</if>
-            <if test="riskLevel != null">risk_level = #{riskLevel},</if>
-            <if test="status != null">status = #{status},</if>
-        </set>
-        WHERE id = #{id}
-    </update>
-
-    <update id="updateStatus">
-        UPDATE z_match_records SET status = #{status}
-        WHERE id = #{id}
-    </update>
-
-    <delete id="delete" parameterType="java.lang.Long">
-        DELETE FROM z_match_records WHERE id = #{id}
-    </delete>
-
-    <select id="lastInsertId" resultType="long">
-        SELECT LAST_INSERT_ID()
-    </select>
-
 </mapper>

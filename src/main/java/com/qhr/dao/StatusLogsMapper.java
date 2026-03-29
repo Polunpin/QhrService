@@ -1,5 +1,6 @@
 package com.qhr.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.qhr.model.StatusLog;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -7,17 +8,11 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 @Mapper
-public interface StatusLogsMapper {
-
-  StatusLog getById(@Param("id") Long id);
-
-  int insert(StatusLog log);
+public interface StatusLogsMapper extends BaseMapper<StatusLog> {
 
   List<StatusLog> listByOrderId(@Param("orderId") Long orderId,
                                 @Param("offset") Integer offset,
                                 @Param("size") Integer size);
 
   long countByOrderId(@Param("orderId") Long orderId);
-
-  long lastInsertId();
 }

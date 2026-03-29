@@ -18,13 +18,16 @@ public class StatusLogServiceImpl implements StatusLogService {
 
   @Override
   public Long create(StatusLog log) {
+    if (log == null) {
+      return null;
+    }
     statusLogsMapper.insert(log);
-    return statusLogsMapper.lastInsertId();
+    return log.getId();
   }
 
   @Override
   public StatusLog getById(Long id) {
-    return statusLogsMapper.getById(id);
+    return id == null ? null : statusLogsMapper.selectById(id);
   }
 
   @Override

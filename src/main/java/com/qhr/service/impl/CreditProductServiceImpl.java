@@ -1,12 +1,12 @@
 package com.qhr.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.qhr.config.PageResult;
 import com.qhr.dao.CreditProductsMapper;
 import com.qhr.model.Product;
 import com.qhr.service.CreditProductService;
-import com.qhr.vo.CreditProductStats;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @ApplicationScoped
@@ -19,67 +19,32 @@ public class CreditProductServiceImpl implements CreditProductService {
   }
 
   @Override
-  public Product getById(Long id) {
-    return creditProductsMapper.getById(id);
+  public PageResult<Product> list(Integer offset, Integer size) {
+    List<Product> products = creditProductsMapper.list(offset, size);
+    Long count = creditProductsMapper.selectCount(Wrappers.lambdaQuery());
+    return PageResult.of(products, count, offset, size);
   }
 
+
   @Override
-  public List<Product> getByIds(List<Long> ids) {
-    if (ids == null || ids.isEmpty()) {
-      return List.of();
-    }
-    return creditProductsMapper.getByIds(ids);
+  public Product getById(Long id) {
+    return creditProductsMapper.selectById(id);
   }
 
   @Override
   public Long create(Product product) {
     creditProductsMapper.insert(product);
-    return creditProductsMapper.lastInsertId();
+    return product.getId();
   }
 
   @Override
   public boolean update(Product product) {
-    return creditProductsMapper.update(product) > 0;
+    return creditProductsMapper.updateById(product) > 0;
   }
 
   @Override
   public boolean delete(Long id) {
-    return creditProductsMapper.delete(id) > 0;
+    return creditProductsMapper.deleteById(id) > 0;
   }
 
-  @Override
-  public boolean updateStatus(Long id, Integer status) {
-    return creditProductsMapper.updateStatus(id, status) > 0;
-  }
-
-  @Override
-  public List<Product> list(Integer status, String productType, String bankName, Integer offset, Integer size) {
-    return creditProductsMapper.list(status, productType, bankName, offset, size);
-  }
-
-  @Override
-  public long count(Integer status, String productType, String bankName) {
-    return creditProductsMapper.count(status, productType, bankName);
-  }
-
-  @Override
-  public List<Product> findEligibleProducts(BigDecimal expectedAmount,
-                                            Integer expectedTerm,
-                                            String productType,
-                                            Integer offset,
-                                            Integer size) {
-    return creditProductsMapper.findEligibleProducts(expectedAmount, expectedTerm, productType, offset, size);
-  }
-
-  @Override
-  public long countEligibleProducts(BigDecimal expectedAmount,
-                                    Integer expectedTerm,
-                                    String productType) {
-    return creditProductsMapper.countEligibleProducts(expectedAmount, expectedTerm, productType);
-  }
-
-  @Override
-  public CreditProductStats getStats() {
-    return creditProductsMapper.getStats();
-  }
 }

@@ -66,11 +66,17 @@
             <artifactId>quarkus-virtual-threads</artifactId>
         </dependency>
 
+        <!--        <dependency>-->
+        <!--            <groupId>io.quarkiverse.mybatis</groupId>-->
+        <!--            <artifactId>quarkus-mybatis</artifactId>-->
+        <!--            <version>${quarkus.mybatis.version}</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>io.quarkiverse.mybatis</groupId>
-            <artifactId>quarkus-mybatis</artifactId>
-            <version>${quarkus.mybatis.version}</version>
+            <artifactId>quarkus-mybatis-plus</artifactId>
+            <version>2.4.2</version>
         </dependency>
+
 
         <dependency>
             <groupId>org.kie.kogito</groupId>
@@ -136,7 +142,8 @@
                         </goals>
                         <configuration>
                             <systemPropertyVariables>
-                                <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+                                <native.image.path>${project.build.directory}/${project.build.finalName}-runner
+                                </native.image.path>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                             </systemPropertyVariables>
                         </configuration>

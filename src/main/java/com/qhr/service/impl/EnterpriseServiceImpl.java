@@ -1,11 +1,12 @@
 package com.qhr.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.qhr.config.PageResult;
 import com.qhr.dao.EnterprisesMapper;
 import com.qhr.model.Enterprise;
 import com.qhr.service.EnterpriseService;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.util.Collections;
 import java.util.List;
 
 @ApplicationScoped
@@ -18,49 +19,37 @@ public class EnterpriseServiceImpl implements EnterpriseService {
   }
 
   @Override
-  public Enterprise getById(Long id) {
-    return enterprisesMapper.getById(id);
+  public PageResult<Enterprise> list(Integer offset, Integer size) {
+    List<Enterprise> enterprises = enterprisesMapper.list(offset, size);
+    Long count = enterprisesMapper.selectCount(Wrappers.lambdaQuery());
+    return PageResult.of(enterprises, count, offset, size);
+  }
+
+  public PageResult<Enterprise> listByUserId(Long userId, Integer offset, Integer size) {
+    List<Enterprise> enterprises = enterprisesMapper.listByUserId(userId, offset, size);
+    Long count = enterprisesMapper.selectCount(Wrappers.lambdaQuery());
+    return PageResult.of(enterprises, count, offset, size);
   }
 
   @Override
   public Long create(Enterprise enterprise) {
     enterprisesMapper.insert(enterprise);
-    return enterprisesMapper.lastInsertId();
+    return enterprise.getId();
   }
 
   @Override
   public boolean update(Enterprise enterprise) {
-    return enterprisesMapper.update(enterprise) > 0;
+    return enterprisesMapper.updateById(enterprise) > 0;
   }
 
   @Override
   public boolean delete(Long id) {
-    return enterprisesMapper.delete(id) > 0;
+    return enterprisesMapper.deleteById(id) > 0;
   }
 
   @Override
-  public List<Enterprise> list(String name, String creditCode, String operName, String status, Integer offset, Integer size) {
-    return enterprisesMapper.list(name, creditCode, operName, status, offset, size);
+  public Enterprise getById(Long id) {
+    return enterprisesMapper.selectById(id);
   }
 
-  @Override
-  public long count(String name, String creditCode, String operName, String status) {
-    return enterprisesMapper.count(name, creditCode, operName, status);
-  }
-
-  @Override
-  public List<Enterprise> listByUserId(Long userId, Integer offset, Integer size) {
-    if (userId == null) {
-      return Collections.emptyList();
-    }
-    return enterprisesMapper.listByUserId(userId, offset, size);
-  }
-
-  @Override
-  public long countByUserId(Long userId) {
-    if (userId == null) {
-      return 0;
-    }
-    return enterprisesMapper.countByUserId(userId);
-  }
 }
