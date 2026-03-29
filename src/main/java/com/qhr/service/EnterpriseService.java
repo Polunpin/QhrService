@@ -11,6 +11,16 @@ public interface EnterpriseService {
    */
   PageResult<Enterprise> list(Integer offset, Integer size);
 
+  /**
+   * 分页查询用户关联企业
+   */
+  PageResult<Enterprise> listByUserId(Long userId, Integer offset, Integer size);
+
+  /**
+   * 根据creditCode查询企业
+   */
+  Enterprise getByCreditCode(String creditCode);
+
 
   /** 创建企业并返回主键 */
   Long create(Enterprise enterprise);
@@ -26,8 +36,4 @@ public interface EnterpriseService {
    */
   Enterprise getById(Long id);
 
-  /**
-   * 分页查询用户关联企业
-   */
-  PageResult<Enterprise> listByUserId(Long userId, Integer offset, Integer size);
 }

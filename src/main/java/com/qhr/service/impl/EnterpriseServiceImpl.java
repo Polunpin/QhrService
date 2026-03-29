@@ -32,6 +32,13 @@ public class EnterpriseServiceImpl implements EnterpriseService {
   }
 
   @Override
+  public Enterprise getByCreditCode(String creditCode) {
+    return enterprisesMapper.selectOne(
+            Wrappers.<Enterprise>lambdaQuery().eq(Enterprise::getCreditCode, creditCode)
+    );
+  }
+
+  @Override
   public Long create(Enterprise enterprise) {
     enterprisesMapper.insert(enterprise);
     return enterprise.getId();
