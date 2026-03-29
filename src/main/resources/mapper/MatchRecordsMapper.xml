@@ -3,18 +3,16 @@
 <mapper namespace="com.qhr.dao.MatchRecordsMapper">
 
     <resultMap id="MatchRecordsMap" type="com.qhr.model.MatchRecord">
-        <constructor>
-            <idArg column="id" javaType="java.lang.Long" name="id"/>
-            <arg column="user_open_id" javaType="java.lang.String" name="userOpenId"/>
-            <arg column="enterprise_id" javaType="java.lang.Long" name="enterpriseId"/>
-            <arg column="intention_id" javaType="java.lang.Long" name="intentionId"/>
-            <arg column="product_ids" javaType="java.lang.String" name="productIds"/>
-            <arg column="match_score" javaType="java.math.BigDecimal" name="matchScore"/>
-            <arg column="risk_type" javaType="java.lang.String" name="riskType"/>
-            <arg column="risk_level" javaType="java.lang.String" name="riskLevel"/>
-            <arg column="status" javaType="java.lang.String" name="status"/>
-            <arg column="created_at" javaType="java.time.LocalDateTime" name="createdAt"/>
-        </constructor>
+        <id column="id" property="id"/>
+        <result column="user_open_id" property="userOpenId"/>
+        <result column="enterprise_id" property="enterpriseId"/>
+        <result column="intention_id" property="intentionId"/>
+        <result column="product_ids" property="productIds"/>
+        <result column="match_score" property="matchScore"/>
+        <result column="risk_type" property="riskType"/>
+        <result column="risk_level" property="riskLevel"/>
+        <result column="status" property="status"/>
+        <result column="created_at" property="createdAt"/>
     </resultMap>
 
     <resultMap id="MatchRecordsVoMap" type="com.qhr.vo.MatchRecords">

@@ -19,11 +19,6 @@ public record CustomServiceOrder(Long id,
                                  String costDetails,
                                  String settleStatus,
                                  LocalDateTime lastUpdateAt,
-                                 LocalDateTime createdAt) implements Serializable, WithId<CustomServiceOrder> {
+                                 LocalDateTime createdAt) implements Serializable {
 
-  /** 复制并替换id。 */
-  public CustomServiceOrder withId(Long id) {
-    return new CustomServiceOrder(id, enterpriseId, intentionId, staffId, currentStage, serviceStatus,
-        loanAmount, commissionAmount, serviceCost, costDetails, settleStatus, lastUpdateAt, createdAt);
-  }
 }

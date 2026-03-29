@@ -5,7 +5,6 @@ import com.qhr.config.ApiCode;
 import com.qhr.dto.MeasureSubmitRequest;
 import com.qhr.dto.MeasureSubmitResponse;
 import com.qhr.model.Enterprise;
-import com.qhr.model.FinancingIntention;
 import com.qhr.service.*;
 import com.qhr.vo.Person;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -15,7 +14,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @ApplicationScoped
 public class MeasureServiceImpl implements MeasureService {
@@ -46,19 +44,19 @@ public class MeasureServiceImpl implements MeasureService {
     ApiAssert.isTrue(userService.bindEnterprise(openid, enterpriseId, "owner"),
         ApiCode.INTERNAL_ERROR, "用户与企业绑定失败");
 
-    FinancingIntention intention = new FinancingIntention(
-        null,
-        enterpriseId,
-        request.amountRange(),
-        defaultFalse(request.property()),
-        defaultFalse(request.propertyMortgage()),
-        defaultFalse(request.spouseSupport()),
-        request.taxAccount(),
-        request.taxPassword(),
-        null,
-        null
-    );
-    financingIntentionService.create(intention);
+//    FinancingIntention intention = new FinancingIntention(
+//        null,
+//        enterpriseId,
+//        request.amountRange(),
+//        defaultFalse(request.property()),
+//        defaultFalse(request.propertyMortgage()),
+//        defaultFalse(request.spouseSupport()),
+//        request.taxAccount(),
+//        request.taxPassword(),
+//        null,
+//        null
+//    );
+//    financingIntentionService.create(intention);
 
     //todo 预审
 //    PrecheckResult precheckResult = (PrecheckResult) dmnDecisionService.precheck(buildPrecheckPerson(request.enterprise()));
@@ -69,31 +67,31 @@ public class MeasureServiceImpl implements MeasureService {
   private Long upsertEnterprise(MeasureSubmitRequest.EnterprisePayload enterprisePayload) {
 
     Enterprise existing = findExistingEnterprise(enterprisePayload.creditCode());
-    Enterprise enterprise = new Enterprise(
-        existing == null ? null : existing.id(),
-        enterprisePayload.name(),
-        blankToNull(enterprisePayload.creditCode()),
-        blankToNull(enterprisePayload.startDate()),
-        blankToNull(enterprisePayload.operName()),
-        blankToNull(enterprisePayload.status()),
-        blankToNull(enterprisePayload.address()),
-        existing == null ? null : existing.createdAt(),
-        existing == null ? null : existing.updatedAt()
-    );
+//    Enterprise enterprise = new Enterprise(
+//        existing == null ? null : existing.id(),
+//        enterprisePayload.name(),
+//        blankToNull(enterprisePayload.creditCode()),
+//        blankToNull(enterprisePayload.startDate()),
+//        blankToNull(enterprisePayload.operName()),
+//        blankToNull(enterprisePayload.status()),
+//        blankToNull(enterprisePayload.address()),
+//        existing == null ? null : existing.createdAt(),
+//        existing == null ? null : existing.updatedAt()
+//    );
 
-    if (existing == null) {
-      return enterpriseService.create(enterprise);
-    }
+//    if (existing == null) {
+//      return enterpriseService.create(enterprise);
+//    }
 //    ApiAssert.isTrue(enterpriseService.update(enterprise), ApiCode.INTERNAL_ERROR, "更新企业信息失败");
-    return existing.id();
+    return existing.getId();
   }
 
   private Enterprise findExistingEnterprise(String creditCode) {
     if (creditCode == null || creditCode.isBlank()) {
       return null;
     }
-    List<Enterprise> items = enterpriseService.list(null, creditCode, null, null, 0, 1);
-    return items.isEmpty() ? null : items.getFirst();
+//    List<Enterprise> items = enterpriseService.list(0, 1);
+    return null;
   }
 
   private Person buildPrecheckPerson(MeasureSubmitRequest.EnterprisePayload enterprisePayload) {

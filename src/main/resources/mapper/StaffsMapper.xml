@@ -3,17 +3,15 @@
 <mapper namespace="com.qhr.dao.StaffsMapper">
 
     <resultMap id="StaffsMap" type="com.qhr.model.Staff">
-        <constructor>
-            <idArg column="id" javaType="java.lang.Long" name="id"/>
-            <arg column="openid" javaType="java.lang.String" name="openid"/>
-            <arg column="real_name" javaType="java.lang.String" name="realName"/>
-            <arg column="mobile" javaType="java.lang.String" name="mobile"/>
-            <arg column="role" javaType="java.lang.String" name="role"/>
-            <arg column="department" javaType="java.lang.String" name="department"/>
-            <arg column="status" javaType="java.lang.Integer" name="status"/>
-            <arg column="last_update_at" javaType="java.time.LocalDateTime" name="lastUpdateAt"/>
-            <arg column="created_at" javaType="java.time.LocalDateTime" name="createdAt"/>
-        </constructor>
+        <id column="id" property="id"/>
+        <result column="openid" property="openid"/>
+        <result column="real_name" property="realName"/>
+        <result column="mobile" property="mobile"/>
+        <result column="role" property="role"/>
+        <result column="department" property="department"/>
+        <result column="status" property="status"/>
+        <result column="last_update_at" property="lastUpdateAt"/>
+        <result column="created_at" property="createdAt"/>
     </resultMap>
 
     <sql id="Staff_Columns">

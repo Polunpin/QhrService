@@ -3,16 +3,14 @@
 <mapper namespace="com.qhr.dao.StatusLogsMapper">
 
     <resultMap id="StatusLogsMap" type="com.qhr.model.StatusLog">
-        <constructor>
-            <idArg column="id" javaType="java.lang.Long" name="id"/>
-            <arg column="order_id" javaType="java.lang.Long" name="orderId"/>
-            <arg column="operator_type" javaType="java.lang.String" name="operatorType"/>
-            <arg column="operator_id" javaType="java.lang.Long" name="operatorId"/>
-            <arg column="pre_stage" javaType="java.lang.String" name="preStage"/>
-            <arg column="post_stage" javaType="java.lang.String" name="postStage"/>
-            <arg column="remark" javaType="java.lang.String" name="remark"/>
-            <arg column="created_at" javaType="java.time.LocalDateTime" name="createdAt"/>
-        </constructor>
+        <id column="id" property="id"/>
+        <result column="order_id" property="orderId"/>
+        <result column="operator_type" property="operatorType"/>
+        <result column="operator_id" property="operatorId"/>
+        <result column="pre_stage" property="preStage"/>
+        <result column="post_stage" property="postStage"/>
+        <result column="remark" property="remark"/>
+        <result column="created_at" property="createdAt"/>
     </resultMap>
 
     <sql id="StatusLog_Columns">

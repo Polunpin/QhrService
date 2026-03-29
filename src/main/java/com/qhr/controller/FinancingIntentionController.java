@@ -48,7 +48,7 @@ public class FinancingIntentionController {
   public ApiResponse update(@PathParam("id") Long id, FinancingIntention intention) {
     ApiAssert.notNull(id, ApiCode.BAD_REQUEST, "id不能为空");
     ApiAssert.notNull(intention, ApiCode.BAD_REQUEST, "请求体intention不能为空");
-    return ApiResponse.ok(financingIntentionService.update(intention.withId(id)));
+    return ApiResponse.ok(financingIntentionService.update(intention));
   }
 
   /** 删除融资需求 */

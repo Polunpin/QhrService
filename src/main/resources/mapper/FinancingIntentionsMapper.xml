@@ -3,18 +3,16 @@
 <mapper namespace="com.qhr.dao.FinancingIntentionsMapper">
 
     <resultMap id="FinancingIntentionsMap" type="com.qhr.model.FinancingIntention">
-        <constructor>
-            <idArg column="id" javaType="java.lang.Long" name="id"/>
-            <arg column="enterprise_id" javaType="java.lang.Long" name="enterpriseId"/>
-            <arg column="amount_range" javaType="java.lang.String" name="amountRange"/>
-            <arg column="property" javaType="java.lang.Boolean" name="property"/>
-            <arg column="property_mortgage" javaType="java.lang.Boolean" name="propertyMortgage"/>
-            <arg column="spouse_support" javaType="java.lang.Boolean" name="spouseSupport"/>
-            <arg column="tax_account" javaType="java.lang.String" name="taxAccount"/>
-            <arg column="tax_password" javaType="java.lang.String" name="taxPassword"/>
-            <arg column="created_at" javaType="java.time.LocalDateTime" name="createdAt"/>
-            <arg column="updated_at" javaType="java.time.LocalDateTime" name="updatedAt"/>
-        </constructor>
+        <id column="id" property="id"/>
+        <result column="enterprise_id" property="enterpriseId"/>
+        <result column="amount_range" property="amountRange"/>
+        <result column="property" property="property"/>
+        <result column="property_mortgage" property="propertyMortgage"/>
+        <result column="spouse_support" property="spouseSupport"/>
+        <result column="tax_account" property="taxAccount"/>
+        <result column="tax_password" property="taxPassword"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
     </resultMap>
 
     <sql id="FinancingIntention_Columns">

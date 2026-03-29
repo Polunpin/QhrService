@@ -3,17 +3,15 @@
 <mapper namespace="com.qhr.dao.EnterprisesMapper">
 
     <resultMap id="EnterprisesMap" type="com.qhr.model.Enterprise">
-        <constructor>
-            <idArg column="id" javaType="java.lang.Long" name="id"/>
-            <arg column="name" javaType="java.lang.String" name="name"/>
-            <arg column="credit_code" javaType="java.lang.String" name="creditCode"/>
-            <arg column="start_date" javaType="java.lang.String" name="startDate"/>
-            <arg column="oper_name" javaType="java.lang.String" name="operName"/>
-            <arg column="status" javaType="java.lang.String" name="status"/>
-            <arg column="address" javaType="java.lang.String" name="address"/>
-            <arg column="created_at" javaType="java.time.LocalDateTime" name="createdAt"/>
-            <arg column="updated_at" javaType="java.time.LocalDateTime" name="updatedAt"/>
-        </constructor>
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="credit_code" property="creditCode"/>
+        <result column="start_date" property="startDate"/>
+        <result column="oper_name" property="operName"/>
+        <result column="status" property="status"/>
+        <result column="address" property="address"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
     </resultMap>
 
     <sql id="Enterprise_Columns">

@@ -3,7 +3,6 @@ package com.qhr.service.impl;
 import com.qhr.dao.CustomServiceOrdersMapper;
 import com.qhr.dao.StatusLogsMapper;
 import com.qhr.model.CustomServiceOrder;
-import com.qhr.model.StatusLog;
 import com.qhr.service.CustomServiceOrderService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -72,15 +71,15 @@ public class CustomServiceOrderServiceImpl implements CustomServiceOrderService 
       ordersMapper.updateServiceStatus(id, serviceStatus);
     }
     String safeOperatorType = operatorType == null || operatorType.trim().isEmpty() ? "system" : operatorType.trim();
-    StatusLog log = new StatusLog(null,
-        id,
-        safeOperatorType,
-        operatorId,
-        existing.currentStage(),
-        postStage,
-        remark,
-        null);
-    statusLogsMapper.insert(log);
+//    StatusLog log = new StatusLog(null,
+//        id,
+//        safeOperatorType,
+//        operatorId,
+//        existing.currentStage(),
+//        postStage,
+//        remark,
+//        null);
+//    statusLogsMapper.insert(log);
     return updated;
   }
 

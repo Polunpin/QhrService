@@ -10,10 +10,6 @@ public record UserEnterpriseRelation(Long id,
                                      Long enterpriseId,
                                      String userOpenId,
                                      String role,
-                                     LocalDateTime createdAt) implements Serializable, WithId<UserEnterpriseRelation> {
+                                     LocalDateTime createdAt) implements Serializable {
 
-  /** 复制并替换id。 */
-  public UserEnterpriseRelation withId(Long id) {
-    return new UserEnterpriseRelation(id, enterpriseId, userOpenId, role, createdAt);
-  }
 }

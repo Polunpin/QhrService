@@ -55,7 +55,7 @@ public class CustomServiceOrderController {
   public ApiResponse update(@PathParam("id") Long id, CustomServiceOrder order) {
     ApiAssert.notNull(id, ApiCode.BAD_REQUEST, "id不能为空");
     ApiAssert.notNull(order, ApiCode.BAD_REQUEST, "请求体order不能为空");
-    return ApiResponse.ok(orderService.update(order.withId(id)));
+    return ApiResponse.ok(orderService.update(order));
   }
 
   /** 删除订单 */

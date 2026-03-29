@@ -3,75 +3,74 @@
 <mapper namespace="com.qhr.dao.ProductRulesMapper">
 
     <resultMap id="ProductRuleMap" type="com.qhr.model.ProductRule">
-        <constructor>
-            <idArg column="id" javaType="java.lang.Long" name="id"/>
-            <arg column="product_id" javaType="java.lang.Long" name="productId"/>
-            <arg column="rule_version" javaType="java.lang.Integer" name="ruleVersion"/>
-            <arg column="rule_name" javaType="java.lang.String" name="ruleName"/>
-            <arg column="is_active" javaType="java.lang.Integer" name="isActive"/>
-            <arg column="effective_start_time" javaType="java.time.LocalDateTime" name="effectiveStartTime"/>
-            <arg column="effective_end_time" javaType="java.time.LocalDateTime" name="effectiveEndTime"/>
-            <arg column="remark" javaType="java.lang.String" name="remark"/>
-            <arg column="gs_min_establish_months" javaType="java.lang.Integer" name="gsMinEstablishMonths"/>
-            <arg column="gs_min_registered_capital" javaType="java.math.BigDecimal" name="gsMinRegisteredCapital"/>
-            <arg column="gs_min_paid_in_capital" javaType="java.math.BigDecimal" name="gsMinPaidInCapital"/>
-            <arg column="gs_max_legal_rep_change_count_2y" javaType="java.lang.Integer" name="gsMaxLegalRepChangeCount2y"/>
-            <arg column="gs_min_legal_rep_change_gap_months" javaType="java.lang.Integer" name="gsMinLegalRepChangeGapMonths"/>
-            <arg column="gs_min_legal_rep_share_ratio" javaType="java.math.BigDecimal" name="gsMinLegalRepShareRatio"/>
-            <arg column="gs_allow_legal_rep_no_joint_liability" javaType="java.lang.Integer" name="gsAllowLegalRepNoJointLiability"/>
-            <arg column="gs_allow_shareholder_replace_joint_liability" javaType="java.lang.Integer" name="gsAllowShareholderReplaceJointLiability"/>
-            <arg column="gs_min_shareholder_replace_share_ratio" javaType="java.math.BigDecimal" name="gsMinShareholderReplaceShareRatio"/>
-            <arg column="tax_min_tax_months_12m" javaType="java.lang.Integer" name="taxMinTaxMonths12m"/>
-            <arg column="tax_min_tax_months_24m" javaType="java.lang.Integer" name="taxMinTaxMonths24m"/>
-            <arg column="tax_max_zero_declare_streak" javaType="java.lang.Integer" name="taxMaxZeroDeclareStreak"/>
-            <arg column="tax_min_tax_amount_12m" javaType="java.math.BigDecimal" name="taxMinTaxAmount12m"/>
-            <arg column="tax_min_tax_amount_ytd" javaType="java.math.BigDecimal" name="taxMinTaxAmountYtd"/>
-            <arg column="tax_min_tax_amount_last_year" javaType="java.math.BigDecimal" name="taxMinTaxAmountLastYear"/>
-            <arg column="tax_max_tax_burden_ratio" javaType="java.math.BigDecimal" name="taxMaxTaxBurdenRatio"/>
-            <arg column="tax_min_tax_burden_ratio_yoy" javaType="java.math.BigDecimal" name="taxMinTaxBurdenRatioYoy"/>
-            <arg column="tax_min_total_declares" javaType="java.lang.Integer" name="taxMinTotalDeclares"/>
-            <arg column="jud_reject_if_major_lawsuit" javaType="java.lang.Integer" name="judRejectIfMajorLawsuit"/>
-            <arg column="jud_reject_if_executed" javaType="java.lang.Integer" name="judRejectIfExecuted"/>
-            <arg column="jud_reject_if_dishonest_person" javaType="java.lang.Integer" name="judRejectIfDishonestPerson"/>
-            <arg column="jud_reject_if_equity_frozen" javaType="java.lang.Integer" name="judRejectIfEquityFrozen"/>
-            <arg column="jud_max_execution_count_24m" javaType="java.lang.Integer" name="judMaxExecutionCount24m"/>
-            <arg column="jud_max_court_announcement_count_12m" javaType="java.lang.Integer" name="judMaxCourtAnnouncementCount12m"/>
-            <arg column="jud_max_admin_penalty_count_12m" javaType="java.lang.Integer" name="judMaxAdminPenaltyCount12m"/>
-            <arg column="jud_reject_if_major_judicial_risk" javaType="java.lang.Integer" name="judRejectIfMajorJudicialRisk"/>
-            <arg column="jud_reject_if_restriction_high_consumption" javaType="java.lang.Integer" name="judRejectIfRestrictionHighConsumption"/>
-            <arg column="ind_match_mode_code" javaType="java.lang.String" name="indMatchModeCode"/>
-            <arg column="ind_max_risk_level" javaType="java.lang.Integer" name="indMaxRiskLevel"/>
-            <arg column="ind_require_enterprise_tag" javaType="java.lang.Integer" name="indRequireEnterpriseTag"/>
-            <arg column="ind_min_tag_valid_months" javaType="java.lang.Integer" name="indMinTagValidMonths"/>
-            <arg column="ind_require_region_match" javaType="java.lang.Integer" name="indRequireRegionMatch"/>
-            <arg column="ind_require_actual_business_address" javaType="java.lang.Integer" name="indRequireActualBusinessAddress"/>
-            <arg column="ind_reject_if_high_pollution" javaType="java.lang.Integer" name="indRejectIfHighPollution"/>
-            <arg column="ind_reject_if_high_energy_consumption" javaType="java.lang.Integer" name="indRejectIfHighEnergyConsumption"/>
-            <arg column="ind_reject_if_sensitive_industry" javaType="java.lang.Integer" name="indRejectIfSensitiveIndustry"/>
-            <arg column="ec_max_total_liability" javaType="java.math.BigDecimal" name="ecMaxTotalLiability"/>
-            <arg column="ec_max_credit_liability" javaType="java.math.BigDecimal" name="ecMaxCreditLiability"/>
-            <arg column="ec_max_mortgage_liability" javaType="java.math.BigDecimal" name="ecMaxMortgageLiability"/>
-            <arg column="ec_max_external_guarantee_amount" javaType="java.math.BigDecimal" name="ecMaxExternalGuaranteeAmount"/>
-            <arg column="ec_max_loan_org_count" javaType="java.lang.Integer" name="ecMaxLoanOrgCount"/>
-            <arg column="ec_max_query_count_6m" javaType="java.lang.Integer" name="ecMaxQueryCount6m"/>
-            <arg column="ec_max_overdue_count_12m" javaType="java.lang.Integer" name="ecMaxOverdueCount12m"/>
-            <arg column="ec_max_overdue_months_24m" javaType="java.lang.Integer" name="ecMaxOverdueMonths24m"/>
-            <arg column="ec_min_no_overdue_days" javaType="java.lang.Integer" name="ecMinNoOverdueDays"/>
-            <arg column="ec_allow_abnormal_credit_account" javaType="java.lang.Integer" name="ecAllowAbnormalCreditAccount"/>
-            <arg column="pc_max_query_count_1m" javaType="java.lang.Integer" name="pcMaxQueryCount1m"/>
-            <arg column="pc_max_query_count_3m" javaType="java.lang.Integer" name="pcMaxQueryCount3m"/>
-            <arg column="pc_max_query_count_6m" javaType="java.lang.Integer" name="pcMaxQueryCount6m"/>
-            <arg column="pc_max_loan_query_count_1m" javaType="java.lang.Integer" name="pcMaxLoanQueryCount1m"/>
-            <arg column="pc_max_credit_card_query_count_1m" javaType="java.lang.Integer" name="pcMaxCreditCardQueryCount1m"/>
-            <arg column="pc_max_overdue_count_12m" javaType="java.lang.Integer" name="pcMaxOverdueCount12m"/>
-            <arg column="pc_max_overdue_months_24m" javaType="java.lang.Integer" name="pcMaxOverdueMonths24m"/>
-            <arg column="pc_max_total_overdue_terms_5y" javaType="java.lang.Integer" name="pcMaxTotalOverdueTerms5y"/>
-            <arg column="pc_max_non_bank_loan_count" javaType="java.lang.Integer" name="pcMaxNonBankLoanCount"/>
-            <arg column="pc_max_credit_card_utilization" javaType="java.math.BigDecimal" name="pcMaxCreditCardUtilization"/>
-            <arg column="ext_json" javaType="java.lang.String" name="extJson"/>
-            <arg column="created_at" javaType="java.time.LocalDateTime" name="createdAt"/>
-            <arg column="updated_at" javaType="java.time.LocalDateTime" name="updatedAt"/>
-        </constructor>
+        <id column="id" property="id"/>
+        <result column="product_id" property="productId"/>
+        <result column="rule_version" property="ruleVersion"/>
+        <result column="rule_name" property="ruleName"/>
+        <result column="is_active" property="isActive"/>
+        <result column="effective_start_time" property="effectiveStartTime"/>
+        <result column="effective_end_time" property="effectiveEndTime"/>
+        <result column="remark" property="remark"/>
+        <result column="gs_min_establish_months" property="gsMinEstablishMonths"/>
+        <result column="gs_min_registered_capital" property="gsMinRegisteredCapital"/>
+        <result column="gs_min_paid_in_capital" property="gsMinPaidInCapital"/>
+        <result column="gs_max_legal_rep_change_count_2y" property="gsMaxLegalRepChangeCount2y"/>
+        <result column="gs_min_legal_rep_change_gap_months" property="gsMinLegalRepChangeGapMonths"/>
+        <result column="gs_min_legal_rep_share_ratio" property="gsMinLegalRepShareRatio"/>
+        <result column="gs_allow_legal_rep_no_joint_liability" property="gsAllowLegalRepNoJointLiability"/>
+        <result column="gs_allow_shareholder_replace_joint_liability"
+                property="gsAllowShareholderReplaceJointLiability"/>
+        <result column="gs_min_shareholder_replace_share_ratio" property="gsMinShareholderReplaceShareRatio"/>
+        <result column="tax_min_tax_months_12m" property="taxMinTaxMonths12m"/>
+        <result column="tax_min_tax_months_24m" property="taxMinTaxMonths24m"/>
+        <result column="tax_max_zero_declare_streak" property="taxMaxZeroDeclareStreak"/>
+        <result column="tax_min_tax_amount_12m" property="taxMinTaxAmount12m"/>
+        <result column="tax_min_tax_amount_ytd" property="taxMinTaxAmountYtd"/>
+        <result column="tax_min_tax_amount_last_year" property="taxMinTaxAmountLastYear"/>
+        <result column="tax_max_tax_burden_ratio" property="taxMaxTaxBurdenRatio"/>
+        <result column="tax_min_tax_burden_ratio_yoy" property="taxMinTaxBurdenRatioYoy"/>
+        <result column="tax_min_total_declares" property="taxMinTotalDeclares"/>
+        <result column="jud_reject_if_major_lawsuit" property="judRejectIfMajorLawsuit"/>
+        <result column="jud_reject_if_executed" property="judRejectIfExecuted"/>
+        <result column="jud_reject_if_dishonest_person" property="judRejectIfDishonestPerson"/>
+        <result column="jud_reject_if_equity_frozen" property="judRejectIfEquityFrozen"/>
+        <result column="jud_max_execution_count_24m" property="judMaxExecutionCount24m"/>
+        <result column="jud_max_court_announcement_count_12m" property="judMaxCourtAnnouncementCount12m"/>
+        <result column="jud_max_admin_penalty_count_12m" property="judMaxAdminPenaltyCount12m"/>
+        <result column="jud_reject_if_major_judicial_risk" property="judRejectIfMajorJudicialRisk"/>
+        <result column="jud_reject_if_restriction_high_consumption" property="judRejectIfRestrictionHighConsumption"/>
+        <result column="ind_match_mode_code" property="indMatchModeCode"/>
+        <result column="ind_max_risk_level" property="indMaxRiskLevel"/>
+        <result column="ind_require_enterprise_tag" property="indRequireEnterpriseTag"/>
+        <result column="ind_min_tag_valid_months" property="indMinTagValidMonths"/>
+        <result column="ind_require_region_match" property="indRequireRegionMatch"/>
+        <result column="ind_require_actual_business_address" property="indRequireActualBusinessAddress"/>
+        <result column="ind_reject_if_high_pollution" property="indRejectIfHighPollution"/>
+        <result column="ind_reject_if_high_energy_consumption" property="indRejectIfHighEnergyConsumption"/>
+        <result column="ind_reject_if_sensitive_industry" property="indRejectIfSensitiveIndustry"/>
+        <result column="ec_max_total_liability" property="ecMaxTotalLiability"/>
+        <result column="ec_max_credit_liability" property="ecMaxCreditLiability"/>
+        <result column="ec_max_mortgage_liability" property="ecMaxMortgageLiability"/>
+        <result column="ec_max_external_guarantee_amount" property="ecMaxExternalGuaranteeAmount"/>
+        <result column="ec_max_loan_org_count" property="ecMaxLoanOrgCount"/>
+        <result column="ec_max_query_count_6m" property="ecMaxQueryCount6m"/>
+        <result column="ec_max_overdue_count_12m" property="ecMaxOverdueCount12m"/>
+        <result column="ec_max_overdue_months_24m" property="ecMaxOverdueMonths24m"/>
+        <result column="ec_min_no_overdue_days" property="ecMinNoOverdueDays"/>
+        <result column="ec_allow_abnormal_credit_account" property="ecAllowAbnormalCreditAccount"/>
+        <result column="pc_max_query_count_1m" property="pcMaxQueryCount1m"/>
+        <result column="pc_max_query_count_3m" property="pcMaxQueryCount3m"/>
+        <result column="pc_max_query_count_6m" property="pcMaxQueryCount6m"/>
+        <result column="pc_max_loan_query_count_1m" property="pcMaxLoanQueryCount1m"/>
+        <result column="pc_max_credit_card_query_count_1m" property="pcMaxCreditCardQueryCount1m"/>
+        <result column="pc_max_overdue_count_12m" property="pcMaxOverdueCount12m"/>
+        <result column="pc_max_overdue_months_24m" property="pcMaxOverdueMonths24m"/>
+        <result column="pc_max_total_overdue_terms_5y" property="pcMaxTotalOverdueTerms5y"/>
+        <result column="pc_max_non_bank_loan_count" property="pcMaxNonBankLoanCount"/>
+        <result column="pc_max_credit_card_utilization" property="pcMaxCreditCardUtilization"/>
+        <result column="ext_json" property="extJson"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
     </resultMap>
 
     <sql id="ProductRule_Columns">
