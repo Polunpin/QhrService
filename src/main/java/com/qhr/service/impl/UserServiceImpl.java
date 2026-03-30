@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     if (existing != null) {
       return true;
     }
-    String safeRole = role == null || role.trim().isEmpty() ? "owner" : role.trim();
+    String safeRole = role == null || role.trim().isEmpty() ? "1" : role.trim();
     UserEnterpriseRelation relation = new UserEnterpriseRelation(null, enterpriseId, userOpenId, safeRole, null);
     return relationMapper.insert(relation) > 0;
   }
