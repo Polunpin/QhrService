@@ -2,18 +2,20 @@ package com.qhr.service.impl;
 
 import com.qhr.config.ApiAssert;
 import com.qhr.config.ApiCode;
+import com.qhr.dto.EnterprisePayload;
 import com.qhr.dto.MeasureSubmitRequest;
 import com.qhr.model.Enterprise;
 import com.qhr.model.FinancingIntention;
-import com.qhr.service.*;
-import com.qhr.vo.Person;
+import com.qhr.service.EnterpriseService;
+import com.qhr.service.FinancingIntentionService;
+import com.qhr.service.MeasureService;
+import com.qhr.service.UserService;
+import com.qhr.vo.PrecheckResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
 
 @ApplicationScoped
 public class MeasureServiceImpl implements MeasureService {
@@ -21,16 +23,16 @@ public class MeasureServiceImpl implements MeasureService {
     private final UserService userService;
     private final EnterpriseService enterpriseService;
     private final FinancingIntentionService financingIntentionService;
-    private final DmnDecisionService dmnDecisionService;
+    private final MeasureAsyncMatchService measureAsyncMatchService;
 
     public MeasureServiceImpl(UserService userService,
                               EnterpriseService enterpriseService,
                               FinancingIntentionService financingIntentionService,
-                              DmnDecisionService dmnDecisionService) {
+                              MeasureAsyncMatchService measureAsyncMatchService) {
         this.userService = userService;
         this.enterpriseService = enterpriseService;
         this.financingIntentionService = financingIntentionService;
-        this.dmnDecisionService = dmnDecisionService;
+        this.measureAsyncMatchService = measureAsyncMatchService;
     }
 
     @Override
@@ -40,25 +42,28 @@ public class MeasureServiceImpl implements MeasureService {
         userService.create(openid, unionid);
         //更新或保存企业
         Long enterpriseId = upsertEnterprise(request.enterprise());
+        //用户-绑定-企业
         ApiAssert.isTrue(userService.bindEnterprise(openid, enterpriseId, "owner"),
                 ApiCode.INTERNAL_ERROR, "用户与企业绑定失败");
-
+        //融资需求参数封装
         FinancingIntention intention = new FinancingIntention();
-        intention.setId(enterpriseId);
+        intention.setEnterpriseId(enterpriseId);
         intention.setAmountRange(request.amountRange());
         intention.setProperty(request.property());
         intention.setPropertyMortgage(request.propertyMortgage());
         intention.setSpouseSupport(request.spouseSupport());
         intention.setTaxAccount(request.taxAccount());
         intention.setTaxPassword(request.taxPassword());
-        financingIntentionService.create(intention);
-
-        Object precheck = dmnDecisionService.precheck(buildPrecheckPerson(request.enterprise()));
-        ApiAssert.notNull(precheck, ApiCode.INTERNAL_ERROR, "预审结果为空");
+        Long intentionId = financingIntentionService.create(intention);
+        //预审
+        PrecheckResult precheck = evaluatePrecheck(request.enterprise());
+//        if (precheck.result()) {
+//            measureAsyncMatchService.trigger(request, openid, enterpriseId, intentionId);
+//        }
         return precheck;
     }
 
-    private Long upsertEnterprise(MeasureSubmitRequest.EnterprisePayload enterprisePayload) {
+    private Long upsertEnterprise(EnterprisePayload enterprisePayload) {
         //查询企业是否存在
         Enterprise existing = findExistingEnterprise(enterprisePayload.creditCode());
 
@@ -89,47 +94,30 @@ public class MeasureServiceImpl implements MeasureService {
         return enterpriseService.getByCreditCode(creditCode);
     }
 
-    private Person buildPrecheckPerson(MeasureSubmitRequest.EnterprisePayload enterprisePayload) {
-        return new Person(
-                normalizeAddressForPrecheck(enterprisePayload.address()),
-                blankToNull(enterprisePayload.status()),
-                calculateEnterpriseAgeMonths(enterprisePayload.startDate()),
-                "",
-                false,
-                false,
-                false
-        );
+    private PrecheckResult evaluatePrecheck(EnterprisePayload enterprise) {
+        if (!isEstablishedMoreThanOneYear(enterprise.startDate())) {
+            return new PrecheckResult(false, "企业注册日期需满1年");
+        }
+
+        if (!isActiveEnterpriseStatus(enterprise.status())) {
+            return new PrecheckResult(false, "企业状态需为在业或存续");
+        }
+
+        return new PrecheckResult(true, "预审通过");
     }
 
-    private BigDecimal calculateEnterpriseAgeMonths(String startDate) {
-        if (startDate == null || startDate.isBlank()) {
-            return BigDecimal.ZERO;
-        }
+    private boolean isEstablishedMoreThanOneYear(String startDate) {
         try {
-            LocalDate establishedOn = LocalDate.parse(startDate);
-            LocalDate current = LocalDate.now();
-            long months = ChronoUnit.MONTHS.between(
-                    establishedOn.withDayOfMonth(1),
-                    current.withDayOfMonth(1)
-            );
-            return BigDecimal.valueOf(Math.max(0, months));
+            LocalDate establishedDate = LocalDate.parse(startDate);
+            return !establishedDate.isAfter(LocalDate.now().minusYears(1));
         } catch (DateTimeParseException exception) {
-            throw new IllegalArgumentException("企业成立日期格式不正确，应为yyyy-MM-dd");
+            return false;
         }
     }
 
-    private String normalizeAddressForPrecheck(String address) {
-        if (address == null || address.isBlank()) {
-            return "";
-        }
-        return address.contains("北京") ? "北京" : address;
+    private boolean isActiveEnterpriseStatus(String status) {
+        String normalized = status.trim();
+        return normalized.contains("在业") || normalized.contains("存续");
     }
 
-    private boolean defaultFalse(Boolean value) {
-        return Boolean.TRUE.equals(value);
-    }
-
-    private String blankToNull(String value) {
-        return value == null || value.isBlank() ? null : value;
-    }
 }

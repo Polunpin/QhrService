@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qhr.config.ApiCode;
 import com.qhr.config.ApiException;
+import com.qhr.dto.EnterprisePayload;
 import com.qhr.model.ProductRule;
 import com.qhr.service.DmnDecisionService;
 import com.qhr.service.ProductRuleService;
 import com.qhr.vo.ApplicantProfile;
-import com.qhr.vo.Person;
 import com.qhr.vo.PrecheckResult;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,11 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -70,7 +66,7 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
    * 执行预校验 DMN 决策，返回预审结果。
    */
   @Override
-  public Object precheck(Person request) {
+  public Object precheck(EnterprisePayload request) {
     return evaluateDecision(PRECHECK_RESOURCE, PRECHECK_DECISION_NAME,
             Map.of(COMPANY_INPUT_NAME, buildDmnInput(request)), PrecheckResult.class);
   }

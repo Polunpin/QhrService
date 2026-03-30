@@ -1,11 +1,11 @@
 package com.qhr.service;
 
+import com.qhr.dto.EnterprisePayload;
 import com.qhr.vo.ApplicantProfile;
-import com.qhr.vo.Person;
 
 public interface DmnDecisionService {
 
-  Object precheck(Person request);
+  Object precheck(EnterprisePayload request);
 
   Object match(ApplicantProfile applicantProfile);
 
