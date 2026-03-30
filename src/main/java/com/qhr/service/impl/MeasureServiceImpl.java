@@ -12,6 +12,9 @@ import com.qhr.service.MeasureService;
 import com.qhr.service.UserService;
 import com.qhr.vo.PrecheckResult;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Status;
+import jakarta.transaction.Synchronization;
+import jakarta.transaction.TransactionSynchronizationRegistry;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
@@ -24,15 +27,18 @@ public class MeasureServiceImpl implements MeasureService {
     private final EnterpriseService enterpriseService;
     private final FinancingIntentionService financingIntentionService;
     private final MeasureAsyncMatchService measureAsyncMatchService;
+    private final TransactionSynchronizationRegistry transactionSynchronizationRegistry;
 
     public MeasureServiceImpl(UserService userService,
                               EnterpriseService enterpriseService,
                               FinancingIntentionService financingIntentionService,
-                              MeasureAsyncMatchService measureAsyncMatchService) {
+                              MeasureAsyncMatchService measureAsyncMatchService,
+                              TransactionSynchronizationRegistry transactionSynchronizationRegistry) {
         this.userService = userService;
         this.enterpriseService = enterpriseService;
         this.financingIntentionService = financingIntentionService;
         this.measureAsyncMatchService = measureAsyncMatchService;
+        this.transactionSynchronizationRegistry = transactionSynchronizationRegistry;
     }
 
     @Override
@@ -57,9 +63,9 @@ public class MeasureServiceImpl implements MeasureService {
         Long intentionId = financingIntentionService.create(intention);
         //预审
         PrecheckResult precheck = evaluatePrecheck(request.enterprise());
-//        if (precheck.result()) {
-//            measureAsyncMatchService.trigger(request, openid, enterpriseId, intentionId);
-//        }
+        if (precheck.result()) {
+            triggerAfterCommit(request, openid, enterpriseId, intentionId);
+        }
         return precheck;
     }
 
@@ -118,6 +124,24 @@ public class MeasureServiceImpl implements MeasureService {
     private boolean isActiveEnterpriseStatus(String status) {
         String normalized = status.trim();
         return normalized.contains("在业") || normalized.contains("存续");
+    }
+
+    private void triggerAfterCommit(MeasureSubmitRequest request,
+                                    String openid,
+                                    Long enterpriseId,
+                                    Long intentionId) {
+        transactionSynchronizationRegistry.registerInterposedSynchronization(new Synchronization() {
+            @Override
+            public void beforeCompletion() {
+            }
+
+            @Override
+            public void afterCompletion(int status) {
+                if (status == Status.STATUS_COMMITTED) {
+                    measureAsyncMatchService.trigger(request, openid, enterpriseId, intentionId);
+                }
+            }
+        });
     }
 
 }

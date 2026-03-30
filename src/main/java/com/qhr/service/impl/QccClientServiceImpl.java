@@ -81,7 +81,11 @@ public class QccClientServiceImpl implements QccClientService {
     //解析
     try {
       JsonNode root = objectMapper.readTree(response.body());
-      return root.path("Result");
+      JsonNode result = root.path("Result");
+      if (result.isMissingNode() || result.isNull()) {
+        throw new QccClientException(buildQccFailureMessage(root, "企查查企业模糊搜索接口"));
+      }
+      return result;
     } catch (IOException exception) {
       throw new QccClientException("解析企查查企业模糊搜索响应失败", exception);
     }
@@ -227,5 +231,17 @@ public class QccClientServiceImpl implements QccClientService {
       throw new QccClientException(errorMessage);
     }
     return value.asText();
+  }
+
+  private String buildQccFailureMessage(JsonNode root, String action) {
+    String status = root.path("Status").asText("");
+    String message = root.path("Message").asText("");
+    if (message.isBlank()) {
+      message = "企查查返回空结果";
+    }
+    if (status.isBlank()) {
+      return action + "失败，message=" + message;
+    }
+    return action + "失败，status=" + status + ", message=" + message;
   }
 }
