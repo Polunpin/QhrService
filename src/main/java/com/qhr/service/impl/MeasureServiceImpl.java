@@ -43,7 +43,7 @@ public class MeasureServiceImpl implements MeasureService {
         //更新或保存企业
         Long enterpriseId = upsertEnterprise(request.enterprise());
         //用户-绑定-企业
-        ApiAssert.isTrue(userService.bindEnterprise(openid, enterpriseId, "owner"),
+        ApiAssert.isTrue(userService.bindEnterprise(openid, enterpriseId, "1"),
                 ApiCode.INTERNAL_ERROR, "用户与企业绑定失败");
         //融资需求参数封装
         FinancingIntention intention = new FinancingIntention();
