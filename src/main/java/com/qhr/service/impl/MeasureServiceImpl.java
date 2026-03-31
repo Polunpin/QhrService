@@ -63,9 +63,9 @@ public class MeasureServiceImpl implements MeasureService {
         Long intentionId = financingIntentionService.create(intention);
         //预审
         PrecheckResult precheck = evaluatePrecheck(request.enterprise());
-        if (precheck.result()) {
-            triggerAfterCommit(request, openid, enterpriseId, intentionId);
-        }
+//        if (precheck.result()) {
+//            triggerAfterCommit(request, openid, enterpriseId, intentionId);
+//        }
         return precheck;
     }
 
