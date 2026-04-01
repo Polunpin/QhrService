@@ -1,4 +1,4 @@
-package com.qhr.controller;
+package com.qhr.controller.jichu;
 
 import com.qhr.config.ApiAssert;
 import com.qhr.config.ApiCode;

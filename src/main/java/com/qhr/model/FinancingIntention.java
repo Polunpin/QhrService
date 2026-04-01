@@ -18,15 +18,20 @@ public class FinancingIntention implements Serializable {
 
   @TableId(type = IdType.AUTO)
   private Long id;
+  @TableField("user_open_id")
+  private String userOpenId;
   @TableField("enterprise_id")
   private Long enterpriseId;
   @TableField("amount_range")
   private String amountRange;
-  private Boolean property;
-  @TableField("property_mortgage")
-  private Boolean propertyMortgage;
-  @TableField("spouse_support")
-  private Boolean spouseSupport;
+  @TableField("personal_credit_name")
+  private String personalCreditName;
+  @TableField("personal_credit_cloud_id")
+  private String personalCreditCloudId;
+  @TableField("enterprise_credit_name")
+  private String enterpriseCreditName;
+  @TableField("enterprise_credit_cloud_id")
+  private String enterpriseCreditCloudId;
   @TableField("tax_account")
   private String taxAccount;
   @TableField("tax_password")

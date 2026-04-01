@@ -16,6 +16,7 @@ import jakarta.transaction.Status;
 import jakarta.transaction.Synchronization;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 import jakarta.transaction.Transactional;
+import lombok.NonNull;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -41,6 +42,20 @@ public class MeasureServiceImpl implements MeasureService {
         this.transactionSynchronizationRegistry = transactionSynchronizationRegistry;
     }
 
+    private static @NonNull FinancingIntention getFinancingIntention(MeasureSubmitRequest request, String openid, Long enterpriseId) {
+        FinancingIntention intention = new FinancingIntention();
+        intention.setUserOpenId(openid);
+        intention.setEnterpriseId(enterpriseId);
+        intention.setAmountRange(request.amountRange());
+        intention.setPersonalCreditName(request.personalCreditName());
+        intention.setPersonalCreditCloudId(request.personalCreditCloudId());
+        intention.setEnterpriseCreditName(request.enterpriseCreditName());
+        intention.setEnterpriseCreditCloudId(request.enterpriseCreditCloudId());
+        intention.setTaxAccount(request.taxAccount());
+        intention.setTaxPassword(request.taxPassword());
+        return intention;
+    }
+
     @Override
     @Transactional
     public Object submit(MeasureSubmitRequest request, String openid, String unionid) {
@@ -49,23 +64,15 @@ public class MeasureServiceImpl implements MeasureService {
         //更新或保存企业
         Long enterpriseId = upsertEnterprise(request.enterprise());
         //用户-绑定-企业
-        ApiAssert.isTrue(userService.bindEnterprise(openid, enterpriseId, "1"),
-                ApiCode.INTERNAL_ERROR, "用户与企业绑定失败");
+        userService.bindEnterprise(openid, enterpriseId);
         //融资需求参数封装
-        FinancingIntention intention = new FinancingIntention();
-        intention.setEnterpriseId(enterpriseId);
-        intention.setAmountRange(request.amountRange());
-        intention.setProperty(request.property());
-        intention.setPropertyMortgage(request.propertyMortgage());
-        intention.setSpouseSupport(request.spouseSupport());
-        intention.setTaxAccount(request.taxAccount());
-        intention.setTaxPassword(request.taxPassword());
+        FinancingIntention intention = getFinancingIntention(request, openid, enterpriseId);
         Long intentionId = financingIntentionService.create(intention);
         //预审
         PrecheckResult precheck = evaluatePrecheck(request.enterprise());
-//        if (precheck.result()) {
-//            triggerAfterCommit(request, openid, enterpriseId, intentionId);
-//        }
+        if (precheck.result()) {
+            triggerAfterCommit(request, openid, enterpriseId, intentionId);
+        }
         return precheck;
     }
 
@@ -130,11 +137,14 @@ public class MeasureServiceImpl implements MeasureService {
                                     String openid,
                                     Long enterpriseId,
                                     Long intentionId) {
+        //当前事务的上下文工具箱
         transactionSynchronizationRegistry.registerInterposedSynchronization(new Synchronization() {
+            //事务成功前
             @Override
             public void beforeCompletion() {
             }
 
+            //事务成功后
             @Override
             public void afterCompletion(int status) {
                 if (status == Status.STATUS_COMMITTED) {

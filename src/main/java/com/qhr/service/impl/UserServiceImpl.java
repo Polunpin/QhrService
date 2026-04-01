@@ -33,13 +33,13 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public boolean bindEnterprise(String userOpenId, Long enterpriseId, String role) {
+  public boolean bindEnterprise(String userOpenId, Long enterpriseId) {
+    //查询绑定是否存在
     UserEnterpriseRelation existing = relationMapper.getByUserEnterprise(userOpenId, enterpriseId);
     if (existing != null) {
       return true;
     }
-    String safeRole = role == null || role.trim().isEmpty() ? "1" : role.trim();
-    UserEnterpriseRelation relation = new UserEnterpriseRelation(null, enterpriseId, userOpenId, safeRole, null);
+    UserEnterpriseRelation relation = new UserEnterpriseRelation(null, enterpriseId, userOpenId, null, null);
     return relationMapper.insert(relation) > 0;
   }
 

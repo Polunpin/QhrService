@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public record UserEnterpriseRelation(Long id,
                                      Long enterpriseId,
                                      String userOpenId,
+                                     @Deprecated
                                      String role,
                                      LocalDateTime createdAt) implements Serializable {
 

@@ -81,9 +81,6 @@ public class ApplicantProfile {
     // 婚姻状况（未婚/已婚/离异）
     private String maritalStatus;
 
-    // 配偶是否连带担保
-    private Boolean spouseGuarantee;
-
     // 征信查询次数（近6个月）
     private Integer creditInquiryCount;
 

@@ -18,7 +18,7 @@ public class UserController {
   }
 
   /**
-   * 分页查询用户列表 todo 确认列表字段
+   * 分页查询用户列表
    */
   @GET
   @Path("/list")

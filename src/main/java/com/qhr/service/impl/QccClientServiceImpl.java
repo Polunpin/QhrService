@@ -93,13 +93,10 @@ public class QccClientServiceImpl implements QccClientService {
 
   @Override
   public JsonNode taxData(QccTaxCreateOrderRequest requestBody) {
-    validateTaxDataRequest(requestBody);
-
     //下单
     JsonNode createOrderResult = createTaxOrder(requestBody);
-    //验证码发送
     String orderNo = extractRequiredText(createOrderResult, "OrderNo", "企查查财税下单响应缺少OrderNo");
-
+    //验证码发送
     sendCode(orderNo, requestBody.verifyCode());
     return getData(orderNo);
   }
@@ -204,24 +201,6 @@ public class QccClientServiceImpl implements QccClientService {
       return objectMapper.readTree(response.body());
     } catch (IOException exception) {
       throw new QccClientException(action + "响应解析失败", exception);
-    }
-  }
-
-  private void validateTaxDataRequest(QccTaxCreateOrderRequest requestBody) {
-    if (requestBody == null) {
-      throw new IllegalArgumentException("企查查财税数据请求不能为空");
-    }
-    if (requestBody.searchKey() == null || requestBody.searchKey().isBlank()) {
-      throw new IllegalArgumentException("searchKey不能为空");
-    }
-    if (requestBody.userName() == null || requestBody.userName().isBlank()) {
-      throw new IllegalArgumentException("userName不能为空");
-    }
-    if (requestBody.password() == null || requestBody.password().isBlank()) {
-      throw new IllegalArgumentException("password不能为空");
-    }
-    if (requestBody.verifyCode() == null || requestBody.verifyCode().isBlank()) {
-      throw new IllegalArgumentException("verifyCode不能为空");
     }
   }
 

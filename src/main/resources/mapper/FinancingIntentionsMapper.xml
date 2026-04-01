@@ -4,11 +4,13 @@
 
     <resultMap id="FinancingIntentionsMap" type="com.qhr.model.FinancingIntention">
         <id column="id" property="id"/>
+        <result column="user_open_id" property="userOpenId"/>
         <result column="enterprise_id" property="enterpriseId"/>
         <result column="amount_range" property="amountRange"/>
-        <result column="property" property="property"/>
-        <result column="property_mortgage" property="propertyMortgage"/>
-        <result column="spouse_support" property="spouseSupport"/>
+        <result column="personal_credit_name" property="personalCreditName"/>
+        <result column="personal_credit_cloud_id" property="personalCreditCloudId"/>
+        <result column="enterprise_credit_name" property="enterpriseCreditName"/>
+        <result column="enterprise_credit_cloud_id" property="enterpriseCreditCloudId"/>
         <result column="tax_account" property="taxAccount"/>
         <result column="tax_password" property="taxPassword"/>
         <result column="created_at" property="createdAt"/>
@@ -16,8 +18,8 @@
     </resultMap>
 
     <sql id="FinancingIntention_Columns">
-        id, enterprise_id, amount_range, property, property_mortgage,
-        spouse_support, tax_account, tax_password,
+        id, user_open_id, enterprise_id, amount_range, personal_credit_name,
+        personal_credit_cloud_id, enterprise_credit_name, enterprise_credit_cloud_id, tax_account, tax_password,
         created_at, updated_at
     </sql>
 

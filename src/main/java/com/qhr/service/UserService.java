@@ -14,7 +14,7 @@ public interface UserService {
   /**
    * 绑定用户与企业关系
    */
-  boolean bindEnterprise(String userOpenId, Long enterpriseId, String role);
+  boolean bindEnterprise(String userOpenId, Long enterpriseId);
 
 
   /**
