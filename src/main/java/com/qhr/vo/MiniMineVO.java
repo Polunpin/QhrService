@@ -9,7 +9,7 @@ public record MiniMineVO(
         /*测额记录*/
         long measureCount,
         /*提额进度*/
-        long increaseProgress,
+        String increaseProgress,
         /*订单*/
         long orderCount) {
 }

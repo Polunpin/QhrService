@@ -43,12 +43,12 @@ public class HomeServiceImpl implements HomeService {
     @Override
     public MiniHomeVO home(String openid, Long enterpriseId) {
         MiniHomeDashboardVO miniHomeDashboardVO = new MiniHomeDashboardVO(
-                "100-300万",
-                new MiniHomeRadarVO(50, 10, 50, 10, 10),
-                3,
+                "300-500万",
+                new MiniHomeRadarVO(80, 60, 90, 100, 70),
+                10,
                 "4.2"
         );
-        MiniHomeQuotaPredictionVO miniHomeQuotaPredictionVO = new MiniHomeQuotaPredictionVO("20-80万", 6, 60);
+        MiniHomeQuotaPredictionVO miniHomeQuotaPredictionVO = new MiniHomeQuotaPredictionVO("120-180万", 3, 60);
 
         return new MiniHomeVO(miniHomeDashboardVO, miniHomeQuotaPredictionVO);
     }
@@ -71,7 +71,7 @@ public class HomeServiceImpl implements HomeService {
                         .eq(enterpriseId != null, FinancingIntention::getEnterpriseId, enterpriseId)
         );
         //提额进度 todo
-        long increaseProgress = 6;
+        String increaseProgress = "2/3";
         //订单记录 todo
         long orderCount = 3;
         return new MiniMineVO(enterpriseCount, measureCount, increaseProgress, orderCount);
