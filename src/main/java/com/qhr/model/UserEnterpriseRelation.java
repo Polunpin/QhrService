@@ -42,6 +42,7 @@ public class UserEnterpriseRelation implements Serializable {
    */
   @TableField("created_at")
   private LocalDateTime createdAt;
+
   @TableLogic(value = "0", delval = "1")
   private Integer deleted;
 

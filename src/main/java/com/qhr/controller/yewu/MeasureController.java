@@ -27,10 +27,8 @@ public class MeasureController {
 
   @POST
   @Path("/submit")
-  public ApiResponse submit(MeasureSubmitRequest request,@Context HttpHeaders headers) {
-    return ApiResponse.ok(measureService.submit(
-            request,
-            "om70g7YsunOZY-hhhSw2mli1aQKg",
-            "oXiKu6IQxx5OvraUpd5Mp_x5Ecd0"));
+  public ApiResponse submit(MeasureSubmitRequest request, @Context HttpHeaders headers) {
+    return ApiResponse.ok(measureService.submit(request, headers.getHeaderString("x-wx-openid"),
+            headers.getHeaderString("x-wx-unionid")));
   }
 }

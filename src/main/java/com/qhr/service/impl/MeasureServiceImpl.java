@@ -58,7 +58,7 @@ public class MeasureServiceImpl implements MeasureService {
 
     @Override
     @Transactional
-    public Object submit(MeasureSubmitRequest request, String openid, String unionid) {
+    public PrecheckResult submit(MeasureSubmitRequest request, String openid, String unionid) {
         //保存用户
         userService.create(openid, unionid);
         //更新或保存企业
@@ -70,7 +70,7 @@ public class MeasureServiceImpl implements MeasureService {
         //保存融资需求
         Long intentionId = financingIntentionService.create(intention);
         //预审
-        PrecheckResult precheck = evaluatePrecheck(request.enterprise());
+        PrecheckResult precheck = evaluatePrecheck(enterpriseId, request.enterprise());
         if (precheck.result()) {
             //查询财税数据+申请人画像封装+产品匹配｜异步执行
             triggerAfterCommit(request, openid, enterpriseId, intentionId);
@@ -109,16 +109,16 @@ public class MeasureServiceImpl implements MeasureService {
         return enterpriseService.getByCreditCode(creditCode);
     }
 
-    private PrecheckResult evaluatePrecheck(EnterprisePayload enterprise) {
+    private PrecheckResult evaluatePrecheck(Long enterpriseId, EnterprisePayload enterprise) {
         if (!isEstablishedMoreThanOneYear(enterprise.startDate())) {
-            return new PrecheckResult(false, "企业注册日期需满1年");
+            return new PrecheckResult(enterpriseId, enterprise.name(), false, "企业注册日期需满1年");
         }
 
         if (!isActiveEnterpriseStatus(enterprise.status())) {
-            return new PrecheckResult(false, "企业状态需为在业或存续");
+            return new PrecheckResult(enterpriseId, enterprise.name(), false, "企业状态需为在业或存续");
         }
 
-        return new PrecheckResult(true, "预审通过");
+        return new PrecheckResult(enterpriseId, enterprise.name(), true, "预审通过");
     }
 
     private boolean isEstablishedMoreThanOneYear(String startDate) {
