@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  * 企业实体。
  */
 @Data
-@TableName("jc_enterprise_basic_info")
+@TableName("jc_enterprise")
 public class Enterprise implements Serializable {
 
   @TableId(type = IdType.AUTO)

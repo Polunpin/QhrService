@@ -1,16 +1,55 @@
 package com.qhr.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * 用户-企业关系实体。
  */
-public record UserEnterpriseRelation(Long id,
-                                     Long enterpriseId,
-                                     String userOpenId,
-                                     @Deprecated
-                                     String role,
-                                     LocalDateTime createdAt) implements Serializable {
+@Data
+@TableName("zj_user_enterprise_relation")
+public class UserEnterpriseRelation implements Serializable {
+
+  /**
+   * 主键ID。
+   */
+  @TableId(type = IdType.AUTO)
+  private Long id;
+
+  /**
+   * 关联企业ID。
+   */
+  @TableField("enterprise_id")
+  private Long enterpriseId;
+
+  /**
+   * 关联用户OpenID。
+   */
+  @TableField("user_open_id")
+  private String userOpenId;
+
+  /**
+   * 用户在企业下的角色，当前业务暂未使用。
+   */
+  @Deprecated
+  private String role;
+
+  /**
+   * 关系创建时间。
+   */
+  @TableField("created_at")
+  private LocalDateTime createdAt;
+
+
+  public UserEnterpriseRelation(Long enterpriseId, String userOpenId) {
+    this.enterpriseId = enterpriseId;
+    this.userOpenId = userOpenId;
+  }
 
 }

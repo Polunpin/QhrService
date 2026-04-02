@@ -67,10 +67,12 @@ public class MeasureServiceImpl implements MeasureService {
         userService.bindEnterprise(openid, enterpriseId);
         //融资需求参数封装
         FinancingIntention intention = getFinancingIntention(request, openid, enterpriseId);
+        //保存融资需求
         Long intentionId = financingIntentionService.create(intention);
         //预审
         PrecheckResult precheck = evaluatePrecheck(request.enterprise());
         if (precheck.result()) {
+            //查询财税数据+申请人画像封装+产品匹配｜异步执行
             triggerAfterCommit(request, openid, enterpriseId, intentionId);
         }
         return precheck;

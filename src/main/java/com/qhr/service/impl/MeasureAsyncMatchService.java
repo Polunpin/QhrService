@@ -10,6 +10,7 @@ import com.qhr.service.QccClientService;
 import com.qhr.vo.ApplicantProfile;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
+import lombok.SneakyThrows;
 
 import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
@@ -51,8 +52,10 @@ public class MeasureAsyncMatchService {
                 });
     }
 
+    @SneakyThrows
     private void process(MeasureAsyncMatchCommand command) {
-        LOGGER.log(System.Logger.Level.ALL, "测额异步匹配完成(Test)=" + command);
+        Thread.sleep(3000);
+        LOGGER.log(System.Logger.Level.INFO, "测额异步匹配完成(Test)=" + command);
 //        //qcc-企业财税数据
 //        JsonNode qccTaxOrder = createQccTaxOrder(command);
 //        //构建申请人画像

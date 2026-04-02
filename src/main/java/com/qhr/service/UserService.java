@@ -14,8 +14,7 @@ public interface UserService {
   /**
    * 绑定用户与企业关系
    */
-  boolean bindEnterprise(String userOpenId, Long enterpriseId);
-
+  void bindEnterprise(String userOpenId, Long enterpriseId);
 
   /**
    * 创建用户并返回主键

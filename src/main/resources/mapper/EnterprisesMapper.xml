@@ -20,13 +20,7 @@
 
     <select id="list" resultMap="EnterprisesMap">
         SELECT <include refid="Enterprise_Columns"/>
-        FROM jc_enterprise_basic_info
-        <where>
-            <if test="name != null and name != ''"> AND name LIKE CONCAT('%', #{name}, '%')</if>
-            <if test="creditCode != null and creditCode != ''"> AND credit_code = #{creditCode}</if>
-            <if test="operName != null and operName != ''"> AND oper_name LIKE CONCAT('%', #{operName}, '%')</if>
-            <if test="status != null and status != ''"> AND status = #{status}</if>
-        </where>
+        FROM jc_enterprise
         ORDER BY id DESC
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
@@ -36,7 +30,7 @@
     <select id="listByUserId" resultMap="EnterprisesMap">
         SELECT e.id, e.name, e.credit_code, e.start_date, e.oper_name, e.status,
                e.address, e.created_at, e.updated_at
-        FROM jc_enterprise_basic_info e
+        FROM jc_enterprise e
         JOIN zj_user_enterprise_relation r ON e.id = r.enterprise_id
         WHERE r.user_id = #{userId}
         ORDER BY e.id DESC

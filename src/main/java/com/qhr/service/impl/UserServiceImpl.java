@@ -33,14 +33,14 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public boolean bindEnterprise(String userOpenId, Long enterpriseId) {
+  public void bindEnterprise(String userOpenId, Long enterpriseId) {
     //查询绑定是否存在
     UserEnterpriseRelation existing = relationMapper.getByUserEnterprise(userOpenId, enterpriseId);
     if (existing != null) {
-      return true;
+      return;
     }
-    UserEnterpriseRelation relation = new UserEnterpriseRelation(null, enterpriseId, userOpenId, null, null);
-    return relationMapper.insert(relation) > 0;
+    UserEnterpriseRelation relation = new UserEnterpriseRelation(enterpriseId, userOpenId);
+    relationMapper.insert(relation);
   }
 
 
@@ -52,9 +52,7 @@ public class UserServiceImpl implements UserService {
       return existing.getId();
     }
 
-    User user = new User();
-    user.setOpenid(openid);
-    user.setUnionid(unionid);
+    User user = new User(openid, unionid);
     usersMapper.insert(user);
     return user.getId();
   }

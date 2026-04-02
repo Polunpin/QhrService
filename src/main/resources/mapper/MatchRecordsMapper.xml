@@ -43,12 +43,7 @@
         ymr.created_at as matchTime
         from z_match_records ymr
         left join jc_users pu on ymr.user_open_id=pu.id
-        left join jc_enterprise_basic_info ye on ymr.enterprise_id=ye.id
-        <where>
-            <if test="enterpriseId != null">AND ymr.enterprise_id = #{enterpriseId}</if>
-            <if test="intentionId != null">AND ymr.intention_id = #{intentionId}</if>
-            <if test="status != null and status != ''">AND ymr.status = #{status}</if>
-        </where>
+        left join jc_enterprise ye on ymr.enterprise_id=ye.id
         ORDER BY ymr.id DESC
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
