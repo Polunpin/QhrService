@@ -25,6 +25,7 @@
         from z_match_records ymr
         left join jc_users pu on ymr.user_open_id=pu.id
         left join jc_enterprise ye on ymr.enterprise_id=ye.id
+        where ymr.deleted = 0
         ORDER BY ymr.id DESC
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}

@@ -13,8 +13,10 @@ public interface EnterprisesMapper extends BaseMapper<Enterprise> {
   List<Enterprise> list(@Param("offset") Integer offset,
                         @Param("size") Integer size);
 
-  List<Enterprise> listByUserId(@Param("userId") Long userId,
+  List<Enterprise> listByUserId(@Param("openid") String openid,
                                 @Param("offset") Integer offset,
                                 @Param("size") Integer size);
+
+  int restoreByCreditCode(@Param("creditCode") String creditCode);
 
 }

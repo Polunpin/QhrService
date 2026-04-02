@@ -17,6 +17,8 @@ public interface CustomServiceOrdersMapper {
 
   int delete(@Param("id") Long id);
 
+  int deleteByEnterpriseId(@Param("enterpriseId") Long enterpriseId);
+
   int updateStage(@Param("id") Long id, @Param("currentStage") String currentStage);
 
   int updateServiceStatus(@Param("id") Long id, @Param("serviceStatus") String serviceStatus);

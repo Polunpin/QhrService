@@ -30,12 +30,14 @@
         SELECT <include refid="CustomServiceOrder_Columns"/>
         FROM yw_custom_service_orders
         WHERE id = #{id}
+        AND deleted = 0
     </select>
 
     <select id="list" resultMap="CustomServiceOrdersMap">
         SELECT <include refid="CustomServiceOrder_Columns"/>
         FROM yw_custom_service_orders
         <where>
+            deleted = 0
             <if test="enterpriseId != null"> AND enterprise_id = #{enterpriseId}</if>
             <if test="staffId != null"> AND staff_id = #{staffId}</if>
             <if test="serviceStatus != null and serviceStatus != ''"> AND service_status = #{serviceStatus}</if>
@@ -52,6 +54,7 @@
         SELECT COUNT(1)
         FROM yw_custom_service_orders
         <where>
+            deleted = 0
             <if test="enterpriseId != null"> AND enterprise_id = #{enterpriseId}</if>
             <if test="staffId != null"> AND staff_id = #{staffId}</if>
             <if test="serviceStatus != null and serviceStatus != ''"> AND service_status = #{serviceStatus}</if>
@@ -84,31 +87,46 @@
             <if test="settleStatus != null">settle_status = #{settleStatus},</if>
         </set>
         WHERE id = #{id}
+        AND deleted = 0
     </update>
 
     <update id="updateStage">
         UPDATE yw_custom_service_orders SET current_stage = #{currentStage}
         WHERE id = #{id}
+          AND deleted = 0
     </update>
 
     <update id="updateServiceStatus">
         UPDATE yw_custom_service_orders SET service_status = #{serviceStatus}
         WHERE id = #{id}
+          AND deleted = 0
     </update>
 
     <update id="updateSettleStatus">
         UPDATE yw_custom_service_orders SET settle_status = #{settleStatus}
         WHERE id = #{id}
+          AND deleted = 0
     </update>
 
     <update id="assignStaff">
         UPDATE yw_custom_service_orders SET staff_id = #{staffId}
         WHERE id = #{id}
+          AND deleted = 0
     </update>
 
-    <delete id="delete">
-        DELETE FROM yw_custom_service_orders WHERE id = #{id}
-    </delete>
+    <update id="delete">
+        UPDATE yw_custom_service_orders
+        SET deleted = 1
+        WHERE id = #{id}
+          AND deleted = 0
+    </update>
+
+    <update id="deleteByEnterpriseId">
+        UPDATE yw_custom_service_orders
+        SET deleted = 1
+        WHERE enterprise_id = #{enterpriseId}
+          AND deleted = 0
+    </update>
 
     <select id="lastInsertId" resultType="long">
         SELECT LAST_INSERT_ID()

@@ -1,9 +1,6 @@
 package com.qhr.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -45,7 +42,11 @@ public class UserEnterpriseRelation implements Serializable {
    */
   @TableField("created_at")
   private LocalDateTime createdAt;
+  @TableLogic(value = "0", delval = "1")
+  private Integer deleted;
 
+  public UserEnterpriseRelation() {
+  }
 
   public UserEnterpriseRelation(Long enterpriseId, String userOpenId) {
     this.enterpriseId = enterpriseId;

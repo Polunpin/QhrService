@@ -9,14 +9,27 @@
     <select id="getByUserEnterprise" resultType="com.qhr.model.UserEnterpriseRelation">
         SELECT <include refid="Relation_Columns"/>
         FROM zj_user_enterprise_relation
-        WHERE user_open_id = #{userOpenId} AND enterprise_id = #{enterpriseId}
+        WHERE deleted = 0
+        AND user_open_id = #{userOpenId}
+        AND enterprise_id = #{enterpriseId}
         LIMIT 1
     </select>
 
+    <update id="restoreByUserEnterprise">
+        UPDATE zj_user_enterprise_relation
+        SET deleted = 0
+        WHERE deleted = 1
+          AND user_open_id = #{userOpenId}
+          AND enterprise_id = #{enterpriseId}
+    </update>
 
-    <delete id="deleteByUserEnterprise">
-        DELETE FROM zj_user_enterprise_relation
-        WHERE user_open_id = #{userOpenId} AND enterprise_id = #{enterpriseId}
-    </delete>
+
+    <update id="deleteByUserEnterprise">
+        UPDATE zj_user_enterprise_relation
+        SET deleted = 1
+        WHERE deleted = 0
+          AND user_open_id = #{userOpenId}
+          AND enterprise_id = #{enterpriseId}
+    </update>
 
 </mapper>

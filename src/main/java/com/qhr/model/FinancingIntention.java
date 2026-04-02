@@ -1,9 +1,6 @@
 package com.qhr.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -40,4 +37,6 @@ public class FinancingIntention implements Serializable {
   private LocalDateTime createdAt;
   @TableField("updated_at")
   private LocalDateTime updatedAt;
+  @TableLogic(value = "0", delval = "1")
+  private Integer deleted;
 }

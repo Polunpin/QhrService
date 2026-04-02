@@ -14,7 +14,7 @@ public interface EnterpriseService {
   /**
    * 分页查询用户关联企业
    */
-  PageResult<Enterprise> listByUserId(Long userId, Integer offset, Integer size);
+  PageResult<Enterprise> listByOpenid(String openid, Integer offset, Integer size);
 
   /**
    * 根据creditCode查询企业

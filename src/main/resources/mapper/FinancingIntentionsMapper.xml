@@ -12,6 +12,7 @@
         SELECT <include refid="FinancingIntention_Columns"/>
         FROM yw_financing_intentions
         <where>
+            deleted = 0
             <if test="enterpriseId != null"> AND enterprise_id = #{enterpriseId}</if>
         </where>
         ORDER BY id DESC

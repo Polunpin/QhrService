@@ -39,6 +39,10 @@ public class UserServiceImpl implements UserService {
     if (existing != null) {
       return;
     }
+    //重新绑定-激活旧绑定信息
+    if (relationMapper.restoreByUserEnterprise(userOpenId, enterpriseId) > 0) {
+      return;
+    }
     UserEnterpriseRelation relation = new UserEnterpriseRelation(enterpriseId, userOpenId);
     relationMapper.insert(relation);
   }

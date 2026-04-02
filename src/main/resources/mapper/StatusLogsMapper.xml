@@ -9,7 +9,8 @@
     <select id="listByOrderId" resultType="com.qhr.model.StatusLog">
         SELECT <include refid="StatusLog_Columns"/>
         FROM yw_status_logs
-        WHERE order_id = #{orderId}
+        WHERE deleted = 0
+        AND order_id = #{orderId}
         ORDER BY id DESC
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
@@ -19,7 +20,8 @@
     <select id="countByOrderId" resultType="long">
         SELECT COUNT(1)
         FROM yw_status_logs
-        WHERE order_id = #{orderId}
+        WHERE deleted = 0
+          AND order_id = #{orderId}
     </select>
 
 </mapper>

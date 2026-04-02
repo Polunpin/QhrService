@@ -9,6 +9,7 @@
     <select id="list" resultType="com.qhr.model.Enterprise">
         SELECT <include refid="Enterprise_Columns"/>
         FROM jc_enterprise
+        WHERE deleted = 0
         ORDER BY id DESC
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
@@ -20,11 +21,20 @@
                e.address, e.created_at, e.updated_at
         FROM jc_enterprise e
         JOIN zj_user_enterprise_relation r ON e.id = r.enterprise_id
-        WHERE r.user_id = #{userId}
+        WHERE e.deleted = 0
+        AND r.deleted = 0
+        AND r.user_open_id = #{openid}
         ORDER BY e.id DESC
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
         </if>
     </select>
+
+    <update id="restoreByCreditCode">
+        UPDATE jc_enterprise
+        SET deleted = 0
+        WHERE credit_code = #{creditCode}
+          AND deleted = 1
+    </update>
 
 </mapper>

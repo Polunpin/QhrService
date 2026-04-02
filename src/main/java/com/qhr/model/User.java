@@ -29,6 +29,9 @@ public class User implements Serializable {
     @TableField("updated_at")
     private LocalDateTime updatedAt;
 
+    public User() {
+    }
+
     public User(String openid, String unionid) {
         this.openid = openid;
         this.unionid = unionid;

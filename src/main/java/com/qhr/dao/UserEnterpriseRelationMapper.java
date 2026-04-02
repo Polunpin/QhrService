@@ -11,6 +11,9 @@ public interface UserEnterpriseRelationMapper extends BaseMapper<UserEnterpriseR
   UserEnterpriseRelation getByUserEnterprise(@Param("userOpenId") String userOpenId,
                                              @Param("enterpriseId") Long enterpriseId);
 
+  int restoreByUserEnterprise(@Param("userOpenId") String userOpenId,
+                              @Param("enterpriseId") Long enterpriseId);
+
   int deleteByUserEnterprise(@Param("userOpenId") String userOpenId,
                              @Param("enterpriseId") Long enterpriseId);
 
