@@ -57,8 +57,10 @@ public class EnterpriseServiceImpl implements EnterpriseService {
 
   @Override
   public Long create(Enterprise enterprise) {
-    if (enterprise.getCreditCode() != null && enterprisesMapper.restoreByCreditCode(enterprise.getCreditCode()) > 0) {
+    //判断库中是否存在历史绑定信息
+    if (enterprisesMapper.restoreByCreditCode(enterprise.getCreditCode()) > 0) {
       Enterprise restored = getByCreditCode(enterprise.getCreditCode());
+      //更新企业基础信息
       if (restored != null) {
         enterprise.setId(restored.getId());
         enterprisesMapper.updateById(enterprise);
