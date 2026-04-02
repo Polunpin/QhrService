@@ -2,21 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.qhr.dao.UserEnterpriseRelationMapper">
 
-    <resultMap id="RelationMap" type="com.qhr.model.UserEnterpriseRelation">
-        <constructor>
-            <idArg column="id" javaType="java.lang.Long" name="id"/>
-            <arg column="enterprise_id" javaType="java.lang.Long" name="enterpriseId"/>
-            <arg column="user_open_id" javaType="java.lang.String" name="userOpenId"/>
-            <arg column="role" javaType="java.lang.String" name="role"/>
-            <arg column="created_at" javaType="java.time.LocalDateTime" name="createdAt"/>
-        </constructor>
-    </resultMap>
-
     <sql id="Relation_Columns">
         id, enterprise_id, user_open_id, role, created_at
     </sql>
 
-    <select id="getByUserEnterprise" resultMap="RelationMap">
+    <select id="getByUserEnterprise" resultType="com.qhr.model.UserEnterpriseRelation">
         SELECT <include refid="Relation_Columns"/>
         FROM zj_user_enterprise_relation
         WHERE user_open_id = #{userOpenId} AND enterprise_id = #{enterpriseId}

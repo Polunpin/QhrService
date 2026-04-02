@@ -2,23 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.qhr.dao.StaffsMapper">
 
-    <resultMap id="StaffsMap" type="com.qhr.model.Staff">
-        <id column="id" property="id"/>
-        <result column="openid" property="openid"/>
-        <result column="real_name" property="realName"/>
-        <result column="mobile" property="mobile"/>
-        <result column="role" property="role"/>
-        <result column="department" property="department"/>
-        <result column="status" property="status"/>
-        <result column="last_update_at" property="lastUpdateAt"/>
-        <result column="created_at" property="createdAt"/>
-    </resultMap>
-
-    <sql id="Staff_Columns">
-        id, openid, real_name, mobile, role, department, status, last_update_at, created_at
-    </sql>
-
-    <select id="list" parameterType="com.qhr.vo.Staffs">
+    <select id="list">
         SELECT id,
         real_name as name,
         mobile as phone,

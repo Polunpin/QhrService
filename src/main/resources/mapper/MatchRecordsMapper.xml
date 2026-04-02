@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.qhr.dao.MatchRecordsMapper">
-
-    <resultMap id="MatchRecordsMap" type="com.qhr.model.MatchRecord">
-        <id column="id" property="id"/>
-        <result column="user_open_id" property="userOpenId"/>
-        <result column="enterprise_id" property="enterpriseId"/>
-        <result column="intention_id" property="intentionId"/>
-        <result column="product_ids" property="productIds"/>
-        <result column="match_score" property="matchScore"/>
-        <result column="risk_type" property="riskType"/>
-        <result column="risk_level" property="riskLevel"/>
-        <result column="status" property="status"/>
-        <result column="created_at" property="createdAt"/>
-    </resultMap>
-
     <resultMap id="MatchRecordsVoMap" type="com.qhr.vo.MatchRecords">
         <id column="id" property="id"/>
         <result column="enterprise" property="enterprise"/>
@@ -27,12 +13,7 @@
         <result column="matchTime" property="matchTime"/>
     </resultMap>
 
-    <sql id="MatchRecord_Columns">
-        id, user_open_id, enterprise_id, intention_id, product_ids, match_score,
-        risk_type, risk_level, status, created_at
-    </sql>
-
-    <select id="list" parameterType="com.qhr.vo.MatchRecords" resultMap="MatchRecordsVoMap">
+    <select id="list" resultMap="MatchRecordsVoMap">
         select ymr.id,
         ye.name as enterprise,
         pu.real_name as applicant,

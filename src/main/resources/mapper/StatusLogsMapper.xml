@@ -2,22 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.qhr.dao.StatusLogsMapper">
 
-    <resultMap id="StatusLogsMap" type="com.qhr.model.StatusLog">
-        <id column="id" property="id"/>
-        <result column="order_id" property="orderId"/>
-        <result column="operator_type" property="operatorType"/>
-        <result column="operator_id" property="operatorId"/>
-        <result column="pre_stage" property="preStage"/>
-        <result column="post_stage" property="postStage"/>
-        <result column="remark" property="remark"/>
-        <result column="created_at" property="createdAt"/>
-    </resultMap>
-
     <sql id="StatusLog_Columns">
         id, order_id, operator_type, operator_id, pre_stage, post_stage, remark, created_at
     </sql>
 
-    <select id="listByOrderId" resultMap="StatusLogsMap">
+    <select id="listByOrderId" resultType="com.qhr.model.StatusLog">
         SELECT <include refid="StatusLog_Columns"/>
         FROM yw_status_logs
         WHERE order_id = #{orderId}

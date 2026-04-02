@@ -12,11 +12,6 @@
             <arg column="lastMatch" javaType="java.lang.String" name="lastMatch"/>
         </constructor>
     </resultMap>
-
-    <sql id="User_Columns">
-        id, openid, unionid, mobile, real_name, status, created_at, updated_at
-    </sql>
-
     <select id="list" resultMap="UsersVoMap">
         SELECT u.id,u.real_name AS name,u.mobile AS phone,
         COALESCE(ue.enterprises, 0) AS enterprises,

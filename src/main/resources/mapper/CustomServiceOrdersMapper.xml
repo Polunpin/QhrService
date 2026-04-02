@@ -26,7 +26,7 @@
         last_update_at, created_at
     </sql>
 
-    <select id="getById" resultMap="CustomServiceOrdersMap" parameterType="java.lang.Long">
+    <select id="getById" resultMap="CustomServiceOrdersMap">
         SELECT <include refid="CustomServiceOrder_Columns"/>
         FROM yw_custom_service_orders
         WHERE id = #{id}
@@ -60,7 +60,7 @@
         </where>
     </select>
 
-    <insert id="insert" parameterType="com.qhr.model.CustomServiceOrder">
+    <insert id="insert">
         INSERT INTO yw_custom_service_orders (enterprise_id, intention_id, staff_id, current_stage,
                                            service_status, loan_amount, commission_amount, service_cost,
                                            cost_details, settle_status)
@@ -69,7 +69,7 @@
                 #{costDetails}, #{settleStatus})
     </insert>
 
-    <update id="update" parameterType="com.qhr.model.CustomServiceOrder">
+    <update id="update">
         UPDATE yw_custom_service_orders
         <set>
             <if test="enterpriseId != null">enterprise_id = #{enterpriseId},</if>
@@ -106,7 +106,7 @@
         WHERE id = #{id}
     </update>
 
-    <delete id="delete" parameterType="java.lang.Long">
+    <delete id="delete">
         DELETE FROM yw_custom_service_orders WHERE id = #{id}
     </delete>
 

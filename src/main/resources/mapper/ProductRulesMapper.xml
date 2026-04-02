@@ -2,77 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.qhr.dao.ProductRulesMapper">
 
-    <resultMap id="ProductRuleMap" type="com.qhr.model.ProductRule">
-        <id column="id" property="id"/>
-        <result column="product_id" property="productId"/>
-        <result column="rule_version" property="ruleVersion"/>
-        <result column="rule_name" property="ruleName"/>
-        <result column="is_active" property="isActive"/>
-        <result column="effective_start_time" property="effectiveStartTime"/>
-        <result column="effective_end_time" property="effectiveEndTime"/>
-        <result column="remark" property="remark"/>
-        <result column="gs_min_establish_months" property="gsMinEstablishMonths"/>
-        <result column="gs_min_registered_capital" property="gsMinRegisteredCapital"/>
-        <result column="gs_min_paid_in_capital" property="gsMinPaidInCapital"/>
-        <result column="gs_max_legal_rep_change_count_2y" property="gsMaxLegalRepChangeCount2y"/>
-        <result column="gs_min_legal_rep_change_gap_months" property="gsMinLegalRepChangeGapMonths"/>
-        <result column="gs_min_legal_rep_share_ratio" property="gsMinLegalRepShareRatio"/>
-        <result column="gs_allow_legal_rep_no_joint_liability" property="gsAllowLegalRepNoJointLiability"/>
-        <result column="gs_allow_shareholder_replace_joint_liability"
-                property="gsAllowShareholderReplaceJointLiability"/>
-        <result column="gs_min_shareholder_replace_share_ratio" property="gsMinShareholderReplaceShareRatio"/>
-        <result column="tax_min_tax_months_12m" property="taxMinTaxMonths12m"/>
-        <result column="tax_min_tax_months_24m" property="taxMinTaxMonths24m"/>
-        <result column="tax_max_zero_declare_streak" property="taxMaxZeroDeclareStreak"/>
-        <result column="tax_min_tax_amount_12m" property="taxMinTaxAmount12m"/>
-        <result column="tax_min_tax_amount_ytd" property="taxMinTaxAmountYtd"/>
-        <result column="tax_min_tax_amount_last_year" property="taxMinTaxAmountLastYear"/>
-        <result column="tax_max_tax_burden_ratio" property="taxMaxTaxBurdenRatio"/>
-        <result column="tax_min_tax_burden_ratio_yoy" property="taxMinTaxBurdenRatioYoy"/>
-        <result column="tax_min_total_declares" property="taxMinTotalDeclares"/>
-        <result column="jud_reject_if_major_lawsuit" property="judRejectIfMajorLawsuit"/>
-        <result column="jud_reject_if_executed" property="judRejectIfExecuted"/>
-        <result column="jud_reject_if_dishonest_person" property="judRejectIfDishonestPerson"/>
-        <result column="jud_reject_if_equity_frozen" property="judRejectIfEquityFrozen"/>
-        <result column="jud_max_execution_count_24m" property="judMaxExecutionCount24m"/>
-        <result column="jud_max_court_announcement_count_12m" property="judMaxCourtAnnouncementCount12m"/>
-        <result column="jud_max_admin_penalty_count_12m" property="judMaxAdminPenaltyCount12m"/>
-        <result column="jud_reject_if_major_judicial_risk" property="judRejectIfMajorJudicialRisk"/>
-        <result column="jud_reject_if_restriction_high_consumption" property="judRejectIfRestrictionHighConsumption"/>
-        <result column="ind_match_mode_code" property="indMatchModeCode"/>
-        <result column="ind_max_risk_level" property="indMaxRiskLevel"/>
-        <result column="ind_require_enterprise_tag" property="indRequireEnterpriseTag"/>
-        <result column="ind_min_tag_valid_months" property="indMinTagValidMonths"/>
-        <result column="ind_require_region_match" property="indRequireRegionMatch"/>
-        <result column="ind_require_actual_business_address" property="indRequireActualBusinessAddress"/>
-        <result column="ind_reject_if_high_pollution" property="indRejectIfHighPollution"/>
-        <result column="ind_reject_if_high_energy_consumption" property="indRejectIfHighEnergyConsumption"/>
-        <result column="ind_reject_if_sensitive_industry" property="indRejectIfSensitiveIndustry"/>
-        <result column="ec_max_total_liability" property="ecMaxTotalLiability"/>
-        <result column="ec_max_credit_liability" property="ecMaxCreditLiability"/>
-        <result column="ec_max_mortgage_liability" property="ecMaxMortgageLiability"/>
-        <result column="ec_max_external_guarantee_amount" property="ecMaxExternalGuaranteeAmount"/>
-        <result column="ec_max_loan_org_count" property="ecMaxLoanOrgCount"/>
-        <result column="ec_max_query_count_6m" property="ecMaxQueryCount6m"/>
-        <result column="ec_max_overdue_count_12m" property="ecMaxOverdueCount12m"/>
-        <result column="ec_max_overdue_months_24m" property="ecMaxOverdueMonths24m"/>
-        <result column="ec_min_no_overdue_days" property="ecMinNoOverdueDays"/>
-        <result column="ec_allow_abnormal_credit_account" property="ecAllowAbnormalCreditAccount"/>
-        <result column="pc_max_query_count_1m" property="pcMaxQueryCount1m"/>
-        <result column="pc_max_query_count_3m" property="pcMaxQueryCount3m"/>
-        <result column="pc_max_query_count_6m" property="pcMaxQueryCount6m"/>
-        <result column="pc_max_loan_query_count_1m" property="pcMaxLoanQueryCount1m"/>
-        <result column="pc_max_credit_card_query_count_1m" property="pcMaxCreditCardQueryCount1m"/>
-        <result column="pc_max_overdue_count_12m" property="pcMaxOverdueCount12m"/>
-        <result column="pc_max_overdue_months_24m" property="pcMaxOverdueMonths24m"/>
-        <result column="pc_max_total_overdue_terms_5y" property="pcMaxTotalOverdueTerms5y"/>
-        <result column="pc_max_non_bank_loan_count" property="pcMaxNonBankLoanCount"/>
-        <result column="pc_max_credit_card_utilization" property="pcMaxCreditCardUtilization"/>
-        <result column="ext_json" property="extJson"/>
-        <result column="created_at" property="createdAt"/>
-        <result column="updated_at" property="updatedAt"/>
-    </resultMap>
-
     <sql id="ProductRule_Columns">
         id, product_id, rule_version, rule_name, is_active, effective_start_time, effective_end_time,
         remark, gs_min_establish_months, gs_min_registered_capital, gs_min_paid_in_capital,
@@ -97,16 +26,16 @@
         pc_max_non_bank_loan_count, pc_max_credit_card_utilization, ext_json, created_at, updated_at
     </sql>
 
-    <select id="list" resultMap="ProductRuleMap">
+    <select id="list" resultType="com.qhr.model.ProductRule">
         SELECT <include refid="ProductRule_Columns"/>
         FROM yw_product_rule
-        <where>
-            <if test="productId != null"> AND product_id = #{productId}</if>
-            <if test="ruleVersion != null"> AND rule_version = #{ruleVersion}</if>
-            <if test="ruleName != null and ruleName != ''"> AND rule_name LIKE CONCAT('%', #{ruleName}, '%')</if>
-            <if test="isActive != null"> AND is_active = #{isActive}</if>
-        </where>
-        ORDER BY product_id ASC, rule_version DESC, id DESC
+        <!--        <where>-->
+        <!--            <if test="productId != null"> AND product_id = #{productId}</if>-->
+        <!--            <if test="ruleVersion != null"> AND rule_version = #{ruleVersion}</if>-->
+        <!--            <if test="ruleName != null and ruleName != ''"> AND rule_name LIKE CONCAT('%', #{ruleName}, '%')</if>-->
+        <!--            <if test="isActive != null"> AND is_active = #{isActive}</if>-->
+        <!--        </where>-->
+        ORDER BY product_id , rule_version DESC, id DESC
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
         </if>
