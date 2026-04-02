@@ -27,7 +27,7 @@ public class Product implements Serializable {
     Integer creditValidity;
     String disbursementAccount;
     Integer scene;
-    Integer online;
+    String online;
     String repaymentMethod;
     Integer status;
     LocalDateTime createdAt;
