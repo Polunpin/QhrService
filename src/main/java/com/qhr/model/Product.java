@@ -1,7 +1,9 @@
 package com.qhr.model;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -10,7 +12,8 @@ import java.time.LocalDateTime;
  * TODO 后期追加两个：贷款速度、通过率
  */
 @Data
-public class Product {
+@TableName("jc_products")
+public class Product implements Serializable {
     Long id;
     String bankName;
     String productName;

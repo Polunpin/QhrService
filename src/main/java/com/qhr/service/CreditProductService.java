@@ -3,6 +3,8 @@ package com.qhr.service;
 import com.qhr.config.PageResult;
 import com.qhr.model.Product;
 
+import java.util.List;
+
 public interface CreditProductService {
 
   /**
@@ -24,4 +26,8 @@ public interface CreditProductService {
    */
   Product getById(Long id);
 
+  /**
+   * 根据企业ID查询产品
+   */
+  List<Product> listEid(Long enterpriseId);
 }

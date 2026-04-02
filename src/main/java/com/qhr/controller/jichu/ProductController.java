@@ -24,6 +24,15 @@ public class ProductController {
     return ApiResponse.ok(products);
   }
 
+  /**
+   * IDs查询产品列表-小程序查询
+   */
+  @GET
+  @Path("/listByEid")
+  public ApiResponse listByEid(@QueryParam("enterpriseId") Long enterpriseId) {
+    return ApiResponse.ok(creditProductService.listEid(enterpriseId));
+  }
+
   /** 创建产品 */
   @POST
   public ApiResponse create(Product product) {
@@ -33,7 +42,6 @@ public class ProductController {
 
   /** 更新产品 */
   @PUT
-  @Path("/{id}")
   public ApiResponse update(Product product) {
     ApiAssert.notNull(product, ApiCode.BAD_REQUEST, "请求体product不能为空");
     return ApiResponse.ok(creditProductService.update(product));
