@@ -3,13 +3,15 @@ package com.qhr.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.qhr.config.PageResult;
 import com.qhr.dao.*;
-import com.qhr.model.*;
+import com.qhr.model.Enterprise;
+import com.qhr.model.FinancingIntention;
+import com.qhr.model.MatchRecord;
+import com.qhr.model.UserEnterpriseRelation;
 import com.qhr.service.EnterpriseService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 
 @ApplicationScoped
 public class EnterpriseServiceImpl implements EnterpriseService {
@@ -79,23 +81,29 @@ public class EnterpriseServiceImpl implements EnterpriseService {
   @Override
   @Transactional
   public boolean delete(Long id) {
-    List<CustomServiceOrder> orders = ordersMapper.list(id, null, null, null, null, null, null);
-    List<Long> orderIds = orders.stream()
-            .map(CustomServiceOrder::id)
-            .filter(Objects::nonNull)
-            .toList();
-    if (!orderIds.isEmpty()) {
-      statusLogsMapper.delete(
-              Wrappers.<StatusLog>lambdaQuery().in(StatusLog::getOrderId, orderIds)
-      );
-    }
-    ordersMapper.deleteByEnterpriseId(id);
+    //查询订单
+//    List<CustomServiceOrder> orders = ordersMapper.list(id, null, null, null, null, null, null);
+//    List<Long> orderIds = orders.stream()
+//            .map(CustomServiceOrder::id)
+//            .filter(Objects::nonNull)
+//            .toList();
+//    if (!orderIds.isEmpty()) {
+//      //删除操作日志
+//      statusLogsMapper.delete(
+//              Wrappers.<StatusLog>lambdaQuery().in(StatusLog::getOrderId, orderIds)
+//      );
+//    }
+    //删除订单
+//    ordersMapper.deleteByEnterpriseId(id);
+    //删除匹配记录
     matchRecordsMapper.delete(
             Wrappers.<MatchRecord>lambdaQuery().eq(MatchRecord::getEnterpriseId, id)
     );
+    //删除融资需求
     financingIntentionsMapper.delete(
             Wrappers.<FinancingIntention>lambdaQuery().eq(FinancingIntention::getEnterpriseId, id)
     );
+    //删除中间表：用户-企业
     relationMapper.delete(
             Wrappers.<UserEnterpriseRelation>lambdaQuery().eq(UserEnterpriseRelation::getEnterpriseId, id)
     );
