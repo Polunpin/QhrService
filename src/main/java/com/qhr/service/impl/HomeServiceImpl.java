@@ -1,12 +1,8 @@
 package com.qhr.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qhr.config.PageResult;
-import com.qhr.dao.EnterprisesMapper;
 import com.qhr.dao.FinancingIntentionsMapper;
-import com.qhr.dao.MatchRecordsMapper;
 import com.qhr.dao.UserEnterpriseRelationMapper;
 import com.qhr.model.FinancingIntention;
 import com.qhr.model.UserEnterpriseRelation;
@@ -14,34 +10,21 @@ import com.qhr.service.HomeService;
 import com.qhr.vo.*;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.util.List;
-
 @ApplicationScoped
 public class HomeServiceImpl implements HomeService {
 
-    private static final int HOME_ENTERPRISE_LIMIT = 5;
-    private static final int HOME_MEASURE_LIMIT = 5;
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().findAndRegisterModules();
-    private static final TypeReference<List<MatchRecords.Product>> PRODUCT_LIST_TYPE = new TypeReference<>() {
-    };
-
-    private final EnterprisesMapper enterprisesMapper;
     private final UserEnterpriseRelationMapper relationMapper;
     private final FinancingIntentionsMapper financingIntentionsMapper;
-    private final MatchRecordsMapper matchRecordsMapper;
 
-    public HomeServiceImpl(EnterprisesMapper enterprisesMapper,
-                           UserEnterpriseRelationMapper relationMapper,
-                           FinancingIntentionsMapper financingIntentionsMapper,
-                           MatchRecordsMapper matchRecordsMapper) {
-        this.enterprisesMapper = enterprisesMapper;
+    public HomeServiceImpl(UserEnterpriseRelationMapper relationMapper,
+                           FinancingIntentionsMapper financingIntentionsMapper) {
         this.relationMapper = relationMapper;
         this.financingIntentionsMapper = financingIntentionsMapper;
-        this.matchRecordsMapper = matchRecordsMapper;
     }
 
     @Override
     public MiniHomeVO home(String openid, Long enterpriseId) {
+        //todo
         MiniHomeDashboardVO miniHomeDashboardVO = new MiniHomeDashboardVO(
                 "300-500万",
                 new MiniHomeRadarVO(80, 60, 90, 100, 70),

@@ -51,6 +51,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public Long create(String openid, String unionid) {
 
+    //判断用户是否存在
     User existing = getByOpenid(openid);
     if (existing != null) {
       return existing.getId();

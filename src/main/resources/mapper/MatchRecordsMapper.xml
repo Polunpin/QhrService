@@ -1,34 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.qhr.dao.MatchRecordsMapper">
-    <resultMap id="MatchRecordsVoMap" type="com.qhr.vo.MatchRecords">
-        <id column="id" property="id"/>
-        <result column="enterprise" property="enterprise"/>
-        <result column="applicant" property="applicant"/>
-        <result column="products" property="products"
-                typeHandler="com.qhr.config.typehandler.MatchProductsTypeHandler"/>
-        <result column="riskType" property="riskType"/>
-        <result column="riskLevel" property="riskLevel"/>
-        <result column="status" property="status"/>
-        <result column="matchTime" property="matchTime"/>
-    </resultMap>
 
-    <select id="list" resultMap="MatchRecordsVoMap">
-        select ymr.id,
-        ye.name as enterprise,
-        pu.real_name as applicant,
-        ymr.product_ids as products,
-        ymr.risk_type as riskType,
-        ymr.risk_level as riskLevel,
-        ymr.status as status,
-        ymr.created_at as matchTime
-        from z_match_records ymr
-        left join jc_users pu on ymr.user_open_id=pu.id
-        left join jc_enterprise ye on ymr.enterprise_id=ye.id
-        where ymr.deleted = 0
-        ORDER BY ymr.id DESC
-        <if test="offset != null and size != null">
-            LIMIT #{offset}, #{size}
-        </if>
+    <select id="list" resultType="com.qhr.vo.MatchRecords">
+        select ma.id,
+               fin.amount_range            as finAmountRange,
+               ma.amount_range             as matchAmountRange,
+               JSON_LENGTH(ma.product_ids) as productCount,
+               ma.status                   as status,
+               fin.created_at              as matchTime
+        from yw_match_records ma
+                 left join yw_financing_intentions fin on ma.intention_id = fin.id
+        where ma.deleted = 0
+          and ma.user_open_id = #{openid}
+          and ma.enterprise_id = #{enterpriseId}
+        order by ma.id desc
     </select>
 </mapper>

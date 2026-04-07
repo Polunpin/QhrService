@@ -1,11 +1,14 @@
 package com.qhr.controller.jichu;
 
-import com.qhr.config.*;
+import com.qhr.config.ApiAssert;
+import com.qhr.config.ApiCode;
+import com.qhr.config.ApiResponse;
 import com.qhr.model.MatchRecord;
 import com.qhr.service.MatchRecordService;
-import com.qhr.vo.MatchRecords;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 
 /*匹配记录*/
@@ -23,10 +26,9 @@ public class MatchRecordController {
   /** 分页查询匹配记录列表 */
   @GET
   @Path("/list")
-  public ApiResponse list(@QueryParam("page") Integer page, @QueryParam("size") Integer size) {
-    PageBounds bounds = PageBounds.of(page, size);
-    PageResult<MatchRecords> records = matchRecordService.list(bounds.offset(), bounds.size());
-    return ApiResponse.ok(records);
+  public ApiResponse list(@Context HttpHeaders headers, @QueryParam("enterpriseId") Long enterpriseId) {
+    String openid = headers.getHeaderString("x-wx-openid");
+    return ApiResponse.ok(matchRecordService.list(openid, enterpriseId));
   }
 
   /** 创建匹配记录 */

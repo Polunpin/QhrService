@@ -1,7 +1,5 @@
 package com.qhr.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.qhr.config.PageResult;
 import com.qhr.dao.MatchRecordsMapper;
 import com.qhr.model.MatchRecord;
 import com.qhr.service.MatchRecordService;
@@ -20,10 +18,9 @@ public class MatchRecordServiceImpl implements MatchRecordService {
     }
 
     @Override
-    public PageResult<MatchRecords> list(Integer offset, Integer size) {
-        List<MatchRecords> matchRecords = matchRecordsMapper.list(offset, size);
-        Long count = matchRecordsMapper.selectCount(Wrappers.lambdaQuery());
-        return PageResult.of(matchRecords, count, offset, size);
+    public List<MatchRecords> list(String openid, Long enterpriseId) {
+        //根据openid+企业ID查询匹配记录
+        return matchRecordsMapper.list(openid, enterpriseId);
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * 匹配记录实体。
  */
 @Data
-@TableName("z_match_records")
+@TableName("yw_match_records")
 public class MatchRecord implements Serializable {
 
     @TableId(type = IdType.AUTO)
@@ -24,12 +24,16 @@ public class MatchRecord implements Serializable {
     Long intentionId;
     @TableField("product_ids")
     String productIds;
+    @Deprecated
     @TableField("match_score")
     BigDecimal matchScore;
+    @Deprecated
     @TableField("risk_type")
     String riskType;
+    @Deprecated
     @TableField("risk_level")
     String riskLevel;
+    @Deprecated
     String status;
     @TableField("created_at")
     LocalDateTime createdAt;

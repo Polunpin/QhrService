@@ -34,15 +34,12 @@ public class MeasureAsyncMatchService {
     }
 
     public void trigger(MeasureSubmitRequest request, String openid, Long enterpriseId, Long intentionId) {
+        //入参
         MeasureAsyncMatchCommand command = new MeasureAsyncMatchCommand(
-                openid,
-                enterpriseId,
-                intentionId,
-                request.taxAccount(),
-                request.taxPassword(),
-                request.verifyCode(),
-                request.enterprise()
+                openid, enterpriseId, intentionId, request.taxAccount(),
+                request.taxPassword(), request.verifyCode(), request.enterprise()
         );
+        //异步处理
         CompletableFuture.runAsync(() -> process(command), executorService)
                 .exceptionally(exception -> {
                     LOGGER.log(System.Logger.Level.ERROR,

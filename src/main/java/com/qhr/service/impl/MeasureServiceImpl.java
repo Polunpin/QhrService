@@ -59,16 +59,18 @@ public class MeasureServiceImpl implements MeasureService {
     @Override
     @Transactional
     public PrecheckResult submit(MeasureSubmitRequest request, String openid, String unionid) {
-        //保存用户
+        //用户-保存
         userService.create(openid, unionid);
-        //更新或保存企业
+        //企业-更新或保存
         Long enterpriseId = upsertEnterprise(request.enterprise());
-        //用户-绑定-企业
+        //中间表-用户绑定企业
         userService.bindEnterprise(openid, enterpriseId);
-        //融资需求参数封装
+
+        //融资需求-参数封装
         FinancingIntention intention = getFinancingIntention(request, openid, enterpriseId);
-        //保存融资需求
+        //融资需求-保存
         Long intentionId = financingIntentionService.create(intention);
+
         //预审
         PrecheckResult precheck = evaluatePrecheck(enterpriseId, request.enterprise());
         if (precheck.result()) {

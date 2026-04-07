@@ -98,6 +98,7 @@ public class QccClientServiceImpl implements QccClientService {
     String orderNo = extractRequiredText(createOrderResult, "OrderNo", "企查查财税下单响应缺少OrderNo");
     //验证码发送
     sendCode(orderNo, requestBody.verifyCode());
+    //数据获取
     return getData(orderNo);
   }
 

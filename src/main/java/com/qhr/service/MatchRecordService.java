@@ -1,15 +1,16 @@
 package com.qhr.service;
 
-import com.qhr.config.PageResult;
 import com.qhr.model.MatchRecord;
 import com.qhr.vo.MatchRecords;
+
+import java.util.List;
 
 public interface MatchRecordService {
 
   /**
    * 分页查询匹配记录列表
    */
-  PageResult<MatchRecords> list(Integer offset, Integer size);
+  List<MatchRecords> list(String openid, Long enterpriseId);
 
   /** 创建匹配记录并返回主键 */
   Long create(MatchRecord record);
