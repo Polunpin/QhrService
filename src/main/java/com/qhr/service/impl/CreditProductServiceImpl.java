@@ -26,10 +26,8 @@ public class CreditProductServiceImpl implements CreditProductService {
     }
 
     @Override
-    public List<Product> listEid(Long enterpriseId) {
-        // 临时 mock：固定返回指定产品ID，后续再接入企业匹配逻辑
-        List<Long> mockProductIds = List.of(1L, 2L, 3L, 10L);
-        return creditProductsMapper.selectByIds(mockProductIds);
+    public List<Product> listByIds(List<String> productIds) {
+        return creditProductsMapper.selectByIds(productIds);
     }
 
 

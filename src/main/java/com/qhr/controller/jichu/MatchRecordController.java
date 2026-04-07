@@ -23,7 +23,9 @@ public class MatchRecordController {
     this.matchRecordService = matchRecordService;
   }
 
-  /** 分页查询匹配记录列表 */
+  /**
+   * 查询匹配记录列表
+   */
   @GET
   @Path("/list")
   public ApiResponse list(@Context HttpHeaders headers, @QueryParam("enterpriseId") Long enterpriseId) {

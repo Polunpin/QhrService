@@ -51,7 +51,7 @@ public class HomeServiceImpl implements HomeService {
         long measureCount = financingIntentionsMapper.selectCount(
                 Wrappers.<FinancingIntention>lambdaQuery()
                         .eq(FinancingIntention::getUserOpenId, openid)
-                        .eq(enterpriseId != null, FinancingIntention::getEnterpriseId, enterpriseId)
+                        .eq(FinancingIntention::getEnterpriseId, enterpriseId)
         );
         //提额进度 todo
         String increaseProgress = "2/3";

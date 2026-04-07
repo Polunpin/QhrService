@@ -5,6 +5,8 @@ import com.qhr.model.Product;
 import com.qhr.service.CreditProductService;
 import jakarta.ws.rs.*;
 
+import java.util.Arrays;
+
 /*产品管理*/
 @Path("/api/products")
 public class ProductController {
@@ -28,9 +30,10 @@ public class ProductController {
    * IDs查询产品列表-小程序查询
    */
   @GET
-  @Path("/listByEid")
-  public ApiResponse listByEid(@QueryParam("enterpriseId") Long enterpriseId) {
-    return ApiResponse.ok(creditProductService.listEid(enterpriseId));
+  @Path("/listByIds")
+  public ApiResponse listByIds(@QueryParam("productIds") String productIds) {
+    ApiAssert.isTrue(!productIds.isEmpty(), ApiCode.BAD_REQUEST, "ids不能为空");
+    return ApiResponse.ok(creditProductService.listByIds(Arrays.asList(productIds.split(","))));
   }
 
   /** 创建产品 */

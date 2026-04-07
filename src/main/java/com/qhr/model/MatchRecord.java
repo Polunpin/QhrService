@@ -1,6 +1,8 @@
 package com.qhr.model;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import jakarta.json.JsonObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,7 +13,7 @@ import java.time.LocalDateTime;
  * 匹配记录实体。
  */
 @Data
-@TableName("yw_match_records")
+@TableName(value = "yw_match_records", autoResultMap = true)
 public class MatchRecord implements Serializable {
 
     @TableId(type = IdType.AUTO)
@@ -22,8 +24,8 @@ public class MatchRecord implements Serializable {
     Long enterpriseId;
     @TableField("intention_id")
     Long intentionId;
-    @TableField("product_ids")
-    String productIds;
+    @TableField(value = "product_ids", typeHandler = JacksonTypeHandler.class)
+    JsonObject productIds;
     @Deprecated
     @TableField("match_score")
     BigDecimal matchScore;

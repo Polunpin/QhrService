@@ -27,7 +27,7 @@ public interface CreditProductService {
   Product getById(Long id);
 
   /**
-   * 根据企业ID查询产品
+   * 根据产品ID集合查询产品
    */
-  List<Product> listEid(Long enterpriseId);
+  List<Product> listByIds(List<String> productIds);
 }
