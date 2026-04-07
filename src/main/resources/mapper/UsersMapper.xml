@@ -25,7 +25,7 @@
         GROUP BY user_id) ue ON u.id = ue.user_id
         LEFT JOIN
         (SELECT user_id, COUNT(id) AS matchCount, MAX(created_at) AS lastMatch
-        FROM z_match_records
+        FROM yw_match_records
         WHERE deleted = 0
         GROUP BY user_id) m ON u.id = m.user_id
         where u.status = 1 ORDER BY id DESC
