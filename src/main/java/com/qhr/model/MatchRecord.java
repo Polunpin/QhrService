@@ -1,13 +1,13 @@
 package com.qhr.model;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import jakarta.json.JsonObject;
+import com.baomidou.mybatisplus.extension.handlers.Fastjson2TypeHandler;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 匹配记录实体。
@@ -24,8 +24,8 @@ public class MatchRecord implements Serializable {
     Long enterpriseId;
     @TableField("intention_id")
     Long intentionId;
-    @TableField(value = "product_ids", typeHandler = JacksonTypeHandler.class)
-    JsonObject productIds;
+    @TableField(value = "product_ids", typeHandler = Fastjson2TypeHandler.class)
+    List<Long> productIds;
     @Deprecated
     @TableField("match_score")
     BigDecimal matchScore;

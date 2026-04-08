@@ -3,6 +3,8 @@ package com.qhr.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.qhr.config.PageResult;
 import com.qhr.dao.CreditProductsMapper;
+import com.qhr.dao.MatchRecordsMapper;
+import com.qhr.model.MatchRecord;
 import com.qhr.model.Product;
 import com.qhr.service.CreditProductService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -13,9 +15,13 @@ import java.util.List;
 public class CreditProductServiceImpl implements CreditProductService {
 
     private final CreditProductsMapper creditProductsMapper;
+    private final MatchRecordsMapper matchRecordsMapper;
 
-    public CreditProductServiceImpl(CreditProductsMapper creditProductsMapper) {
+
+    public CreditProductServiceImpl(CreditProductsMapper creditProductsMapper,
+                                    MatchRecordsMapper matchRecordsMapper) {
         this.creditProductsMapper = creditProductsMapper;
+        this.matchRecordsMapper = matchRecordsMapper;
     }
 
     @Override
@@ -26,10 +32,10 @@ public class CreditProductServiceImpl implements CreditProductService {
     }
 
     @Override
-    public List<Product> listByIds(List<String> productIds) {
-        return creditProductsMapper.selectByIds(productIds);
+    public List<Product> listById(String id) {
+        MatchRecord matchRecord = matchRecordsMapper.selectById(id);
+        return creditProductsMapper.selectByIds(matchRecord.getProductIds());
     }
-
 
     @Override
     public Product getById(Long id) {
