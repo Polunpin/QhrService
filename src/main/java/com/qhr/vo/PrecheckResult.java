@@ -2,7 +2,7 @@ package com.qhr.vo;
 
 public record PrecheckResult(
         /*企业ID*/
-        long enterpriseId,
+        Long enterpriseId,
         /*企业名称*/
         String enterpriseName,
         /*结果*/
