@@ -30,6 +30,18 @@ public class Enterprise implements Serializable {
     private String status;
     /*注册地址*/
     private String address;
+    /*QCC财税订单号*/
+    @TableField("qcc_order_no")
+    private String qccOrderNo;
+    /*QCC财税数据状态*/
+    @TableField("qcc_data_status")
+    private String qccDataStatus;
+    /*QCC财税数据JSON*/
+    @TableField("qcc_tax_data")
+    private String qccTaxData;
+    /*QCC财税订单过期时间*/
+    @TableField("qcc_order_expire_at")
+    private LocalDateTime qccOrderExpireAt;
     @TableField("created_at")
     private LocalDateTime createdAt;
     @TableField("updated_at")

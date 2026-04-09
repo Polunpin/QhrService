@@ -42,13 +42,14 @@ public class QccClientController {
      * 财税步骤1:数据下单（获取验证码）
      * 逻辑：下单状态（P-已发送验证码，需要下一步操作，S-下单成功，F-下单失败）
      *
-     * @param qccTaxCreateOrder qcc接口入参
+     * @param orderRequest qcc接口入参
      * @return qcc结果
      */
     @POST
     @Path("/createOrder")
-    public ApiResponse createOrder(QccTaxCreateOrderRequest qccTaxCreateOrder) {
-        return ApiResponse.ok(qccClientService.createTaxOrder(qccTaxCreateOrder));
+    public ApiResponse createOrder(QccTaxCreateOrderRequest orderRequest) {
+        JsonNode result = qccClientService.createTaxOrder(orderRequest);
+        return ApiResponse.ok(result);
     }
 
     /**
@@ -62,18 +63,20 @@ public class QccClientController {
     @Path("/sendCode")
     public ApiResponse sendCode(@QueryParam("orderNo") String orderNo,
                                 @QueryParam("verifyCode") String verifyCode) {
-        return ApiResponse.ok(qccClientService.sendCode(orderNo, verifyCode));
+        JsonNode result = qccClientService.sendCode(orderNo, verifyCode);
+        return ApiResponse.ok(result);
     }
 
     /**
-     * 财税步骤2:验证码校验
+     * 财税步骤3:数据获取
      *
      * @param orderNo qcc订单号
-     * @return 订单结果
+     * @return 财税数据
      */
     @GET
     @Path("/taxData")
     public ApiResponse taxData(@QueryParam("orderNo") String orderNo) {
-        return ApiResponse.ok(qccClientService.taxData(orderNo));
+        JsonNode result = qccClientService.getTaxData(orderNo);
+        return ApiResponse.ok(result);
     }
 }

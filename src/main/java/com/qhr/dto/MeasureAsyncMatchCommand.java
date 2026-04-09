@@ -12,7 +12,9 @@ public record MeasureAsyncMatchCommand(
         Long intentionId,
         //qcc财税数据订单号
         String orderNo,
-        //企查查模糊查询对象
-        EnterprisePayload enterprise
+        //验证码
+        String verifyCode,
+        //数据下单状态，判断是否需要短信验证
+        String dataStatus
 ) {
 }

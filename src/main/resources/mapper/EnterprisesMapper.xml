@@ -3,7 +3,9 @@
 <mapper namespace="com.qhr.dao.EnterprisesMapper">
 
     <sql id="Enterprise_Columns">
-        id, name, credit_code, start_date, oper_name, status, address, created_at, updated_at
+        id, name, credit_code, start_date, oper_name, status, address,
+        qcc_order_no, qcc_data_status, qcc_tax_data, qcc_order_expire_at,
+        created_at, updated_at
     </sql>
 
     <select id="list" resultType="com.qhr.model.Enterprise">
@@ -18,7 +20,8 @@
 
     <select id="listByUserId" resultType="com.qhr.model.Enterprise">
         SELECT e.id, e.name, e.credit_code, e.start_date, e.oper_name, e.status,
-               e.address, e.created_at, e.updated_at
+        e.address, e.qcc_order_no, e.qcc_data_status, e.qcc_tax_data, e.qcc_order_expire_at,
+        e.created_at, e.updated_at
         FROM jc_enterprise e
         JOIN zj_user_enterprise_relation r ON e.id = r.enterprise_id
         WHERE e.deleted = 0

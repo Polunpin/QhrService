@@ -175,17 +175,21 @@ create table jc_products
 -- auto-generated definition
 create table jc_enterprise
 (
-    id          bigint unsigned auto_increment
+    id                  bigint unsigned auto_increment
         primary key,
-    name        varchar(1000)                        not null comment '企业名称',
-    credit_code varchar(50)                          null comment '统一社会信用代码（查询企业为中国香港企业时，返回商业登记号码）',
-    start_date  varchar(50)                          null comment '成立日期',
-    oper_name   varchar(1000)                        null comment '法定代表人姓名',
-    status      varchar(100)                         null comment '状态',
-    address     varchar(1000)                        null comment '注册地址',
-    created_at  datetime   default CURRENT_TIMESTAMP null,
-    updated_at  datetime   default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP,
-    deleted     tinyint(1) default 0                 not null comment '软删除标记：0未删除，1已删除',
+    name                varchar(1000)                        not null comment '企业名称',
+    credit_code         varchar(50)                          null comment '统一社会信用代码（查询企业为中国香港企业时，返回商业登记号码）',
+    start_date          varchar(50)                          null comment '成立日期',
+    oper_name           varchar(1000)                        null comment '法定代表人姓名',
+    status              varchar(100)                         null comment '状态',
+    address             varchar(1000)                        null comment '注册地址',
+    qcc_order_no        varchar(100)                         null comment 'QCC财税订单号',
+    qcc_data_status     varchar(50)                          null comment 'QCC财税数据状态：CREATED/WAIT_CAPTCHA/FETCHING/CONSUMED/FAILED/EXPIRED',
+    qcc_tax_data        json                                 null comment 'QCC获取到的财税数据JSON',
+    qcc_order_expire_at datetime                             null comment 'QCC订单过期时间（下单后7天）',
+    created_at          datetime   default CURRENT_TIMESTAMP null,
+    updated_at          datetime   default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP,
+    deleted             tinyint(1) default 0                 not null comment '软删除标记：0未删除，1已删除',
     constraint uk_credit_code
         unique (credit_code)
 )

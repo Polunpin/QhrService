@@ -21,6 +21,16 @@ public interface EnterpriseService {
    */
   Enterprise getByCreditCode(String creditCode);
 
+//  /**
+//   * 根据企业名称精确查询企业
+//   */
+//  Enterprise getByName(String name);
+//
+//  /**
+//   * 根据QCC订单号查询企业
+//   */
+//  Enterprise getByQccOrderNo(String orderNo);
+
 
   /** 创建企业并返回主键 */
   Long create(Enterprise enterprise);

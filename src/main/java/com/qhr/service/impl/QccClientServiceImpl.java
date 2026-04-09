@@ -22,6 +22,11 @@ import java.time.Duration;
 @ApplicationScoped
 public class QccClientServiceImpl implements QccClientService {
 
+    @ConfigProperty(name = "qcc-key")
+    String appKey;
+    @ConfigProperty(name = "qcc-secretKey")
+    String secretKey;
+
     //企业模糊查询
     private static final String FUZZY_SEARCH_URL = "https://api.qichacha.com/FuzzySearch/GetList";
     //企业财税数据 第一步：创建订单
@@ -30,13 +35,10 @@ public class QccClientServiceImpl implements QccClientService {
     private static final String TAX_SEND_CODE_URL = "https://api.qichacha.com/TaxData/SendCode";
     //企业财税数据 第三步：数据获取
     private static final String TAX_GET_DATA_URL = "https://api.qichacha.com/TaxData/GetData";
+
     private final QccAuthSigner qccAuthSigner;
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
-    @ConfigProperty(name = "qcc-key")
-    String appKey;
-    @ConfigProperty(name = "qcc-secretKey")
-    String secretKey;
 
     public QccClientServiceImpl(QccAuthSigner qccAuthSigner, ObjectMapper objectMapper) {
         this.qccAuthSigner = qccAuthSigner;
@@ -120,7 +122,7 @@ public class QccClientServiceImpl implements QccClientService {
 
     @SneakyThrows
     @Override
-    public JsonNode taxData(String orderNo) {
+    public JsonNode getTaxData(String orderNo) {
 
 //        QccAuthHeaders authHeaders = qccAuthSigner.sign(appKey, secretKey);
 //        HttpRequest request = HttpRequest.newBuilder(buildUri(

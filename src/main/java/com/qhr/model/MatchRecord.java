@@ -41,4 +41,11 @@ public class MatchRecord implements Serializable {
     LocalDateTime createdAt;
     @TableLogic(value = "0", delval = "1")
     Integer deleted;
+
+    public MatchRecord(String userOpenId, Long enterpriseId, Long intentionId, List<Long> productIds) {
+        this.userOpenId = userOpenId;
+        this.enterpriseId = enterpriseId;
+        this.intentionId = intentionId;
+        this.productIds = productIds;
+    }
 }

@@ -1,6 +1,7 @@
 package com.qhr.controller.yewu;
 
 import com.qhr.config.ApiResponse;
+import com.qhr.dto.EnterprisePayload;
 import com.qhr.dto.MeasureSubmitRequest;
 import com.qhr.service.MeasureService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,6 +24,13 @@ public class MeasureController {
 
   public MeasureController(MeasureService measureService) {
     this.measureService = measureService;
+  }
+
+  @POST
+  @Path("/precheck")
+  public ApiResponse precheck(EnterprisePayload request, @Context HttpHeaders headers) {
+    return ApiResponse.ok(measureService.precheck(request, headers.getHeaderString("x-wx-openid"),
+            headers.getHeaderString("x-wx-unionid")));
   }
 
   @POST

@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record MeasureSubmitRequest(
+        //企业ID
+        Long enterpriseId,
+
         //融资区间
         String amountRange,
         //个人征信文件名称
@@ -14,9 +17,13 @@ public record MeasureSubmitRequest(
         String enterpriseCreditName,
         //企业征信文件云托管文件ID
         String enterpriseCreditCloudId,
-        //qcc订单号
+
+        //qcc-订单号
         String orderNo,
-        //企业基本信息
-        EnterprisePayload enterprise
+        //qcc-验证码
+        String verifyCode,
+        //qcc-数据下单状态，判断是否需要短信验证
+        String dataStatus
 ) {
 }
+

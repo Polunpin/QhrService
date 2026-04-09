@@ -34,6 +34,6 @@ public interface QccClientService {
      * @param orderNo qcc订单号
      * @return 数据
      */
-    JsonNode taxData(String orderNo);
+    JsonNode getTaxData(String orderNo);
 
 }
