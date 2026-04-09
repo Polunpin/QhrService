@@ -76,7 +76,9 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
    */
   @Override
   public Object match(ApplicantProfile applicantProfile) {
+    //粗筛产品规则，缩小匹配范围
     List<ProductRule> items = productRuleService.list();
+    //封装DMN入参
     Map<String, Object> input = Map.of(
             APPLICANT_PROFILE_INPUT_NAME, buildDmnInput(applicantProfile),
             PRODUCT_RULE_INPUT_NAME, items.stream().map(this::buildDmnInput).toList());

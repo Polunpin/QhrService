@@ -14,12 +14,8 @@ public record MeasureSubmitRequest(
         String enterpriseCreditName,
         //企业征信文件云托管文件ID
         String enterpriseCreditCloudId,
-        //工商帐号
-        String taxAccount,
-        //工商密码
-        String taxPassword,
-        //验证码
-        String verifyCode,
+        //qcc订单号
+        String orderNo,
         //企业基本信息
         EnterprisePayload enterprise
 ) {

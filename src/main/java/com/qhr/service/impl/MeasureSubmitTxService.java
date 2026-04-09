@@ -49,8 +49,6 @@ public class MeasureSubmitTxService {
         intention.setPersonalCreditCloudId(request.personalCreditCloudId());
         intention.setEnterpriseCreditName(request.enterpriseCreditName());
         intention.setEnterpriseCreditCloudId(request.enterpriseCreditCloudId());
-        intention.setTaxAccount(request.taxAccount());
-        intention.setTaxPassword(request.taxPassword());
         return intention;
     }
 
@@ -58,23 +56,23 @@ public class MeasureSubmitTxService {
     public PrecheckResult submitAfterPrecheck(MeasureSubmitRequest request, String openid, String unionid) {
         //用户-保存
         userService.create(openid, unionid);
-
         //企业-更新/保存
         Long enterpriseId = upsertEnterprise(request.enterprise());
         //中间表-用户绑定企业
         userService.bindEnterprise(openid, enterpriseId);
-
-        FinancingIntention intention = getFinancingIntention(request, openid, enterpriseId);
         //融资需求-保存
+        FinancingIntention intention = getFinancingIntention(request, openid, enterpriseId);
         Long intentionId = financingIntentionService.create(intention);
 
         //异步执行-查询财税数据+申请人画像封装+产品匹配
         triggerAfterCommit(request, openid, enterpriseId, intentionId);
+        //实时返回结果，不影响异步执行
         return new PrecheckResult(enterpriseId, request.enterprise().name(), true, "预审通过");
     }
 
     private Long upsertEnterprise(EnterprisePayload enterprisePayload) {
-        Enterprise existing = findExistingEnterprise(enterprisePayload.creditCode());
+        //根据creditCode查询是否存在
+        Enterprise existing = enterpriseService.getByCreditCode(enterprisePayload.creditCode());
 
         if (existing == null) {
             Enterprise enterprise = new Enterprise();
@@ -97,20 +95,18 @@ public class MeasureSubmitTxService {
         return existing.getId();
     }
 
-    private Enterprise findExistingEnterprise(String creditCode) {
-        return enterpriseService.getByCreditCode(creditCode);
-    }
-
     private void triggerAfterCommit(MeasureSubmitRequest request,
                                     String openid,
                                     Long enterpriseId,
                                     Long intentionId) {
+        //当前事务的上下文工具箱
         transactionSynchronizationRegistry.registerInterposedSynchronization(new Synchronization() {
+            //事务成功前
             @Override
             public void beforeCompletion() {
-
             }
 
+            //事务成功后
             @Override
             public void afterCompletion(int status) {
                 if (status == Status.STATUS_COMMITTED) {

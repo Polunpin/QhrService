@@ -29,8 +29,6 @@ public class FinancingIntention implements Serializable {
   private String enterpriseCreditName;
   @TableField("enterprise_credit_cloud_id")
   private String enterpriseCreditCloudId;
-  @TableField("tax_account")
-  private String taxAccount;
   @TableField("tax_password")
   private String taxPassword;
   @TableField("created_at")

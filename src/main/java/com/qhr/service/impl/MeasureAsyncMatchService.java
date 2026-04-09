@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.qhr.dto.EnterprisePayload;
 import com.qhr.dto.MeasureAsyncMatchCommand;
 import com.qhr.dto.MeasureSubmitRequest;
-import com.qhr.dto.QccTaxCreateOrderRequest;
 import com.qhr.service.DmnDecisionService;
 import com.qhr.service.QccClientService;
 import com.qhr.vo.ApplicantProfile;
@@ -36,8 +35,7 @@ public class MeasureAsyncMatchService {
     public void trigger(MeasureSubmitRequest request, String openid, Long enterpriseId, Long intentionId) {
         //入参
         MeasureAsyncMatchCommand command = new MeasureAsyncMatchCommand(
-                openid, enterpriseId, intentionId, request.taxAccount(),
-                request.taxPassword(), request.verifyCode(), request.enterprise()
+                openid, enterpriseId, intentionId, request.orderNo(), request.enterprise()
         );
         //异步处理
         CompletableFuture.runAsync(() -> process(command), executorService)
@@ -51,10 +49,8 @@ public class MeasureAsyncMatchService {
 
     @SneakyThrows
     private void process(MeasureAsyncMatchCommand command) {
-        Thread.sleep(3000);
-        LOGGER.log(System.Logger.Level.INFO, "测额异步匹配完成(Test)=" + command);
-//        //qcc-企业财税数据
-//        JsonNode qccTaxOrder = createQccTaxOrder(command);
+        //qcc-企业财税数据
+        JsonNode qccTaxOrder = createQccTaxOrder(command);
 //        //构建申请人画像
 //        ApplicantProfile applicantProfile = buildApplicantProfile(command, qccTaxOrder);
 //        //DMN产品匹配
@@ -68,17 +64,7 @@ public class MeasureAsyncMatchService {
 
     private JsonNode createQccTaxOrder(MeasureAsyncMatchCommand command) {
         try {
-            JsonNode result = qccClientService.taxData(
-                    new QccTaxCreateOrderRequest(
-                            command.enterprise().creditCode(),
-                            command.taxAccount(),
-                            command.taxPassword(),
-                            command.verifyCode()
-                    )
-            );
-            LOGGER.log(System.Logger.Level.INFO,
-                    "企查查财税数据流程完成，openid=" + command.openid() + ", searchKey=" + command.enterprise().creditCode());
-            return result;
+            return qccClientService.taxData(command.orderNo());
         } catch (RuntimeException exception) {
             LOGGER.log(System.Logger.Level.ERROR,
                     "企查查财税数据流程失败，openid=" + command.openid() + ", searchKey=" + command.enterprise().creditCode(),

@@ -1,10 +1,11 @@
 package com.qhr.controller.yewu;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.qhr.config.ApiAssert;
+import com.qhr.config.ApiCode;
 import com.qhr.config.ApiResponse;
+import com.qhr.dto.QccTaxCreateOrderRequest;
 import com.qhr.service.QccClientService;
-import io.vertx.core.json.JsonArray;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -30,14 +31,36 @@ public class QccClientController {
      */
     @GET
     @Path("/getList")
-    public ApiResponse getList(@QueryParam("searchKey") String searchKey) throws JsonProcessingException {
-//        JsonNode result = qccClientService.getList(searchKey);
-//        ApiAssert.isTrue(result != null && !result.isMissingNode(), ApiCode.NOT_FOUND, "企业不存在");
-        //TODO 数据测试。
-        String str1 = "{\"KeyNo\":\"0si5hyjhbliespkjb9vi5ias5askla5jl5\",\"Name\":\"北京护安行教育科技有限公司\",\"CreditCode\":\"91110108MADH4BC12G\",\"StartDate\":\"2024-04-02\",\"OperName\":\"兰一平\",\"Status\":\"存续\",\"No\":\"110108041266562\",\"Address\":\"北京市海淀区白家疃尚峰园2号楼3层302\"}";
-        String str2 = "{\"KeyNo\":\"0si5hyjhbliespkjb9vi5ias5askla5jl5\",\"Name\":\"上海企会融科技有限公司\",\"CreditCode\":\"91110108MADH4BC13G\",\"StartDate\":\"2026-04-02\",\"OperName\":\"兰一平\",\"Status\":\"暂存\",\"No\":\"110108041266562\",\"Address\":\"北京市海淀区白家疃尚峰园2号楼3层302\"}";
-        ObjectMapper mapper = new ObjectMapper();
-        JsonArray result = new JsonArray().add(mapper.readTree(str1)).add(mapper.readTree(str2));
+    public ApiResponse getList(@QueryParam("searchKey") String searchKey) {
+        JsonNode result = qccClientService.getList(searchKey);
+        ApiAssert.isTrue(result != null && !result.isMissingNode(), ApiCode.NOT_FOUND, "企业不存在");
         return ApiResponse.ok(result);
+    }
+
+    /**
+     * 财税步骤1:数据下单（获取验证码）
+     * 逻辑：下单状态（P-已发送验证码，需要下一步操作，S-下单成功，F-下单失败）
+     *
+     * @param qccTaxCreateOrder qcc接口入参
+     * @return qcc结果
+     */
+    @GET
+    @Path("/createOrder")
+    public ApiResponse createOrder(QccTaxCreateOrderRequest qccTaxCreateOrder) {
+        return ApiResponse.ok(qccClientService.createTaxOrder(qccTaxCreateOrder));
+    }
+
+    /**
+     * 财税步骤2:验证码校验
+     *
+     * @param orderNo    qcc订单号
+     * @param verifyCode 税务验证码
+     * @return 订单结果
+     */
+    @GET
+    @Path("/sendCode")
+    public ApiResponse sendCode(@QueryParam("orderNo") String orderNo,
+                                @QueryParam("verifyCode") String verifyCode) {
+        return ApiResponse.ok(qccClientService.sendCode(orderNo, verifyCode));
     }
 }

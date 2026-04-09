@@ -10,12 +10,8 @@ public record MeasureAsyncMatchCommand(
         Long enterpriseId,
         //融资需求ID
         Long intentionId,
-        //工商帐号
-        String taxAccount,
-        //工商密码
-        String taxPassword,
-        //验证码
-        String verifyCode,
+        //qcc财税数据订单号
+        String orderNo,
         //企查查模糊查询对象
         EnterprisePayload enterprise
 ) {

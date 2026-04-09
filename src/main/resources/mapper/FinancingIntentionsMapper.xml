@@ -4,7 +4,7 @@
 
     <sql id="FinancingIntention_Columns">
         id, user_open_id, enterprise_id, amount_range, personal_credit_name,
-        personal_credit_cloud_id, enterprise_credit_name, enterprise_credit_cloud_id, tax_account, tax_password,
+        personal_credit_cloud_id, enterprise_credit_name, enterprise_credit_cloud_id,
         created_at, updated_at
     </sql>
 
