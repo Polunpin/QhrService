@@ -46,8 +46,7 @@ public class MeasureServiceImpl implements MeasureService {
         this.transactionSynchronizationRegistry = transactionSynchronizationRegistry;
     }
 
-    private static @NonNull FinancingIntention getFinancingIntention(MeasureSubmitRequest request,
-                                                                     String openid) {
+    private static @NonNull FinancingIntention getFinancingIntention(MeasureSubmitRequest request, String openid) {
         FinancingIntention intention = new FinancingIntention();
         intention.setUserOpenId(openid);
         intention.setEnterpriseId(request.enterpriseId());
@@ -90,7 +89,7 @@ public class MeasureServiceImpl implements MeasureService {
      */
     @Override
     @Transactional
-    public MeasureSubmitResult submit(MeasureSubmitRequest request, String openid, String unionid) {
+    public MeasureSubmitResult submit(MeasureSubmitRequest request, String openid) {
         //融资需求-保存
         FinancingIntention intention = getFinancingIntention(request, openid);
         Long intentionId = financingIntentionService.create(intention);

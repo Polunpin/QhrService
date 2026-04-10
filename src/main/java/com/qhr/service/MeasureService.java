@@ -21,6 +21,6 @@ public interface MeasureService {
    * 提交测额任务。
    * 同步返回任务编号和初始进度，核心匹配流程在事务提交后异步执行。
    */
-  MeasureSubmitResult submit(MeasureSubmitRequest request, String openid, String unionid);
+  MeasureSubmitResult submit(MeasureSubmitRequest request, String openid);
 
 }

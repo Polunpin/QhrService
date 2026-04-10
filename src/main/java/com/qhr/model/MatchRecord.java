@@ -44,6 +44,9 @@ public class MatchRecord implements Serializable {
     @TableLogic(value = "0", delval = "1")
     Integer deleted;
 
+    public MatchRecord() {
+    }
+
     public MatchRecord(String userOpenId, Long enterpriseId, Long intentionId, String amountRange, List<Long> productIds) {
         this.userOpenId = userOpenId;
         this.enterpriseId = enterpriseId;
