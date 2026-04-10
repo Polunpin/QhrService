@@ -1,6 +1,8 @@
 package com.qhr.model;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -10,7 +12,7 @@ import java.time.LocalDateTime;
  * 企业实体。
  */
 @Data
-@TableName("jc_enterprise")
+@TableName(value = "jc_enterprise", autoResultMap = true)
 public class Enterprise implements Serializable {
 
     @TableId(type = IdType.AUTO)
@@ -37,8 +39,8 @@ public class Enterprise implements Serializable {
     @TableField("qcc_data_status")
     private String qccDataStatus;
     /*QCC财税数据JSON*/
-    @TableField("qcc_tax_data")
-    private String qccTaxData;
+    @TableField(value = "qcc_tax_data", typeHandler = JacksonTypeHandler.class)
+    private JsonNode qccTaxData;
     /*QCC财税订单过期时间*/
     @TableField("qcc_order_expire_at")
     private LocalDateTime qccOrderExpireAt;

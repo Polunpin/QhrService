@@ -10,11 +10,11 @@ public record MeasureAsyncMatchCommand(
         Long enterpriseId,
         //融资需求ID
         Long intentionId,
-        //qcc财税数据订单号
+        //qcc-财税数据订单号
         String orderNo,
-        //验证码
+        //qcc-验证码
         String verifyCode,
-        //数据下单状态，判断是否需要短信验证
+        //qcc-数据下单状态，判断是否需要短信验证
         String dataStatus
 ) {
 }

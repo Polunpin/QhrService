@@ -24,6 +24,8 @@ public class MatchRecord implements Serializable {
     Long enterpriseId;
     @TableField("intention_id")
     Long intentionId;
+    @TableField("amount_range")
+    String amountRange;
     @TableField(value = "product_ids", typeHandler = Fastjson2TypeHandler.class)
     List<Long> productIds;
     @Deprecated
@@ -42,10 +44,11 @@ public class MatchRecord implements Serializable {
     @TableLogic(value = "0", delval = "1")
     Integer deleted;
 
-    public MatchRecord(String userOpenId, Long enterpriseId, Long intentionId, List<Long> productIds) {
+    public MatchRecord(String userOpenId, Long enterpriseId, Long intentionId, String amountRange, List<Long> productIds) {
         this.userOpenId = userOpenId;
         this.enterpriseId = enterpriseId;
         this.intentionId = intentionId;
+        this.amountRange = amountRange;
         this.productIds = productIds;
     }
 }
