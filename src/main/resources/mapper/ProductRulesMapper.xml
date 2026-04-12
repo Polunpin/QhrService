@@ -2,6 +2,34 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.qhr.dao.ProductRulesMapper">
 
+    <resultMap id="ProductRuleMap" type="com.qhr.model.ProductRule">
+        <id property="id" column="id"/>
+        <result property="productId" column="product_id"/>
+        <result property="ruleCode" column="rule_code"/>
+        <result property="ruleVersion" column="rule_version"/>
+        <result property="ruleName" column="rule_name"/>
+        <result property="ruleStatus" column="rule_status"/>
+        <result property="priority" column="priority"/>
+        <result property="effectiveStartTime" column="effective_start_time"/>
+        <result property="effectiveEndTime" column="effective_end_time"/>
+        <result property="candidateFilter" column="candidate_filter_json"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.Fastjson2TypeHandler"/>
+        <result property="matchRule" column="match_rule_json"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.Fastjson2TypeHandler"/>
+        <result property="amountStrategy" column="amount_strategy_json"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.Fastjson2TypeHandler"/>
+        <result property="diagnosisRule" column="diagnosis_rule_json"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.Fastjson2TypeHandler"/>
+        <result property="payloadSchemaVersion" column="payload_schema_version"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="sourceRef" column="source_ref"/>
+        <result property="remark" column="remark"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="updatedBy" column="updated_by"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
     <sql id="ProductRule_Columns">
         id, product_id, rule_code, rule_version, rule_name, rule_status, priority,
         effective_start_time, effective_end_time, candidate_filter_json, match_rule_json,
@@ -9,7 +37,7 @@
         source_ref, remark, created_by, updated_by, created_at, updated_at
     </sql>
 
-    <select id="list" resultType="com.qhr.model.ProductRule">
+    <select id="list" resultMap="ProductRuleMap">
         SELECT <include refid="ProductRule_Columns"/>
         FROM yw_product_rule
         ORDER BY product_id, rule_version DESC, id DESC

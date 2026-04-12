@@ -7,7 +7,6 @@
                fin.amount_range            as finAmountRange,
                ma.amount_range             as matchAmountRange,
                JSON_LENGTH(ma.product_ids) as productCount,
-               ma.status                   as status,
                fin.created_at              as matchTime
         from yw_match_records ma
                  left join yw_financing_intentions fin on ma.intention_id = fin.id

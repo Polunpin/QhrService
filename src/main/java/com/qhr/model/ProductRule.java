@@ -1,8 +1,14 @@
 package com.qhr.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.Fastjson2TypeHandler;
+import com.qhr.vo.match.AmountStrategyPayload;
+import com.qhr.vo.match.CandidateFilterPayload;
+import com.qhr.vo.match.DiagnosisRulePayload;
+import com.qhr.vo.match.MatchRulePayload;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,7 +19,7 @@ import java.time.LocalDateTime;
  * 采用 payload-first 设计：主表保留规则身份、版本、生命周期与 4 个语义化 payload。
  */
 @Data
-@TableName("yw_product_rule")
+@TableName(value = "yw_product_rule", autoResultMap = true)
 public class ProductRule implements Serializable {
 
   /**
@@ -57,19 +63,23 @@ public class ProductRule implements Serializable {
   /**
    * 候选粗筛 payload，放地区、年龄、成立时长、行业、申请方式等前置过滤条件
    */
-  private String candidateFilterJson;
+  @TableField(value = "candidate_filter_json", typeHandler = Fastjson2TypeHandler.class)
+  private CandidateFilterPayload candidateFilter;
   /**
    * 详细匹配 payload，放税务、征信、负债、REVIEW 条件等精判规则
    */
-  private String matchRuleJson;
+  @TableField(value = "match_rule_json", typeHandler = Fastjson2TypeHandler.class)
+  private MatchRulePayload matchRule;
   /**
    * 额度策略 payload，放额度公式、策略 key、封顶值等额度测算规则
    */
-  private String amountStrategyJson;
+  @TableField(value = "amount_strategy_json", typeHandler = Fastjson2TypeHandler.class)
+  private AmountStrategyPayload amountStrategy;
   /**
    * 提额诊断 payload，放可优化项、动作建议、预期影响等诊断规则
    */
-  private String diagnosisRuleJson;
+  @TableField(value = "diagnosis_rule_json", typeHandler = Fastjson2TypeHandler.class)
+  private DiagnosisRulePayload diagnosisRule;
 
   /**
    * payload 结构版本号，用于后续 JSON schema 演进

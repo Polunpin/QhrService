@@ -183,25 +183,24 @@ create index idx_enterprise_id
     on zj_user_enterprise_relation (enterprise_id);
 
 -- auto-generated definition
-create table z_match_records
+create table yw_match_records
 (
-    id            bigint unsigned auto_increment
+    id             bigint unsigned auto_increment
         primary key,
-    user_open_id  varchar(128)                                              not null comment '用户openId',
-    enterprise_id bigint unsigned                                           not null comment '企业ID',
-    intention_id  bigint unsigned                                           null comment '关联的融资意向ID',
-    product_ids   json                                                      not null comment '匹配到的产品ID数组',
-    match_score   decimal(5, 2)                                             null comment '匹配度分数',
-    risk_type     varchar(100)                                              null comment '风险类型',
-    risk_level    enum ('提示', '警告', '严重')   default '提示'            null comment '风险级别',
-    status        enum ('成功', '失败', '待人工') default '待人工'          null comment '匹配状态',
-    created_at    datetime                        default CURRENT_TIMESTAMP null,
-    deleted       tinyint(1)                      default 0                 not null comment '软删除标记：0未删除，1已删除'
+    user_open_id   varchar(128)                         not null comment '用户openId',
+    enterprise_id  bigint unsigned                      not null comment '企业ID',
+    intention_id   bigint unsigned                      null comment '关联的融资意向ID',
+    amount_range   varchar(15)                          not null comment '额度区间',
+    product_ids    json                                 not null comment '明确命中的产品ID数组，仅 MATCH',
+    review_reasons json                                 null comment '可做但需补件/人工确认的结构化原因',
+    reject_reasons json                                 null comment '拒绝和数据缺失原因，用于回溯',
+    created_at     datetime   default CURRENT_TIMESTAMP null,
+    deleted        tinyint(1) default 0                 not null comment '软删除标记：0未删除，1已删除'
 )
     comment '匹配记录表';
 
 create index idx_enterprise
-    on z_match_records (enterprise_id);
+    on yw_match_records (enterprise_id);
 
 -- auto-generated definition
 create table yw_financing_intentions
