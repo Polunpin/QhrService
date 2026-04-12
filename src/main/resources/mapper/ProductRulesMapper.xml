@@ -3,39 +3,16 @@
 <mapper namespace="com.qhr.dao.ProductRulesMapper">
 
     <sql id="ProductRule_Columns">
-        id, product_id, rule_version, rule_name, is_active, effective_start_time, effective_end_time,
-        remark, gs_min_establish_months, gs_min_registered_capital, gs_min_paid_in_capital,
-        gs_max_legal_rep_change_count_2y, gs_min_legal_rep_change_gap_months, gs_min_legal_rep_share_ratio,
-        gs_allow_legal_rep_no_joint_liability, gs_allow_shareholder_replace_joint_liability,
-        gs_min_shareholder_replace_share_ratio, tax_min_tax_months_12m, tax_min_tax_months_24m,
-        tax_max_zero_declare_streak, tax_min_tax_amount_12m, tax_min_tax_amount_ytd,
-        tax_min_tax_amount_last_year, tax_max_tax_burden_ratio, tax_min_tax_burden_ratio_yoy,
-        tax_min_total_declares, jud_reject_if_major_lawsuit, jud_reject_if_executed,
-        jud_reject_if_dishonest_person, jud_reject_if_equity_frozen, jud_max_execution_count_24m,
-        jud_max_court_announcement_count_12m, jud_max_admin_penalty_count_12m,
-        jud_reject_if_major_judicial_risk, jud_reject_if_restriction_high_consumption, ind_match_mode_code,
-        ind_max_risk_level, ind_require_enterprise_tag, ind_min_tag_valid_months, ind_require_region_match,
-        ind_require_actual_business_address, ind_reject_if_high_pollution,
-        ind_reject_if_high_energy_consumption, ind_reject_if_sensitive_industry,
-        ec_max_total_liability, ec_max_credit_liability, ec_max_mortgage_liability,
-        ec_max_external_guarantee_amount, ec_max_loan_org_count, ec_max_query_count_6m,
-        ec_max_overdue_count_12m, ec_max_overdue_months_24m, ec_min_no_overdue_days,
-        ec_allow_abnormal_credit_account, pc_max_query_count_1m, pc_max_query_count_3m,
-        pc_max_query_count_6m, pc_max_loan_query_count_1m, pc_max_credit_card_query_count_1m,
-        pc_max_overdue_count_12m, pc_max_overdue_months_24m, pc_max_total_overdue_terms_5y,
-        pc_max_non_bank_loan_count, pc_max_credit_card_utilization, ext_json, created_at, updated_at
+        id, product_id, rule_code, rule_version, rule_name, rule_status, priority,
+        effective_start_time, effective_end_time, candidate_filter_json, match_rule_json,
+        amount_strategy_json, diagnosis_rule_json, payload_schema_version, source_type,
+        source_ref, remark, created_by, updated_by, created_at, updated_at
     </sql>
 
     <select id="list" resultType="com.qhr.model.ProductRule">
         SELECT <include refid="ProductRule_Columns"/>
         FROM yw_product_rule
-        <!--        <where>-->
-        <!--            <if test="productId != null"> AND product_id = #{productId}</if>-->
-        <!--            <if test="ruleVersion != null"> AND rule_version = #{ruleVersion}</if>-->
-        <!--            <if test="ruleName != null and ruleName != ''"> AND rule_name LIKE CONCAT('%', #{ruleName}, '%')</if>-->
-        <!--            <if test="isActive != null"> AND is_active = #{isActive}</if>-->
-        <!--        </where>-->
-        ORDER BY product_id , rule_version DESC, id DESC
+        ORDER BY product_id, rule_version DESC, id DESC
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
         </if>

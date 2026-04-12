@@ -7,6 +7,7 @@ import com.qhr.model.ProductRule;
 import com.qhr.service.ProductRuleService;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @ApplicationScoped
@@ -54,6 +55,21 @@ public class ProductRuleServiceImpl implements ProductRuleService {
   @Override
   public ProductRule getById(Long id) {
     return productRulesMapper.selectById(id);
+  }
+
+  @Override
+  public List<ProductRule> listActive() {
+    LocalDateTime now = LocalDateTime.now();
+    return productRulesMapper.selectList(Wrappers.<ProductRule>lambdaQuery()
+            .eq(ProductRule::getRuleStatus, "ACTIVE")
+            .and(wrapper -> wrapper.isNull(ProductRule::getEffectiveStartTime)
+                    .or().le(ProductRule::getEffectiveStartTime, now))
+            .and(wrapper -> wrapper.isNull(ProductRule::getEffectiveEndTime)
+                    .or().ge(ProductRule::getEffectiveEndTime, now))
+            .orderByAsc(ProductRule::getPriority)
+            .orderByAsc(ProductRule::getProductId)
+            .orderByDesc(ProductRule::getRuleVersion)
+            .orderByDesc(ProductRule::getId));
   }
 
 }

@@ -13,6 +13,8 @@ public interface ProductRuleService {
 
   ProductRule getById(Long id);
 
+  List<ProductRule> listActive();
+
   Long create(ProductRule productRule);
 
   boolean update(ProductRule productRule);

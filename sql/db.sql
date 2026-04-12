@@ -4,87 +4,40 @@ create table yw_product_rule
     id                                           bigint unsigned auto_increment comment '主键'
         primary key,
     product_id                                   bigint unsigned                        not null comment '产品ID',
+    rule_code              varchar(64)                  not null comment '稳定规则编码',
     rule_version                                 int unsigned default '1'               not null comment '规则版本号',
-    rule_name                                    varchar(128) default 'default'         not null comment '规则名称',
-    is_active                                    tinyint(1)   default 1                 not null comment '是否生效',
+    rule_name              varchar(128)                 not null comment '规则名称',
+    rule_status            varchar(16)  default 'DRAFT' not null comment 'DRAFT/ACTIVE/INACTIVE/ARCHIVED',
+    priority               int          default 100     not null comment '优先级，越小越靠前',
     effective_start_time                         datetime                               null comment '生效开始时间',
     effective_end_time                           datetime                               null comment '生效结束时间',
+    candidate_filter_json  json                         null comment '候选粗筛规则',
+    match_rule_json        json                         null comment '详细匹配规则',
+    amount_strategy_json   json                         null comment '额度策略',
+    diagnosis_rule_json    json                         null comment '提额诊断规则',
+    payload_schema_version int unsigned default '1'     not null comment 'payload结构版本',
+    source_type            varchar(32)                  null comment '规则来源类型：EXCEL/MANUAL/API',
+    source_ref             varchar(128)                 null comment '来源定位，如excel row',
     remark                                       varchar(500)                           null comment '备注',
-    gs_min_establish_months                      int unsigned                           null comment '工商-最低成立月数',
-    gs_min_registered_capital                    decimal(18, 2)                         null comment '工商-最低注册资本',
-    gs_min_paid_in_capital                       decimal(18, 2)                         null comment '工商-最低实缴资本',
-    gs_max_legal_rep_change_count_2y             int unsigned                           null comment '工商-近2年法定代表人变更次数上限',
-    gs_min_legal_rep_change_gap_months           int unsigned                           null comment '工商-法人最近一次变更距今最少月数',
-    gs_min_legal_rep_share_ratio                 decimal(5, 2)                          null comment '工商-法人最低持股比例，按百分比存',
-    gs_allow_legal_rep_no_joint_liability        tinyint(1)                             null comment '工商-是否允许法人不连带，1允许 0不允许 NULL不限制',
-    gs_allow_shareholder_replace_joint_liability tinyint(1)                             null comment '工商-是否允许股东代替法人连带，1允许 0不允许 NULL不限制',
-    gs_min_shareholder_replace_share_ratio       decimal(5, 2)                          null comment '工商-股东代替连带时最低持股比例，按百分比存',
-    tax_min_tax_months_12m                       tinyint unsigned                       null comment '税务-近12个月最少纳税月份数',
-    tax_min_tax_months_24m                       tinyint unsigned                       null comment '税务-近24个月最少纳税月份数',
-    tax_max_zero_declare_streak                  tinyint unsigned                       null comment '税务-连续0申报次数上限',
-    tax_min_tax_amount_12m                       decimal(18, 2)                         null comment '税务-近12个月最低纳税金额',
-    tax_min_tax_amount_ytd                       decimal(18, 2)                         null comment '税务-当年最低纳税金额',
-    tax_min_tax_amount_last_year                 decimal(18, 2)                         null comment '税务-上一完整自然年最低纳税金额',
-    tax_max_tax_burden_ratio                     decimal(8, 4)                          null comment '税务-税负率上限，按百分比存',
-    tax_min_tax_burden_ratio_yoy                 decimal(8, 4)                          null comment '税务-当年税负率/上年税负率比值下限',
-    tax_min_total_declares                       int unsigned                           null comment '税务-累计纳税申报次数下限',
-    jud_reject_if_major_lawsuit                  tinyint(1)                             null comment '司法-是否因重大诉讼拒绝',
-    jud_reject_if_executed                       tinyint(1)                             null comment '司法-是否因被执行拒绝',
-    jud_reject_if_dishonest_person               tinyint(1)                             null comment '司法-是否因失信被执行拒绝',
-    jud_reject_if_equity_frozen                  tinyint(1)                             null comment '司法-是否因股权冻结拒绝',
-    jud_max_execution_count_24m                  int unsigned                           null comment '司法-近24个月被执行次数上限',
-    jud_max_court_announcement_count_12m         int unsigned                           null comment '司法-近12个月法院公告次数上限',
-    jud_max_admin_penalty_count_12m              int unsigned                           null comment '司法-近12个月行政处罚次数上限',
-    jud_reject_if_major_judicial_risk            tinyint(1)                             null comment '司法-是否因重大司法风险拒绝',
-    jud_reject_if_restriction_high_consumption   tinyint(1)                             null comment '司法-是否因限制高消费拒绝',
-    ind_match_mode_code                          varchar(16)                            null comment '行业风险-行业匹配模式，ALLOW/BLOCK',
-    ind_max_risk_level                           tinyint unsigned                       null comment '行业风险-行业风险等级上限，1低-5高',
-    ind_require_enterprise_tag                   tinyint(1)                             null comment '行业风险-是否要求企业标签',
-    ind_min_tag_valid_months                     int unsigned                           null comment '行业风险-标签最少剩余有效月数',
-    ind_require_region_match                     tinyint(1)                             null comment '行业风险-是否要求地区匹配',
-    ind_require_actual_business_address          tinyint(1)                             null comment '行业风险-是否要求经营地可核验',
-    ind_reject_if_high_pollution                 tinyint(1)                             null comment '行业风险-是否拒绝高污染行业',
-    ind_reject_if_high_energy_consumption        tinyint(1)                             null comment '行业风险-是否拒绝高耗能行业',
-    ind_reject_if_sensitive_industry             tinyint(1)                             null comment '行业风险-是否拒绝敏感行业',
-    ec_max_total_liability                       decimal(18, 2)                         null comment '企业征信-企业总负债上限',
-    ec_max_credit_liability                      decimal(18, 2)                         null comment '企业征信-企业信贷负债上限',
-    ec_max_mortgage_liability                    decimal(18, 2)                         null comment '企业征信-企业抵押负债上限',
-    ec_max_external_guarantee_amount             decimal(18, 2)                         null comment '企业征信-企业对外担保余额上限',
-    ec_max_loan_org_count                        int unsigned                           null comment '企业征信-企业贷款机构数上限',
-    ec_max_query_count_6m                        int unsigned                           null comment '企业征信-近6个月企业征信查询次数上限',
-    ec_max_overdue_count_12m                     int unsigned                           null comment '企业征信-近12个月逾期次数上限',
-    ec_max_overdue_months_24m                    int unsigned                           null comment '企业征信-近24个月最大逾期月数上限',
-    ec_min_no_overdue_days                       int unsigned                           null comment '企业征信-最短无逾期天数下限',
-    ec_allow_abnormal_credit_account             tinyint(1)                             null comment '企业征信-是否允许征信账户状态异常',
-    pc_max_query_count_1m                        int unsigned                           null comment '个人征信-近1个月查询次数上限',
-    pc_max_query_count_3m                        int unsigned                           null comment '个人征信-近3个月查询次数上限',
-    pc_max_query_count_6m                        int unsigned                           null comment '个人征信-近6个月查询次数上限',
-    pc_max_loan_query_count_1m                   int unsigned                           null comment '个人征信-近1个月贷款审批查询次数上限',
-    pc_max_credit_card_query_count_1m            int unsigned                           null comment '个人征信-近1个月信用卡审批查询次数上限',
-    pc_max_overdue_count_12m                     int unsigned                           null comment '个人征信-近12个月逾期次数上限',
-    pc_max_overdue_months_24m                    int unsigned                           null comment '个人征信-近24个月最大逾期月数上限',
-    pc_max_total_overdue_terms_5y                int unsigned                           null comment '个人征信-近5年累计逾期期数上限',
-    pc_max_non_bank_loan_count                   int unsigned                           null comment '个人征信-非银行网贷/小贷笔数上限',
-    pc_max_credit_card_utilization               decimal(5, 2)                          null comment '个人征信-信用卡使用率上限，按百分比存',
-    ext_json                                     json                                   null comment '低频个性化扩展字段，不建议通用DMN直接依赖',
+    created_by             bigint unsigned              null comment '创建人',
+    updated_by             bigint unsigned              null comment '更新人',
     created_at                                   datetime     default CURRENT_TIMESTAMP not null comment '创建时间',
     updated_at                                   datetime     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-    constraint uk_product_rule_version
+    constraint uk_product_rule_product_version
         unique (product_id, rule_version),
+    constraint uk_product_rule_code_version
+        unique (rule_code, rule_version),
     constraint fk_product_rule_product
         foreign key (product_id) references jc_products (id)
             on update cascade
 )
     comment '产品规则主表';
 
-create index idx_product_rule_active
-    on yw_product_rule (is_active);
-
-create index idx_product_rule_match_mode
-    on yw_product_rule (ind_match_mode_code);
-
 create index idx_product_rule_query
-    on yw_product_rule (product_id, is_active, effective_start_time, effective_end_time);
+    on yw_product_rule (product_id, rule_status, effective_start_time, effective_end_time);
+
+create index idx_product_rule_status_priority
+    on yw_product_rule (rule_status, priority, effective_start_time, effective_end_time);
 
 -- auto-generated definition
 create table yw_custom_service_orders
