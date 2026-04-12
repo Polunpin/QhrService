@@ -27,6 +27,11 @@ public interface CreditProductService {
   Product getById(Long id);
 
   /**
+   * 根据银行和产品名查询产品。
+   */
+  Product findByBankNameAndProductName(String bankName, String productName);
+
+  /**
    * 根据匹配记录ID查询产品列表
    */
   List<Product> listById(String id);

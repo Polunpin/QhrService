@@ -36,4 +36,11 @@ public interface QccClientService {
      */
     JsonNode getTaxData(String orderNo);
 
+    /**
+     * 企业工商详情
+     *
+     * @param searchKey 统一社会信用代码
+     * @return 查询结果
+     */
+    JsonNode getInfo(String searchKey);
 }

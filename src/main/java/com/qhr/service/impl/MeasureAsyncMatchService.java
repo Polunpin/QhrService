@@ -14,7 +14,6 @@ import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.SneakyThrows;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,7 +30,7 @@ public class MeasureAsyncMatchService {
     private final QccClientService qccClientService;
     private final CreditReportParseService creditReportParseService;
     private final ApplicantProfileAssembler applicantProfileAssembler;
-    private final DmnDecisionService dmnDecisionService;
+    private final ProductMatchService productMatchService;
     private final ExecutorService executorService;
     private final MatchRecordService matchRecordService;
     private final EnterpriseService enterpriseService;
@@ -40,14 +39,14 @@ public class MeasureAsyncMatchService {
     public MeasureAsyncMatchService(QccClientService qccClientService,
                                     CreditReportParseService creditReportParseService,
                                     ApplicantProfileAssembler applicantProfileAssembler,
-                                    DmnDecisionService dmnDecisionService,
+                                    ProductMatchService productMatchService,
                                     MatchRecordService matchRecordService,
                                     EnterpriseService enterpriseService,
                                     MeasureProgressService measureProgressService) {
         this.qccClientService = qccClientService;
         this.creditReportParseService = creditReportParseService;
         this.applicantProfileAssembler = applicantProfileAssembler;
-        this.dmnDecisionService = dmnDecisionService;
+        this.productMatchService = productMatchService;
         this.matchRecordService = matchRecordService;
         this.enterpriseService = enterpriseService;
         this.measureProgressService = measureProgressService;
@@ -78,48 +77,62 @@ public class MeasureAsyncMatchService {
      */
     @SneakyThrows
     public void process(MeasureAsyncMatchCommand command) {
-        //qcc-企业财税数据
+        //qcc-企业财税数据短信验证
         if ("P".equals(command.dataStatus())) {
             String status = qccClientService.sendCode(
                     command.orderNo(), command.verifyCode()).get("DataStatus").asText();
             //企业-更新qcc订单状态
             extracted(command.enterpriseId(), status);
         }
-        //获取企业财税数据
+
+        Enterprise enterprise = enterpriseService.getById(command.enterpriseId());
+
+        //qcc-获取企业财税数据
         JsonNode taxData = qccClientService.getTaxData(command.orderNo());
         //企业-更新qcc订单状态
         extracted(command.enterpriseId(), taxData.get("DataStatus").asText(), taxData.get("Data"));
+
+        //qcc-获取企业工商详情
+        JsonNode companyDetail = loadCompanyDetail(enterprise);
+
         //构建申请人画像
         measureProgressService.markStage(command.intentionId(), MeasureProgressStage.PROFILE_BUILDING, null);
+        //个人征信
         PersonalCreditReportRaw personalCreditReport = null;
         if (command.personalCreditCloudId() != null && !command.personalCreditCloudId().isBlank()) {
-            personalCreditReport = creditReportParseService.parsePersonalCloudFile(
-                    command.personalCreditCloudId());
+            personalCreditReport = creditReportParseService.parsePersonalCloudFile(command.personalCreditCloudId());
         }
-        Enterprise enterprise = enterpriseService.getById(command.enterpriseId());
+        //企业征信 todo
+
+        ApplicationContext applicationContext = new ApplicationContext();
+
         ApplicantProfile applicantProfile = applicantProfileAssembler.assemble(
                 enterprise,
+                companyDetail,
                 taxData.path("Data"),
                 personalCreditReport,
                 null,
-                new ApplicationContext());
-        //DMN产品匹配
+                applicationContext);
+        //产品匹配
         measureProgressService.markStage(command.intentionId(), MeasureProgressStage.PRODUCT_MATCHING, null);
-        //Object matchResult = dmnDecisionService.match(applicantProfile);
-        //TODO-数据模拟测试
-        List<Long> list = List.of(1L, 2L, 4L);
+        var matchSummary = productMatchService.match(applicantProfile, applicationContext);
 
         LOGGER.log(System.Logger.Level.INFO,
                 "申请人画像构建完成，enterpriseId=" + command.enterpriseId()
                         + ", companyName=" + applicantProfile.getCompanyName()
+                        + ", region=" + applicantProfile.getCompanyRegion()
+                        + ", legalShareRatio=" + applicantProfile.getLegalPersonShareRatio()
                         + ", tax12m=" + applicantProfile.getTaxAmount12m()
                         + ", invoice12m=" + applicantProfile.getInvoiceAmount12m()
-                        + ", creditInquiry6m=" + applicantProfile.getCreditInquiryCount());
+                        + ", creditInquiry6m=" + applicantProfile.getCreditInquiryCount()
+                        + ", candidateProducts=" + matchSummary.getCandidateProductIds().size()
+                        + ", matchedProducts=" + matchSummary.getMatchedProductIds().size());
 
         //保存匹配结果
         measureProgressService.markStage(command.intentionId(), MeasureProgressStage.RECOMMENDATION_GENERATING, null);
         matchRecordService.create(
-                new MatchRecord(command.openid(), command.enterpriseId(), command.intentionId(), "500-800万", list));
+                new MatchRecord(command.openid(), command.enterpriseId(), command.intentionId(),
+                        "待测算", matchSummary.getCandidateProductIds()));
         measureProgressService.markStage(command.intentionId(), MeasureProgressStage.COMPLETED, null);
 
 
@@ -163,6 +176,27 @@ public class MeasureAsyncMatchService {
         enterprise.setQccDataStatus(status);
         enterprise.setQccTaxData(data);
         enterpriseService.update(enterprise);
+    }
+
+    private JsonNode loadCompanyDetail(Enterprise enterprise) {
+        if (enterprise == null) {
+            return null;
+        }
+        String searchKey = enterprise.getCreditCode();
+        if (searchKey == null || searchKey.isBlank()) {
+            searchKey = enterprise.getName();
+        }
+        if (searchKey == null || searchKey.isBlank()) {
+            return null;
+        }
+        try {
+            return qccClientService.getInfo(searchKey);
+        } catch (Exception exception) {
+            LOGGER.log(System.Logger.Level.WARNING,
+                    "获取企业工商详情失败，enterpriseId=" + enterprise.getId() + ", searchKey=" + searchKey,
+                    exception);
+            return null;
+        }
     }
 
 //    private ApplicantProfile buildApplicantProfile(MeasureAsyncMatchCommand command, JsonNode qccTaxOrder) {

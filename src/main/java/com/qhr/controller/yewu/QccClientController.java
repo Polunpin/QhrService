@@ -39,6 +39,19 @@ public class QccClientController {
     }
 
     /**
+     * 企业工商详情
+     *
+     * @param searchKey 统一社会信用代码
+     * @return qcc结果
+     */
+    @GET
+    @Path("/getInfo")
+    public ApiResponse getInfo(@QueryParam("searchKey") String searchKey) {
+        JsonNode result = qccClientService.getInfo(searchKey);
+        return ApiResponse.ok(result);
+    }
+
+    /**
      * 财税步骤1:数据下单（获取验证码）
      * 逻辑：下单状态（P-已发送验证码，需要下一步操作，S-下单成功，F-下单失败）
      *

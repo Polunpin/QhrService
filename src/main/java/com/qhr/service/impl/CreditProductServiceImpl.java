@@ -43,6 +43,14 @@ public class CreditProductServiceImpl implements CreditProductService {
     }
 
     @Override
+    public Product findByBankNameAndProductName(String bankName, String productName) {
+        return creditProductsMapper.selectOne(Wrappers.<Product>lambdaQuery()
+                .eq(Product::getBankName, bankName)
+                .eq(Product::getProductName, productName)
+                .last("limit 1"));
+    }
+
+    @Override
     public Long create(Product product) {
         creditProductsMapper.insert(product);
         return product.getId();

@@ -5,11 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qhr.config.ApiCode;
 import com.qhr.config.ApiException;
 import com.qhr.dto.EnterprisePayload;
-import com.qhr.model.ProductRule;
 import com.qhr.service.DmnDecisionService;
-import com.qhr.service.ProductRuleService;
+import com.qhr.service.ProductMatchService;
 import com.qhr.vo.ApplicantProfile;
 import com.qhr.vo.PrecheckResult;
+import com.qhr.vo.match.ApplicationContext;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.kie.dmn.api.core.DMNDecisionResult;
@@ -31,26 +31,20 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
 
   private static final String PRECHECK_RESOURCE = "/dmn/common_precheck.dmn";
   private static final String PRECHECK_DECISION_NAME = "common_precheck";
-  private static final String PRODUCT_MATCH_RESOURCE = "/dmn/Rating and Matching.dmn";
-  private static final String PRODUCT_MATCH_DECISION_NAME = "ProductFilter";
   private static final String COMPANY_INPUT_NAME = "Company";
-  private static final String APPLICANT_PROFILE_INPUT_NAME = "ApplicantProfile";
-  private static final String PRODUCT_RULE_INPUT_NAME = "ProductRule";
   private static final TypeReference<Map<String, Object>> MAP_TYPE = new TypeReference<>() {
-  };
-  private static final TypeReference<List<ProductRule>> PRODUCT_RULE_LIST_TYPE = new TypeReference<>() {
   };
 
   private final ObjectMapper objectMapper;
-  private final ProductRuleService productRuleService;
+  private final ProductMatchService productMatchService;
   private final Map<String, DmnDecisionModel> decisionModels = new HashMap<>();
 
   /**
    * 注入 JSON 转换工具，供请求对象到 DMN 输入上下文的映射使用。
    */
-  public DmnDecisionServiceImpl(ObjectMapper objectMapper, ProductRuleService productRuleService) {
+  public DmnDecisionServiceImpl(ObjectMapper objectMapper, ProductMatchService productMatchService) {
     this.objectMapper = objectMapper;
-    this.productRuleService = productRuleService;
+    this.productMatchService = productMatchService;
   }
 
   /**
@@ -59,7 +53,6 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
   @PostConstruct
   void init() {
     decisionModels.put(PRECHECK_RESOURCE, loadDecisionModel(PRECHECK_RESOURCE));
-    decisionModels.put(PRODUCT_MATCH_RESOURCE, loadDecisionModel(PRODUCT_MATCH_RESOURCE));
   }
 
   /**
@@ -76,14 +69,7 @@ public class DmnDecisionServiceImpl implements DmnDecisionService {
    */
   @Override
   public Object match(ApplicantProfile applicantProfile) {
-    //粗筛产品规则，缩小匹配范围
-    List<ProductRule> items = productRuleService.list();
-    //封装DMN入参
-    Map<String, Object> input = Map.of(
-            APPLICANT_PROFILE_INPUT_NAME, buildDmnInput(applicantProfile),
-            PRODUCT_RULE_INPUT_NAME, items.stream().map(this::buildDmnInput).toList());
-    return evaluateDecision(PRODUCT_MATCH_RESOURCE, PRODUCT_MATCH_DECISION_NAME, input,
-            PRODUCT_RULE_LIST_TYPE);
+    return productMatchService.match(applicantProfile, new ApplicationContext());
   }
 
   /**
