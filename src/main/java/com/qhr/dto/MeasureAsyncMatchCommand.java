@@ -10,6 +10,10 @@ public record MeasureAsyncMatchCommand(
         Long enterpriseId,
         //融资需求ID
         Long intentionId,
+        //个人征信云文件ID
+        String personalCreditCloudId,
+        //企业征信云文件ID
+        String enterpriseCreditCloudId,
         //qcc-财税数据订单号
         String orderNo,
         //qcc-验证码

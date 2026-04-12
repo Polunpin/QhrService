@@ -7,6 +7,9 @@ import com.qhr.enums.MeasureProgressStage;
 import com.qhr.model.Enterprise;
 import com.qhr.model.MatchRecord;
 import com.qhr.service.*;
+import com.qhr.vo.ApplicantProfile;
+import com.qhr.vo.credit.PersonalCreditReportRaw;
+import com.qhr.vo.match.ApplicationContext;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.SneakyThrows;
@@ -26,6 +29,8 @@ public class MeasureAsyncMatchService {
     private static final System.Logger LOGGER = System.getLogger(MeasureAsyncMatchService.class.getName());
 
     private final QccClientService qccClientService;
+    private final CreditReportParseService creditReportParseService;
+    private final ApplicantProfileAssembler applicantProfileAssembler;
     private final DmnDecisionService dmnDecisionService;
     private final ExecutorService executorService;
     private final MatchRecordService matchRecordService;
@@ -33,11 +38,15 @@ public class MeasureAsyncMatchService {
     private final MeasureProgressService measureProgressService;
 
     public MeasureAsyncMatchService(QccClientService qccClientService,
+                                    CreditReportParseService creditReportParseService,
+                                    ApplicantProfileAssembler applicantProfileAssembler,
                                     DmnDecisionService dmnDecisionService,
                                     MatchRecordService matchRecordService,
                                     EnterpriseService enterpriseService,
                                     MeasureProgressService measureProgressService) {
         this.qccClientService = qccClientService;
+        this.creditReportParseService = creditReportParseService;
+        this.applicantProfileAssembler = applicantProfileAssembler;
         this.dmnDecisionService = dmnDecisionService;
         this.matchRecordService = matchRecordService;
         this.enterpriseService = enterpriseService;
@@ -51,6 +60,7 @@ public class MeasureAsyncMatchService {
     public void trigger(MeasureSubmitRequest request, String openid, Long enterpriseId, Long intentionId) {
         //入参
         MeasureAsyncMatchCommand command = new MeasureAsyncMatchCommand(openid, enterpriseId, intentionId,
+                request.personalCreditCloudId(), request.enterpriseCreditCloudId(),
                 request.orderNo(), request.verifyCode(), request.dataStatus());
         //异步处理
         CompletableFuture.runAsync(() -> process(command), executorService)
@@ -79,16 +89,32 @@ public class MeasureAsyncMatchService {
         JsonNode taxData = qccClientService.getTaxData(command.orderNo());
         //企业-更新qcc订单状态
         extracted(command.enterpriseId(), taxData.get("DataStatus").asText(), taxData.get("Data"));
-        Thread.sleep(5000);
         //构建申请人画像
         measureProgressService.markStage(command.intentionId(), MeasureProgressStage.PROFILE_BUILDING, null);
-        //ApplicantProfile applicantProfile = buildApplicantProfile(command, taxData);
+        PersonalCreditReportRaw personalCreditReport = null;
+        if (command.personalCreditCloudId() != null && !command.personalCreditCloudId().isBlank()) {
+            personalCreditReport = creditReportParseService.parsePersonalCloudFile(
+                    command.personalCreditCloudId());
+        }
+        Enterprise enterprise = enterpriseService.getById(command.enterpriseId());
+        ApplicantProfile applicantProfile = applicantProfileAssembler.assemble(
+                enterprise,
+                taxData.path("Data"),
+                personalCreditReport,
+                null,
+                new ApplicationContext());
         //DMN产品匹配
-        Thread.sleep(5000);
         measureProgressService.markStage(command.intentionId(), MeasureProgressStage.PRODUCT_MATCHING, null);
         //Object matchResult = dmnDecisionService.match(applicantProfile);
         //TODO-数据模拟测试
         List<Long> list = List.of(1L, 2L, 4L);
+
+        LOGGER.log(System.Logger.Level.INFO,
+                "申请人画像构建完成，enterpriseId=" + command.enterpriseId()
+                        + ", companyName=" + applicantProfile.getCompanyName()
+                        + ", tax12m=" + applicantProfile.getTaxAmount12m()
+                        + ", invoice12m=" + applicantProfile.getInvoiceAmount12m()
+                        + ", creditInquiry6m=" + applicantProfile.getCreditInquiryCount());
 
         //保存匹配结果
         measureProgressService.markStage(command.intentionId(), MeasureProgressStage.RECOMMENDATION_GENERATING, null);

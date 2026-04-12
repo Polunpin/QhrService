@@ -1,4 +1,4 @@
-package com.qhr.controller;
+package com.qhr.controller.yewu;
 
 import com.qhr.config.*;
 import com.qhr.model.StatusLog;
@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
 
-/*操作日志*/
+/*流式接口节点日志*/
 @ApplicationScoped
 @Path("/api/status-logs")
 @Produces(MediaType.APPLICATION_JSON)
