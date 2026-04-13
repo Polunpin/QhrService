@@ -1038,7 +1038,11 @@ public class CreditReportParseServiceImpl implements CreditReportParseService {
         if (value == null || value.isBlank()) {
             return null;
         }
-        return Integer.parseInt(value.replace(",", "").trim());
+        String normalized = value.replace(",", "").trim();
+        if (normalized.isBlank() || "--".equals(normalized) || "N".equalsIgnoreCase(normalized)) {
+            return null;
+        }
+        return Integer.parseInt(normalized);
     }
 
     private record EnterpriseLoanParseResult(EnterpriseCreditReportRaw.UnsettledLoan loan, int nextIndex) {
