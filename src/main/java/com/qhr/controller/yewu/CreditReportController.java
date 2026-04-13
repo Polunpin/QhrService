@@ -43,4 +43,25 @@ public class CreditReportController {
         ApiAssert.notNull(fileId, ApiCode.BAD_REQUEST, "请求体不能为空");
         return ApiResponse.ok(creditReportParseService.parsePersonalCloudFile(fileId));
     }
+
+    /**
+     * 调试入口：直接接收 PDF 二进制并解析企业征信报告。
+     */
+    @POST
+    @Path("/enterprise/parse")
+    public ApiResponse parseEnterprisePdf(byte[] pdfBytes) {
+        ApiAssert.isTrue(pdfBytes != null && pdfBytes.length > 0, ApiCode.BAD_REQUEST, "PDF内容不能为空");
+        return ApiResponse.ok(creditReportParseService.parseEnterprisePdf(pdfBytes));
+    }
+
+    /**
+     * 正式入口：根据前端传入的云文件 fileId 下载 PDF，解析企业征信报告。
+     */
+    @POST
+    @Path("/enterprise/parse-cloud-file")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public ApiResponse parseEnterpriseCloudFile(@QueryParam("fileId") String fileId) {
+        ApiAssert.notNull(fileId, ApiCode.BAD_REQUEST, "请求体不能为空");
+        return ApiResponse.ok(creditReportParseService.parseEnterpriseCloudFile(fileId));
+    }
 }

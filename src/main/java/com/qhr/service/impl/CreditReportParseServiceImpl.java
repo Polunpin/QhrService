@@ -4,6 +4,7 @@ import com.qhr.config.ApiCode;
 import com.qhr.config.ApiException;
 import com.qhr.service.CreditReportParseService;
 import com.qhr.service.WeixinCloudFileService;
+import com.qhr.vo.credit.EnterpriseCreditReportRaw;
 import com.qhr.vo.credit.PersonalCreditReportRaw;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.pdfbox.Loader;
@@ -73,6 +74,35 @@ public class CreditReportParseServiceImpl implements CreditReportParseService {
                     + "在(.+?)办理的贷款承担相关还款责任，责任人类型为([^，]+)，相关还款责任金额([^（，。]+"
                     + ")(?:（[^）]*）)?。截至(\\d{4}年\\d{2}月\\d{2}日)，贷款余\\s*额([\\d,]+|--)（人民币元）。?$");
     private static final Pattern QUERY_RECORD_PATTERN = Pattern.compile("^(\\d+)\\s+(\\d{4}年\\d{2}月\\d{2}日)\\s+(.+)$");
+    private static final Pattern ENTERPRISE_REPORT_NO_PATTERN = Pattern.compile("NO\\.(\\S+)");
+    private static final Pattern ENTERPRISE_COMPANY_NAME_PATTERN = Pattern.compile("企业名称[:：]?\\s*(\\S+)");
+    private static final Pattern ENTERPRISE_CENT_CODE_PATTERN = Pattern.compile("中征码[:：]?\\s*(\\S+)");
+    private static final Pattern ENTERPRISE_UNIFIED_CODE_PATTERN = Pattern.compile("统一社会信用代码[:：]?\\s*(\\S+)");
+    private static final Pattern ENTERPRISE_QUERY_INSTITUTION_PATTERN = Pattern.compile("查询机构[:：]?\\s*(.+?)\\s+报告时间");
+    private static final Pattern ENTERPRISE_REPORT_TIME_PATTERN = Pattern.compile("报告时间[:：]?\\s*(\\S+)");
+    private static final Pattern ENTERPRISE_SUMMARY_YEARS_PATTERN = Pattern.compile(
+            "首次有信贷交易的年份 发生信贷交易的机构数 当前有未结清信贷 交易的机构数 首次有相关还款 责任的年份 (\\S+) (\\S+) (\\S+) (\\S+)");
+    private static final Pattern ENTERPRISE_SUMMARY_BALANCES_PATTERN = Pattern.compile(
+            "借贷交易 担保交易 余额 (\\S+) 余额 (\\S+) 其中：被追偿余额 (\\S+) 其中：关注类余额 (\\S+) 关注类余额 (\\S+) 不良类余额 (\\S+) 不良类余额 (\\S+)");
+    private static final Pattern ENTERPRISE_PUBLIC_COUNTS_PATTERN = Pattern.compile(
+            "非信贷交易账户数 欠税记录条数 民事判决记录条数 强制执行记录条数 行政处罚记录条数 (\\S+) (\\S+) (\\S+) (\\S+) (\\S+)");
+    private static final Pattern ENTERPRISE_SHORT_TERM_SUMMARY_PATTERN = Pattern.compile(
+            "短期借款 (\\S+) (\\S+) (\\S+) (\\S+) (\\S+) (\\S+) (\\S+) (\\S+)");
+    private static final Pattern ENTERPRISE_GUARANTEE_SUMMARY_PATTERN = Pattern.compile(
+            "其他担保交易 (\\S+) (\\S+) (\\S+) (\\S+) (\\S+) (\\S+) (\\S+) (\\S+)");
+    private static final Pattern ENTERPRISE_CREDIT_SUMMARY_PATTERN = Pattern.compile(
+            "非循环信用额度 循环信用额度 总额 已用额度 剩余可用额度 总额 已用额度 剩余可用额度 (\\S+) (\\S+) (\\S+) (\\S+) (\\S+) (\\S+)");
+    private static final Pattern ENTERPRISE_RELATED_REPAYMENT_SUMMARY_PATTERN = Pattern.compile(
+            "保证人/反担保人 (\\S+) (\\S+) (\\S+) (\\S+) (\\S+) (\\S+) (\\S+) (\\S+)");
+    private static final String ENTERPRISE_BASIC_FIELD_PATTERN_TEMPLATE = "%s\\s+(.+?)\\s+信息来源机构";
+    private static final Pattern ENTERPRISE_REGISTERED_CAPITAL_PATTERN = Pattern.compile("注册资本折人民币合计\\s*(\\S+)");
+    private static final Pattern ENTERPRISE_CURRENT_LOAN_LINE_PATTERN = Pattern.compile(
+            "(.+?(?:贷款|融资|保理|票据贴现))\\s+(\\d{4}-\\d{2}-\\d{2})\\s+(\\d{4}-\\d{2}-\\d{2})\\s+(人民币元|美元|欧元|港币)\\s+([\\d.]+)\\s+(新增|续作|--)");
+    private static final Pattern ENTERPRISE_CURRENT_LOAN_DETAIL_PATTERN = Pattern.compile(
+            "(.+?)\\s+([\\d.]+)\\s+(正常|关注|次级|可疑|损失|违约|未分类)\\s+([\\d.]+)\\s+([\\d.]+)\\s+([\\dN]+)\\s+(\\d{4}-\\d{2}-\\d{2})");
+    private static final Pattern ENTERPRISE_CURRENT_LOAN_TAIL_PATTERN = Pattern.compile(
+            "([\\d.]+)\\s+(正常还款|逾期还款|部分还款|--)");
+    private static final Pattern ENTERPRISE_TAX_LEVEL_PATTERN = Pattern.compile("纳税信用([ABMCD])级纳税人");
     private static final List<String> QUERY_REASONS = List.of(
             "本人查询（商业银行网上银行）",
             "法人代表、负责人、高管等资信审查",
@@ -106,6 +136,21 @@ public class CreditReportParseServiceImpl implements CreditReportParseService {
     }
 
     /**
+     * 云文件解析主入口：下载企业征信 PDF、解析内容，再按策略尝试删除远端文件。
+     */
+    @Override
+    public EnterpriseCreditReportRaw parseEnterpriseCloudFile(String fileId) {
+        byte[] pdfBytes = weixinCloudFileService.download(fileId);
+        EnterpriseCreditReportRaw report = parseEnterprisePdf(pdfBytes);
+        try {
+            weixinCloudFileService.delete(fileId);
+        } catch (ApiException exception) {
+            report.getParseWarnings().add("云文件删除失败: " + exception.getMessage());
+        }
+        return report;
+    }
+
+    /**
      * 直接解析 PDF 字节流，只接受个人征信文本型 PDF。
      */
     @Override
@@ -121,7 +166,7 @@ public class CreditReportParseServiceImpl implements CreditReportParseService {
             if (rawText == null || rawText.isBlank()) {
                 throw new ApiException(ApiCode.BAD_REQUEST, "PDF文本提取失败，可能是扫描件或加密文件");
             }
-            if (!rawText.contains("个人信用报告")) {
+            if (!rawText.replaceAll("\\s+", "").contains("个人信用报告")) {
                 throw new ApiException(ApiCode.BAD_REQUEST, "当前仅支持个人信用报告PDF解析");
             }
             PersonalCreditReportRaw report = new PersonalCreditReportRaw();
@@ -134,6 +179,40 @@ public class CreditReportParseServiceImpl implements CreditReportParseService {
             populateInstitutionQueries(rawText, report);
             populateSelfQueries(rawText, report);
             populateSummary(report);
+            return report;
+        } catch (IOException exception) {
+            throw new ApiException(ApiCode.BAD_REQUEST, "PDF解析失败: " + exception.getMessage());
+        }
+    }
+
+    /**
+     * 直接解析 PDF 字节流，只接受企业信用报告文本型 PDF。
+     */
+    @Override
+    public EnterpriseCreditReportRaw parseEnterprisePdf(byte[] pdfBytes) {
+        if (pdfBytes == null || pdfBytes.length == 0) {
+            throw new ApiException(ApiCode.BAD_REQUEST, "PDF内容不能为空");
+        }
+
+        try (PDDocument document = Loader.loadPDF(pdfBytes)) {
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setSortByPosition(true);
+            String rawText = stripper.getText(document);
+            if (rawText == null || rawText.isBlank()) {
+                throw new ApiException(ApiCode.BAD_REQUEST, "PDF文本提取失败，可能是扫描件或加密文件");
+            }
+            if (!rawText.replaceAll("\\s+", "").contains("企业信用报告")) {
+                throw new ApiException(ApiCode.BAD_REQUEST, "当前仅支持企业信用报告PDF解析");
+            }
+
+            EnterpriseCreditReportRaw report = new EnterpriseCreditReportRaw();
+            report.setPageCount(document.getNumberOfPages());
+            List<String> pageTexts = extractPageTexts(document);
+            populateEnterpriseHeaders(rawText, report);
+            populateEnterpriseSummary(pageTexts, report);
+            populateEnterpriseBasicProfile(pageTexts, report);
+            populateEnterpriseUnsettledLoans(pageTexts, report);
+            populateEnterpriseTaxLevels(pageTexts, report);
             return report;
         } catch (IOException exception) {
             throw new ApiException(ApiCode.BAD_REQUEST, "PDF解析失败: " + exception.getMessage());
@@ -285,6 +364,369 @@ public class CreditReportParseServiceImpl implements CreditReportParseService {
         summary.setRelatedRepaymentLiabilityCount(report.getRelatedLiabilities().size());
         summary.setInstitutionQueryCount(report.getInstitutionQueries().size());
         summary.setSelfQueryCount(report.getSelfQueries().size());
+    }
+
+    /**
+     * 按页抽取 PDF 文本，便于企业征信这种强版式报告按页定位章节。
+     */
+    private List<String> extractPageTexts(PDDocument document) throws IOException {
+        PDFTextStripper stripper = new PDFTextStripper();
+        stripper.setSortByPosition(true);
+        List<String> pageTexts = new ArrayList<>();
+        for (int page = 1; page <= document.getNumberOfPages(); page++) {
+            stripper.setStartPage(page);
+            stripper.setEndPage(page);
+            pageTexts.add(stripper.getText(document));
+        }
+        return pageTexts;
+    }
+
+    /**
+     * 提取企业征信报告头：报告编号、报告时间、企业名称、中征码和统一社会信用代码。
+     */
+    private void populateEnterpriseHeaders(String text, EnterpriseCreditReportRaw report) {
+        String normalized = normalizeSpaces(text);
+        report.setReportNumber(extractFirst(normalized, ENTERPRISE_REPORT_NO_PATTERN));
+        report.setReportTime(extractFirst(normalized, ENTERPRISE_REPORT_TIME_PATTERN));
+        report.getEnterprise().setCompanyName(extractFirst(normalized, ENTERPRISE_COMPANY_NAME_PATTERN));
+        report.getEnterprise().setCentCode(extractFirst(normalized, ENTERPRISE_CENT_CODE_PATTERN));
+        report.getEnterprise().setUnifiedSocialCreditCode(extractFirst(normalized, ENTERPRISE_UNIFIED_CODE_PATTERN));
+        report.getEnterprise().setQueryInstitution(extractFirst(normalized, ENTERPRISE_QUERY_INSTITUTION_PATTERN));
+    }
+
+    /**
+     * 提取企业征信概要页中的机构数、余额、公共记录条数和授信额度摘要。
+     */
+    private void populateEnterpriseSummary(List<String> pageTexts, EnterpriseCreditReportRaw report) {
+        if (pageTexts.size() < 3) {
+            report.getParseWarnings().add("企业征信报告页数不足，无法提取信息概要");
+            return;
+        }
+        List<String> lines = cleanEnterpriseLines(pageTexts.get(2));
+        String normalized = cleanupEnterprisePage(pageTexts.get(2))
+                .replace("其他担保交 易", "其他担保交易");
+        EnterpriseCreditReportRaw.Summary summary = report.getSummary();
+
+        int yearsIndex = indexOfContains(lines, "责任的年份");
+        if (yearsIndex >= 0 && yearsIndex + 1 < lines.size()) {
+            String[] parts = normalizeSpaces(lines.get(yearsIndex + 1)).split(" ");
+            if (parts.length >= 4) {
+                summary.setFirstCreditYear(parseInteger(parts[0]));
+                summary.setCreditInstitutionCount(parseInteger(parts[1]));
+                summary.setActiveCreditInstitutionCount(parseInteger(parts[2]));
+                summary.setFirstRelatedRepaymentYear(parseInteger(parts[3]));
+            }
+        } else {
+            report.getParseWarnings().add("未识别企业征信概要中的机构数信息");
+        }
+
+        Matcher balanceMatcher = ENTERPRISE_SUMMARY_BALANCES_PATTERN.matcher(normalized);
+        if (balanceMatcher.find()) {
+            summary.setLoanBalance(parseAmount(balanceMatcher.group(1)));
+            summary.setGuaranteeBalance(parseAmount(balanceMatcher.group(2)));
+            summary.setRecoveredLoanBalance(parseAmount(balanceMatcher.group(3)));
+            summary.setGuaranteeConcernBalance(parseAmount(balanceMatcher.group(4)));
+            summary.setLoanConcernBalance(parseAmount(balanceMatcher.group(5)));
+            summary.setGuaranteeBadBalance(parseAmount(balanceMatcher.group(6)));
+            summary.setLoanBadBalance(parseAmount(balanceMatcher.group(7)));
+        } else {
+            report.getParseWarnings().add("未识别企业征信概要中的余额信息");
+        }
+
+        Matcher publicMatcher = ENTERPRISE_PUBLIC_COUNTS_PATTERN.matcher(normalized);
+        if (publicMatcher.find()) {
+            summary.setNonCreditAccountCount(parseInteger(publicMatcher.group(1)));
+            summary.setTaxArrearsCount(parseInteger(publicMatcher.group(2)));
+            summary.setCivilJudgmentCount(parseInteger(publicMatcher.group(3)));
+            summary.setEnforcementCount(parseInteger(publicMatcher.group(4)));
+            summary.setAdminPenaltyCount(parseInteger(publicMatcher.group(5)));
+        }
+
+        Matcher shortTermMatcher = ENTERPRISE_SHORT_TERM_SUMMARY_PATTERN.matcher(normalized);
+        if (shortTermMatcher.find()) {
+            summary.setShortTermLoanAccountCount(parseInteger(shortTermMatcher.group(7)));
+            summary.setShortTermLoanBalance(parseAmount(shortTermMatcher.group(8)));
+        }
+
+        Matcher guaranteeMatcher = ENTERPRISE_GUARANTEE_SUMMARY_PATTERN.matcher(normalized);
+        if (guaranteeMatcher.find()) {
+            summary.setOtherGuaranteeAccountCount(parseInteger(guaranteeMatcher.group(7)));
+            summary.setOtherGuaranteeBalance(parseAmount(guaranteeMatcher.group(8)));
+        }
+
+        Matcher creditMatcher = ENTERPRISE_CREDIT_SUMMARY_PATTERN.matcher(normalized);
+        if (creditMatcher.find()) {
+            summary.setNonRevolvingCreditTotal(parseAmount(creditMatcher.group(1)));
+            summary.setNonRevolvingCreditUsed(parseAmount(creditMatcher.group(2)));
+            summary.setNonRevolvingCreditAvailable(parseAmount(creditMatcher.group(3)));
+            summary.setRevolvingCreditTotal(parseAmount(creditMatcher.group(4)));
+            summary.setRevolvingCreditUsed(parseAmount(creditMatcher.group(5)));
+            summary.setRevolvingCreditAvailable(parseAmount(creditMatcher.group(6)));
+        }
+    }
+
+    /**
+     * 提取企业基本概况与相关还款责任概要。
+     */
+    private void populateEnterpriseBasicProfile(List<String> pageTexts, EnterpriseCreditReportRaw report) {
+        if (pageTexts.size() < 4) {
+            report.getParseWarnings().add("企业征信报告页数不足，无法提取基本概况信息");
+            return;
+        }
+        String normalized = cleanupEnterprisePage(pageTexts.get(3));
+        EnterpriseCreditReportRaw.BasicProfile basic = report.getBasicProfile();
+
+        Matcher relatedMatcher = ENTERPRISE_RELATED_REPAYMENT_SUMMARY_PATTERN.matcher(normalized);
+        if (relatedMatcher.find()) {
+            report.getSummary().setRelatedRepaymentAmount(parseAmount(relatedMatcher.group(4)));
+            report.getSummary().setRelatedRepaymentAccountCount(parseInteger(relatedMatcher.group(5)));
+            report.getSummary().setRelatedRepaymentBalance(parseAmount(relatedMatcher.group(6)));
+            report.getSummary().setRelatedRepaymentConcernBalance(parseAmount(relatedMatcher.group(7)));
+            report.getSummary().setRelatedRepaymentBadBalance(parseAmount(relatedMatcher.group(8)));
+        }
+
+        basic.setEconomicType(extractEnterpriseBasicField(normalized, "经济类型"));
+        basic.setOrganizationType(extractEnterpriseBasicField(normalized, "组织机构类型"));
+        basic.setEnterpriseScale(extractEnterpriseBasicField(normalized, "企业规模"));
+        basic.setIndustry(extractEnterpriseBasicField(normalized, "所属行业"));
+        basic.setEstablishYear(parseInteger(extractEnterpriseBasicField(normalized, "成立年份")));
+        basic.setCertificateValidUntil(extractEnterpriseBasicField(normalized, "登记证书有效截止日期"));
+        basic.setRegisterAddress(extractEnterpriseBasicField(normalized, "登记地址"));
+        basic.setOperatingAddress(extractEnterpriseBasicField(normalized, "办公/经营地址"));
+        basic.setBusinessStatus(extractEnterpriseBasicField(normalized, "存续状态"));
+        basic.setRegisteredCapital(parseAmount(extractFirst(normalized, ENTERPRISE_REGISTERED_CAPITAL_PATTERN)));
+    }
+
+    /**
+     * 解析未结清贷款明细，用于识别企业信贷余额、抵押余额和当前逾期情况。
+     */
+    private void populateEnterpriseUnsettledLoans(List<String> pageTexts, EnterpriseCreditReportRaw report) {
+        if (pageTexts.size() < 5) {
+            report.getParseWarnings().add("企业征信报告页数不足，无法提取未结清贷款");
+            return;
+        }
+        List<String> lines = cleanEnterpriseLines(pageTexts.get(4));
+        int start = indexOfContains(lines, "短期借款 共");
+        if (start < 0) {
+            report.getParseWarnings().add("未识别未结清贷款章节");
+            return;
+        }
+
+        int index = start + 1;
+        while (index < lines.size()) {
+            while (index < lines.size() && !isEnterpriseAccountToken(lines.get(index))) {
+                index++;
+            }
+            if (index >= lines.size()) {
+                break;
+            }
+            EnterpriseLoanParseResult parsed = parseEnterpriseUnsettledLoan(lines, report, index);
+            if (parsed == null || parsed.loan() == null) {
+                break;
+            }
+            report.getUnsettledLoans().add(parsed.loan());
+            index = parsed.nextIndex();
+        }
+    }
+
+    /**
+     * 识别纳税信用等级，优先取企业信用报告中的认证记录。
+     */
+    private void populateEnterpriseTaxLevels(List<String> pageTexts, EnterpriseCreditReportRaw report) {
+        for (String pageText : pageTexts) {
+            String normalized = cleanupEnterprisePage(pageText);
+            Matcher matcher = ENTERPRISE_TAX_LEVEL_PATTERN.matcher(normalized);
+            while (matcher.find()) {
+                String level = matcher.group(1);
+                if (!report.getTaxCreditLevels().contains(level)) {
+                    report.getTaxCreditLevels().add(level);
+                }
+            }
+        }
+    }
+
+    /**
+     * 解析一笔未结清贷款表格记录。
+     */
+    private EnterpriseLoanParseResult parseEnterpriseUnsettledLoan(List<String> lines,
+                                                                   EnterpriseCreditReportRaw report,
+                                                                   int startIndex) {
+        int index = startIndex;
+        StringBuilder accountNo = new StringBuilder();
+        while (index < lines.size() && isEnterpriseAccountToken(lines.get(index))) {
+            accountNo.append(lines.get(index));
+            index++;
+        }
+        if (accountNo.isEmpty()) {
+            return null;
+        }
+
+        StringBuilder institution = new StringBuilder();
+        while (index < lines.size() && !ENTERPRISE_CURRENT_LOAN_LINE_PATTERN.matcher(lines.get(index)).find()) {
+            institution.append(lines.get(index)).append(' ');
+            index++;
+        }
+        if (index >= lines.size()) {
+            report.getParseWarnings().add("未识别未结清贷款业务行: " + abbreviate(accountNo.toString()));
+            return null;
+        }
+
+        Matcher coreMatcher = ENTERPRISE_CURRENT_LOAN_LINE_PATTERN.matcher(lines.get(index));
+        if (!coreMatcher.find()) {
+            report.getParseWarnings().add("未识别未结清贷款业务行: " + abbreviate(lines.get(index)));
+            return null;
+        }
+        index++;
+        if (index >= lines.size()) {
+            report.getParseWarnings().add("未识别未结清贷款详情行: " + abbreviate(accountNo.toString()));
+            return null;
+        }
+
+        Matcher detailMatcher = ENTERPRISE_CURRENT_LOAN_DETAIL_PATTERN.matcher(lines.get(index));
+        if (!detailMatcher.find()) {
+            report.getParseWarnings().add("未识别未结清贷款详情行: " + abbreviate(lines.get(index)));
+            return null;
+        }
+
+        EnterpriseCreditReportRaw.UnsettledLoan loan = new EnterpriseCreditReportRaw.UnsettledLoan();
+        loan.setAccountNo(accountNo.toString());
+        loan.setInstitution(normalizeWrappedChinese(institution.toString()));
+        loan.setBusinessType(coreMatcher.group(1));
+        loan.setOpenDate(coreMatcher.group(2));
+        loan.setDueDate(coreMatcher.group(3));
+        loan.setCurrency(coreMatcher.group(4));
+        loan.setLoanAmount(parseAmount(coreMatcher.group(5)));
+        loan.setDisbursementForm(coreMatcher.group(6));
+        loan.setGuaranteeType(normalizeWrappedChinese(detailMatcher.group(1)));
+        loan.setBalance(parseAmount(detailMatcher.group(2)));
+        loan.setFiveClass(detailMatcher.group(3));
+        loan.setOverdueTotal(parseAmount(detailMatcher.group(4)));
+        loan.setOverduePrincipal(parseAmount(detailMatcher.group(5)));
+        loan.setOverdueMonths(parseEnterpriseOverdueMonths(detailMatcher.group(6)));
+        loan.setLastRepaymentDate(detailMatcher.group(7));
+
+        int nextIndex = index + 1;
+        if (nextIndex < lines.size() && !isEnterpriseAccountToken(lines.get(nextIndex))) {
+            Matcher tailMatcher = ENTERPRISE_CURRENT_LOAN_TAIL_PATTERN.matcher(lines.get(nextIndex));
+            if (tailMatcher.find()) {
+                loan.setLastRepaymentAmount(parseAmount(tailMatcher.group(1)));
+                loan.setLastRepaymentForm(tailMatcher.group(2));
+                String maybeReportDate = extractLastDate(lines.get(nextIndex));
+                if (maybeReportDate != null) {
+                    loan.setReportDate(maybeReportDate);
+                }
+                nextIndex++;
+            }
+        }
+        while (nextIndex < lines.size() && !isEnterpriseAccountToken(lines.get(nextIndex))) {
+            nextIndex++;
+        }
+        return new EnterpriseLoanParseResult(loan, nextIndex);
+    }
+
+    /**
+     * 清理企业征信页级文本，去掉页脚和多余空白。
+     */
+    private String cleanupEnterprisePage(String text) {
+        return normalizeSpaces(text
+                .replace("\r", "\n")
+                .replaceAll("第\\s*\\d+\\s*页/共\\s*\\d+\\s*页", " ")
+                .replaceAll("第\\s*\\d+\\s*页\\s*/\\s*共\\s*\\d+\\s*页", " ")
+                .replace('\n', ' '));
+    }
+
+    /**
+     * 清理企业征信表格页的逐行文本。
+     */
+    private List<String> cleanEnterpriseLines(String pageText) {
+        List<String> lines = new ArrayList<>();
+        for (String line : pageText.replace("\r", "\n").split("\n")) {
+            String normalized = normalizeSpaces(line);
+            if (normalized.isBlank() || normalized.matches("第\\s*\\d+\\s*页/共\\s*\\d+\\s*页")) {
+                continue;
+            }
+            lines.add(normalized);
+        }
+        return lines;
+    }
+
+    /**
+     * 提取企业基本概况页中的单字段值。
+     */
+    private String extractEnterpriseBasicField(String normalizedPage, String fieldName) {
+        Pattern pattern = Pattern.compile(String.format(ENTERPRISE_BASIC_FIELD_PATTERN_TEMPLATE, Pattern.quote(fieldName)));
+        return trimToNull(normalizeWrappedChinese(extractFirst(normalizedPage, pattern)));
+    }
+
+    /**
+     * 判断一行是否为企业征信表格中的账户编号片段。
+     */
+    private boolean isEnterpriseAccountToken(String line) {
+        return line != null
+                && line.matches("^[A-Z0-9X-]+$")
+                && !line.matches("^\\d{4}-\\d{2}-\\d{2}$");
+    }
+
+    /**
+     * 查找包含指定关键字的首行索引。
+     */
+    private int indexOfContains(List<String> lines, String keyword) {
+        for (int i = 0; i < lines.size(); i++) {
+            if (lines.get(i).contains(keyword)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 企业征信中的逾期月数字段兼容 N / 数值。
+     */
+    private Integer parseEnterpriseOverdueMonths(String value) {
+        if (value == null || value.isBlank() || "N".equalsIgnoreCase(value) || "--".equals(value)) {
+            return 0;
+        }
+        return parseInteger(value);
+    }
+
+    /**
+     * 抽取行尾日期，用于信息报告日期。
+     */
+    private String extractLastDate(String text) {
+        Matcher matcher = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})$").matcher(normalizeSpaces(text));
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    /**
+     * 空白转 null，避免把空字符串落到结构化字段。
+     */
+    private String trimToNull(String value) {
+        if (value == null) {
+            return null;
+        }
+        String normalized = normalizeSpaces(value);
+        return normalized.isBlank() ? null : normalized;
+    }
+
+    /**
+     * 征信报告中的金额字段统一转成 BigDecimal。
+     */
+    private BigDecimal parseAmount(String value) {
+        if (value == null) {
+            return null;
+        }
+        String normalized = value.replace(",", "")
+                .replace("人民币元", "")
+                .replace("万元", "")
+                .replace("万", "")
+                .trim();
+        if (normalized.isBlank() || "--".equals(normalized)) {
+            return null;
+        }
+        return new BigDecimal(normalized);
     }
 
     /**
@@ -599,18 +1041,7 @@ public class CreditReportParseServiceImpl implements CreditReportParseService {
         return Integer.parseInt(value.replace(",", "").trim());
     }
 
-    /**
-     * 征信报告中的金额字段统一转成 BigDecimal。
-     */
-    private BigDecimal parseAmount(String value) {
-        if (value == null) {
-            return null;
-        }
-        String normalized = value.replace(",", "").trim();
-        if (normalized.isBlank() || "--".equals(normalized)) {
-            return null;
-        }
-        return new BigDecimal(normalized);
+    private record EnterpriseLoanParseResult(EnterpriseCreditReportRaw.UnsettledLoan loan, int nextIndex) {
     }
 
     /**
