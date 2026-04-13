@@ -8,6 +8,7 @@ import com.qhr.model.Enterprise;
 import com.qhr.model.MatchRecord;
 import com.qhr.service.*;
 import com.qhr.vo.ApplicantProfile;
+import com.qhr.vo.credit.EnterpriseCreditReportRaw;
 import com.qhr.vo.credit.PersonalCreditReportRaw;
 import com.qhr.vo.match.ApplicationContext;
 import jakarta.annotation.PreDestroy;
@@ -101,16 +102,20 @@ public class MeasureAsyncMatchService {
 
         //个人征信
         PersonalCreditReportRaw personalInfo = creditReportParseService.parsePersonalCloudFile(command.personalCreditCloudId());
-        //企业征信 todo
+        //企业征信
+        EnterpriseCreditReportRaw enterpriseCreditInfo = null;
+        if (command.enterpriseCreditCloudId() != null && !command.enterpriseCreditCloudId().isBlank()) {
+            enterpriseCreditInfo = creditReportParseService.parseEnterpriseCloudFile(command.enterpriseCreditCloudId());
+        }
 
         ApplicationContext applicationContext = new ApplicationContext();
-
+        //画像组装
         ApplicantProfile applicantProfile = applicantProfileAssembler.assemble(
                 enterprise,
                 companyDetail,
                 taxData.path("Data"),
                 personalInfo,
-                null,
+                enterpriseCreditInfo,
                 applicationContext);
         //产品匹配
         measureProgressService.markStage(command.intentionId(), MeasureProgressStage.PRODUCT_MATCHING, null);

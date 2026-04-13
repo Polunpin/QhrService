@@ -3,6 +3,7 @@ package com.qhr.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.qhr.model.Enterprise;
 import com.qhr.vo.ApplicantProfile;
+import com.qhr.vo.credit.EnterpriseCreditReportRaw;
 import com.qhr.vo.credit.PersonalCreditReportRaw;
 import com.qhr.vo.match.ApplicationContext;
 
@@ -26,6 +27,6 @@ public interface ApplicantProfileAssembler {
                               JsonNode companyDetail,
                               JsonNode taxData,
                               PersonalCreditReportRaw personalCreditReport,
-                              JsonNode enterpriseCreditData,
+                              EnterpriseCreditReportRaw enterpriseCreditData,
                               ApplicationContext applicationContext);
 }

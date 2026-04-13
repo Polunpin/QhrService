@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.qhr.model.Enterprise;
 import com.qhr.service.ApplicantProfileAssembler;
 import com.qhr.vo.ApplicantProfile;
+import com.qhr.vo.credit.EnterpriseCreditReportRaw;
 import com.qhr.vo.credit.PersonalCreditReportRaw;
 import com.qhr.vo.match.ApplicationContext;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -33,7 +34,7 @@ public class ApplicantProfileAssemblerImpl implements ApplicantProfileAssembler 
                                      JsonNode companyDetail,
                                      JsonNode taxData,
                                      PersonalCreditReportRaw personalCreditReport,
-                                     JsonNode enterpriseCreditData,
+                                     EnterpriseCreditReportRaw enterpriseCreditData,
                                      ApplicationContext applicationContext) {
         ApplicantProfile profile = new ApplicantProfile();
         profile.setFinancialReport(new ApplicantProfile.FinancialReport());
@@ -42,7 +43,7 @@ public class ApplicantProfileAssemblerImpl implements ApplicantProfileAssembler 
         populateCompanyDetail(profile, companyDetail, enterprise);
         populateTax(profile, taxData);
         populatePersonalCredit(profile, personalCreditReport);
-        populateEnterpriseCreditPlaceholder(profile, enterpriseCreditData);
+        populateEnterpriseCredit(profile, enterpriseCreditData);
         populateContextDerivedFacts(profile, applicationContext);
         populateDerivedMetrics(profile);
         return profile;
@@ -266,11 +267,67 @@ public class ApplicantProfileAssemblerImpl implements ApplicantProfileAssembler 
         profile.setAbnormalCreditAccount(hasAbnormalCreditAccount(report));
     }
 
-    private void populateEnterpriseCreditPlaceholder(ApplicantProfile profile, JsonNode enterpriseCreditData) {
-        if (enterpriseCreditData == null || enterpriseCreditData.isNull() || enterpriseCreditData.isMissingNode()) {
+    private void populateEnterpriseCredit(ApplicantProfile profile, EnterpriseCreditReportRaw enterpriseCreditData) {
+        if (enterpriseCreditData == null) {
             return;
         }
-        // 企业征信接口未落地，先保留扩展点，字段后续按结构化接口补齐。
+        EnterpriseCreditReportRaw.Summary summary = enterpriseCreditData.getSummary();
+        profile.setEnterpriseLoanInstitutionCount(firstNonNull(
+                summary.getActiveCreditInstitutionCount(),
+                summary.getCreditInstitutionCount()));
+
+        BigDecimal enterpriseCreditLoan = BigDecimal.ZERO;
+        BigDecimal enterpriseMortgageLiability = BigDecimal.ZERO;
+        int overdueCount = 0;
+        int maxOverdueMonths = 0;
+        boolean abnormal = false;
+        for (EnterpriseCreditReportRaw.UnsettledLoan loan : enterpriseCreditData.getUnsettledLoans()) {
+            BigDecimal balance = defaultDecimal(loan.getBalance());
+            if (containsIgnoreCase(loan.getGuaranteeType(), "抵押")) {
+                enterpriseMortgageLiability = enterpriseMortgageLiability.add(balance);
+            } else {
+                enterpriseCreditLoan = enterpriseCreditLoan.add(balance);
+            }
+
+            boolean overdue = defaultDecimal(loan.getOverdueTotal()).compareTo(BigDecimal.ZERO) > 0
+                    || defaultDecimal(loan.getOverduePrincipal()).compareTo(BigDecimal.ZERO) > 0
+                    || defaultZero(loan.getOverdueMonths()) > 0;
+            if (overdue) {
+                overdueCount++;
+                maxOverdueMonths = Math.max(maxOverdueMonths, defaultZero(loan.getOverdueMonths()));
+            }
+            if (!isNormalCreditClass(loan.getFiveClass())) {
+                abnormal = true;
+            }
+        }
+
+        BigDecimal enterpriseGuaranteeLiability = defaultDecimal(summary.getGuaranteeBalance())
+                .add(defaultDecimal(summary.getRelatedRepaymentBalance()));
+        profile.setEnterpriseCreditLoan(enterpriseCreditLoan);
+        profile.setEnterpriseMortgageLiability(enterpriseMortgageLiability);
+        profile.setEnterpriseGuaranteeLiability(enterpriseGuaranteeLiability);
+        profile.setEnterpriseLiability(enterpriseCreditLoan
+                .add(enterpriseMortgageLiability)
+                .add(enterpriseGuaranteeLiability));
+        profile.setEnterpriseOverdueCount12m(overdueCount);
+        profile.setEnterpriseMaxOverdueMonths24m(maxOverdueMonths);
+
+        abnormal = abnormal
+                || defaultDecimal(summary.getLoanConcernBalance()).compareTo(BigDecimal.ZERO) > 0
+                || defaultDecimal(summary.getLoanBadBalance()).compareTo(BigDecimal.ZERO) > 0
+                || defaultDecimal(summary.getGuaranteeConcernBalance()).compareTo(BigDecimal.ZERO) > 0
+                || defaultDecimal(summary.getGuaranteeBadBalance()).compareTo(BigDecimal.ZERO) > 0
+                || defaultZero(summary.getTaxArrearsCount()) > 0
+                || defaultZero(summary.getCivilJudgmentCount()) > 0
+                || defaultZero(summary.getEnforcementCount()) > 0
+                || defaultZero(summary.getAdminPenaltyCount()) > 0;
+        profile.setEnterpriseAbnormalCreditAccount(abnormal);
+
+        if ((profile.getTaxLevel() == null || profile.getTaxLevel().isBlank())
+                && enterpriseCreditData.getTaxCreditLevels() != null
+                && !enterpriseCreditData.getTaxCreditLevels().isEmpty()) {
+            profile.setTaxLevel(enterpriseCreditData.getTaxCreditLevels().get(0));
+        }
     }
 
     private void populateContextDerivedFacts(ApplicantProfile profile, ApplicationContext applicationContext) {
@@ -800,6 +857,23 @@ public class ApplicantProfileAssemblerImpl implements ApplicantProfileAssembler 
                 .anyMatch(card -> containsAny(card.getAccountStatus(), "异常", "呆账", "止付", "冻结"))
                 || report.getLoans().stream()
                 .anyMatch(loan -> containsAny(loan.getCurrentStatus(), "异常", "呆账", "止付", "冻结"));
+    }
+
+    private boolean isNormalCreditClass(String value) {
+        return value == null || value.isBlank() || "正常".equals(value) || "NORMAL".equalsIgnoreCase(value);
+    }
+
+    @SafeVarargs
+    private <T> T firstNonNull(T... values) {
+        if (values == null) {
+            return null;
+        }
+        for (T value : values) {
+            if (value != null) {
+                return value;
+            }
+        }
+        return null;
     }
 
     private boolean containsAny(String value, String... keywords) {
